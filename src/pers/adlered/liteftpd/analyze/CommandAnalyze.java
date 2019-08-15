@@ -1,12 +1,11 @@
 package pers.adlered.liteftpd.analyze;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.net.Socket;
 import java.util.Random;
 
 import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.main.Send;
+import pers.adlered.liteftpd.mode.PASV;
 import pers.adlered.liteftpd.user.Permission;
 
 public class CommandAnalyze {
@@ -19,13 +18,16 @@ public class CommandAnalyze {
 
     private String loginUser = null;
     private String loginPass = null;
+    private String SRVIPADD = null;
 
-    private Send send;
+    private Send send = null;
 
-    File file;
+    File file = null;
+    Thread passiveMode = null;
 
-    public CommandAnalyze(Send send) {
+    public CommandAnalyze(Send send, String SRVIPADD) {
         this.send = send;
+        this.SRVIPADD = SRVIPADD;
         file = new File(Permission.defaultDir);
     }
 
@@ -99,13 +101,22 @@ public class CommandAnalyze {
                                 break;
                         }
                     }
+                    else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
+                        send.send(Dict.bye);
+                    }
                     /**
                      * TRANSMISSION COMMANDS
                      */
                     else if (cmd.equals("PASV")) {
                         Random random = new Random();
                         int randomPort = random.nextInt(55296) + 10240;
-                        send.send(Dict.passiveMode + "(" + 1 + "," + 1 + "," + 1 + "," + 1 + "," + 1 + "," + 1 + ")." + "\r\n");
+                        int randomSub = random.nextInt(5000) + 5000;
+                        int calcPort = (randomPort - randomSub) / 256;
+                        int finalPort = calcPort * 256 + randomSub;
+                        String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
+                        send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")." + "\r\n");
+                        passiveMode = new PASV(finalPort);
+                        passiveMode.start();
                     }
                     else {
                         unknownCommand();

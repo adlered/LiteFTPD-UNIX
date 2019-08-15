@@ -58,7 +58,6 @@ public class AutoInputStream {
             ++storageCursor;
         }
         if (firstEmptyMark == -1) firstEmptyMark = storage.length;
-        System.out.println();
         //Init a fit size bytes.
         byte[] cleaned = new byte[firstEmptyMark];
         for (int i = 0; i < firstEmptyMark; i++) {
@@ -66,12 +65,8 @@ public class AutoInputStream {
         }
         String UTF8 = new String(cleaned, "UTF-8");
         String GB2312 = new String(cleaned, "GB2312");
-        System.out.println("UTF: " + UTF8);
-        System.out.println("GB: " + GB2312);
         String charset = CharsetSelector.getCharset(cleaned);
-        System.out.println("Charset detect: " + charset);
         String bestMatch = new String(cleaned, charset);
-        System.out.println("Best match: " + bestMatch);
         return bestMatch;
     }
 
