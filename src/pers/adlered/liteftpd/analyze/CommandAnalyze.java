@@ -6,6 +6,7 @@ import java.util.Random;
 import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.mode.PASV;
+import pers.adlered.liteftpd.tool.RandomNum;
 import pers.adlered.liteftpd.user.Permission;
 
 public class CommandAnalyze {
@@ -23,7 +24,9 @@ public class CommandAnalyze {
     private Send send = null;
 
     File file = null;
-    Thread passiveMode = null;
+    PASV passiveMode = null;
+
+    private boolean inPassiveMode = false;
 
     public CommandAnalyze(Send send, String SRVIPADD) {
         this.send = send;
@@ -103,20 +106,34 @@ public class CommandAnalyze {
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
+                        //TODO Close server socket connection
+                    }
+                    else if (cmd.equals("LIST")) {
+                        send.send("150 等会儿啊，找着呢。\r\n");
+                        passiveMode.hello("drwxrwxrwx   1 user     group           0 Jan  1  1980 ..\r\n" +
+                                "drwxrwxrwx   1 user     group           0 Aug  7 15:56 helloworld\r\n");
                     }
                     /**
                      * TRANSMISSION COMMANDS
                      */
                     else if (cmd.equals("PASV")) {
                         Random random = new Random();
-                        int randomPort = random.nextInt(55296) + 10240;
+                        /*int randomPort = random.nextInt(55296) + 10240;
                         int randomSub = random.nextInt(5000) + 5000;
                         int calcPort = (randomPort - randomSub) / 256;
+                        int finalPort = calcPort * 256 + randomSub;*/
+                        int randomPort = RandomNum.sumIntger(1024, 40960, false);
+                        int randomSub = RandomNum.sumIntger(0, 64, false);
+                        int calcPort = (randomPort - randomSub) / 256;
                         int finalPort = calcPort * 256 + randomSub;
+                        passiveMode = new PASV(finalPort, send);
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
-                        send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")." + "\r\n");
-                        passiveMode = new PASV(finalPort);
+                        send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
+                        if (inPassiveMode) {
+                            passiveMode.stop();
+                        }
                         passiveMode.start();
+                        inPassiveMode = true;
                     }
                     else {
                         unknownCommand();
