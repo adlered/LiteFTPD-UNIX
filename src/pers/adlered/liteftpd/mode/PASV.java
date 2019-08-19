@@ -34,8 +34,7 @@ public class PASV extends Thread {
             this.socket = socket;
             System.out.println(socket.getInetAddress() + " connected!");
             System.out.println("等");
-            while (listening == null) {}
-            Thread.sleep(2000);
+            while (listening == null) {System.out.println(listening);}
             System.out.println("跳");
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
             bufferedOutputStream.write(listening.getBytes());
@@ -47,7 +46,7 @@ public class PASV extends Thread {
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
-        } catch (InterruptedException E) {}
+        }
     }
 
     public void hello(String message) {

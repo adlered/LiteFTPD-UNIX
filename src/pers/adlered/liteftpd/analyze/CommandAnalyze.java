@@ -1,6 +1,9 @@
 package pers.adlered.liteftpd.analyze;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Random;
 
 import pers.adlered.liteftpd.dict.Dict;
@@ -35,6 +38,7 @@ public class CommandAnalyze {
     }
 
     public void analyze(String command) {
+        System.out.println(command);
         String cmd = null;
         String arg1 = null;
         String arg2 = null;
@@ -109,9 +113,24 @@ public class CommandAnalyze {
                         //TODO Close server socket connection
                     }
                     else if (cmd.equals("LIST")) {
-                        send.send("150 等会儿啊，找着呢。\r\n");
-                        passiveMode.hello("drwxrwxrwx   1 user     group           0 Jan  1  1980 ..\r\n" +
-                                "drwxrwxrwx   1 user     group           0 Aug  7 15:56 helloworld\r\n");
+                        send.send("150 Opening ASCII mode data connection for /bin/ls.\r\n");
+                        try {
+                            Process process = Runtime.getRuntime().exec(new String[]{"ls", "-l"});
+                            process.waitFor();
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                            String line;
+                            StringBuilder result = new StringBuilder();
+                            while ((line = bufferedReader.readLine()) != null) {
+                                result.append(line).append('\n');
+                            }
+                            passiveMode.hello(result.toString());
+                        } catch (IOException IOE) {
+                            //TODO
+                            IOE.printStackTrace();
+                        } catch (InterruptedException IE) {
+                            //TODO
+                            IE.printStackTrace();
+                        }
                     }
                     /**
                      * TRANSMISSION COMMANDS
