@@ -42,8 +42,9 @@ public class CommandAnalyze {
         String cmd = null;
         String arg1 = null;
         String arg2 = null;
+        String[] split = null;
         try {
-            String[] split = command.split(" ");
+            split = command.split(" ");
             for (int i = 0; i < split.length; i++) {
                 split[i] = split[i].replaceAll("(\r|\n)", "");
             }
@@ -94,7 +95,7 @@ public class CommandAnalyze {
                         if (file.isDirectory()) {
                             send.send(Dict.currentDir + "\"" + file.getAbsolutePath() + "\" is current directory." + "\r\n");
                         } else {
-                            send.send(Dict.isFile + file.getName());
+                            send.send(Dict.isFile + file.getName() + "\r\n");
                         }
                     }
                     else if (cmd.equals("TYPE")) {
@@ -115,7 +116,7 @@ public class CommandAnalyze {
                     else if (cmd.equals("LIST")) {
                         send.send("150 Opening ASCII mode data connection for /bin/ls.\r\n");
                         try {
-                            Process process = Runtime.getRuntime().exec(new String[]{"ls", "-l"});
+                            Process process = Runtime.getRuntime().exec(new String[]{"ls", "-l", file.getAbsolutePath()});
                             process.waitFor();
                             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                             String line;
@@ -131,6 +132,16 @@ public class CommandAnalyze {
                             //TODO
                             IE.printStackTrace();
                         }
+                    }
+                    else if (cmd.equals("CWD")) {
+                        String completePath = arg1;
+                        if (arg2 != null) {
+                            for (int i = 2; i < split.length; i++) {
+                                completePath += i;
+                            }
+                        }
+                        file = new File(completePath);
+                        send.send("250 Directory changed to " + file.getAbsolutePath() + "\r\n");
                     }
                     /**
                      * TRANSMISSION COMMANDS
