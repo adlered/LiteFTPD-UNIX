@@ -30,12 +30,13 @@ public class PASV extends Thread {
     @Override
     public void run() {
         try {
+            System.out.println("WAITING...");
             Socket socket = serverSocket.accept();
             this.socket = socket;
             System.out.println(socket.getInetAddress() + " connected!");
-            System.out.println("等");
-            while (listening == null) {System.out.println(listening);}
-            System.out.println("跳");
+            System.out.print("> Waiting");
+            while (listening == null) { System.out.print("."); try { Thread.sleep(500); } catch (InterruptedException IE) {}}
+            System.out.print("\r\nService has response.");
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
             bufferedOutputStream.write(listening.getBytes());
             bufferedOutputStream.flush();

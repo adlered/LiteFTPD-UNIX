@@ -29,12 +29,17 @@ public class CommandAnalyze {
     File file = null;
     PASV passiveMode = null;
 
-    private boolean inPassiveMode = false;
+    private String currentPath = "";
+    //Trans type default A
+    //A: ASCII I: BINARY
+    private String type = "A";
+
+    public boolean interrupted = false;
 
     public CommandAnalyze(Send send, String SRVIPADD) {
         this.send = send;
         this.SRVIPADD = SRVIPADD;
-        file = new File(Permission.defaultDir);
+        currentPath = Permission.defaultDir;
     }
 
     public void analyze(String command) {
@@ -92,19 +97,21 @@ public class CommandAnalyze {
                      * NORMAL COMMANDS
                      */
                     else if (cmd.equals("PWD")) {
-                        if (file.isDirectory()) {
-                            send.send(Dict.currentDir + "\"" + file.getAbsolutePath() + "\" is current directory." + "\r\n");
-                        } else {
-                            send.send(Dict.isFile + file.getName() + "\r\n");
-                        }
+                        //if (file.isDirectory()) {
+                            send.send(Dict.currentDir + "\"" + currentPath + "\" is current directory." + "\r\n");
+                        //} else {
+                        //    send.send(Dict.isFile + file.getName() + "\r\n");
+                        //}
                     }
                     else if (cmd.equals("TYPE")) {
                         arg1 = arg1.toUpperCase();
                         switch (arg1) {
                             case "I":
+                                type = "I";
                                 send.send(Dict.setType + "I." + "\r\n");
                                 break;
                             case "A":
+                                type = "A";
                                 send.send(Dict.setType + "A." + "\r\n");
                                 break;
                         }
@@ -112,11 +119,12 @@ public class CommandAnalyze {
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
                         //TODO Close server socket connection
+                        interrupted = true;
                     }
                     else if (cmd.equals("LIST")) {
                         send.send("150 Opening ASCII mode data connection for /bin/ls.\r\n");
                         try {
-                            Process process = Runtime.getRuntime().exec(new String[]{"ls", "-l", file.getAbsolutePath()});
+                            Process process = Runtime.getRuntime().exec(new String[]{"ls", "-l", currentPath});
                             process.waitFor();
                             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                             String line;
@@ -124,7 +132,10 @@ public class CommandAnalyze {
                             while ((line = bufferedReader.readLine()) != null) {
                                 result.append(line).append('\n');
                             }
+                            System.out.println(result.toString());
+                            System.out.println("hello!");
                             passiveMode.hello(result.toString());
+                            System.out.println("hello ok!");
                         } catch (IOException IOE) {
                             //TODO
                             IOE.printStackTrace();
@@ -133,6 +144,10 @@ public class CommandAnalyze {
                             IE.printStackTrace();
                         }
                     }
+                    else if (cmd.equals("CDUP")) {
+                        upperDirectory();
+                        send.send("250 Directory changed to " + currentPath + "\r\n");
+                    }
                     else if (cmd.equals("CWD")) {
                         String completePath = arg1;
                         if (arg2 != null) {
@@ -140,8 +155,16 @@ public class CommandAnalyze {
                                 completePath += i;
                             }
                         }
-                        file = new File(completePath);
-                        send.send("250 Directory changed to " + file.getAbsolutePath() + "\r\n");
+                        if (arg1.equals("..")) {
+                            upperDirectory();
+                        } else {
+                            if (completePath.indexOf("/") != -1 && completePath.indexOf("./") == -1) {
+                                currentPath = completePath;
+                            } else {
+                                currentPath = currentPath + "/" + completePath;
+                            }
+                        }
+                        send.send("250 Directory changed to " + currentPath + "\r\n");
                     }
                     /**
                      * TRANSMISSION COMMANDS
@@ -159,11 +182,7 @@ public class CommandAnalyze {
                         passiveMode = new PASV(finalPort, send);
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
                         send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
-                        if (inPassiveMode) {
-                            passiveMode.stop();
-                        }
                         passiveMode.start();
-                        inPassiveMode = true;
                     }
                     else {
                         unknownCommand();
@@ -177,4 +196,20 @@ public class CommandAnalyze {
         send.send(Dict.unknownCommand);
         return true;
     }
+
+    public void upperDirectory() {
+        //Depart && Re-part path
+        String[] dir = currentPath.split("/");
+        currentPath = "";
+        for (int i = 0; i < dir.length - 1; i++) {
+            System.out.println("len: " + dir.length + " cur: " + i);
+            if (i == dir.length - 2) {
+                currentPath += dir[i];
+            } else {
+                currentPath += dir[i] + "/";
+            }
+            System.out.println(currentPath);
+        }
+    }
+
 }

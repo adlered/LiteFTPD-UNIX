@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class Main {
     public static void main(String[] args) {
@@ -34,8 +33,7 @@ public class Main {
                     socket.close();
                 } else {
                     ChangeVar.plusOnlineCount();
-                    SocketHandler socketHandler = new SocketHandler(socket);
-                    Pool.handlerPool.execute(socketHandler);
+                    Pool.handlerPool.execute(new SocketHandler(socket));
                 }
             } catch (IOException IOE) {
                 //TODO
