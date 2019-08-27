@@ -4,14 +4,18 @@ import pers.adlered.liteftpd.dict.Dict;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.net.Socket;
 
 public class Send {
-    private BufferedOutputStream bufferedOutputStream;
-    private String IPADD;
+    private BufferedOutputStream bufferedOutputStream = null;
+    private String IPADD = null;
 
-    public Send(BufferedOutputStream bufferedOutputStream, String IPADD) {
+    private PauseListen pauseListen = null;
+
+    public Send(BufferedOutputStream bufferedOutputStream, String IPADD, PauseListen pauseListen) {
         this.bufferedOutputStream = bufferedOutputStream;
         this.IPADD = IPADD;
+        this.pauseListen = pauseListen;
         try {
             //WELCOME MESSAGE
             bufferedOutputStream.write(Dict.connectionStarted.getBytes());
@@ -24,6 +28,8 @@ public class Send {
 
     public boolean send(String message) {
         try {
+            System.out.println(message);
+            pauseListen.resetTimeout();
             //WELCOME MESSAGE
             bufferedOutputStream.write(message.getBytes());
             bufferedOutputStream.flush();

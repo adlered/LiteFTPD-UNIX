@@ -8,6 +8,8 @@ public class Variable {
     //User control
     public static int online = 0;
     public static long maxUserLimit = 10;
+    //Time out per second
+    public static int timeout = 10;
     //Service control
     public static int port = 21;
     //Info control

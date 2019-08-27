@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.Random;
 
 import pers.adlered.liteftpd.dict.Dict;
+import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.mode.PASV;
 import pers.adlered.liteftpd.tool.RandomNum;
@@ -33,17 +34,22 @@ public class CommandAnalyze {
     //Trans type default A
     //A: ASCII I: BINARY
     private String type = "A";
+    //To change timeout when command input
+    private PauseListen pauseListen = null;
 
-    public boolean interrupted = false;
+    PrivateVariable privateVariable = null;
 
-    public CommandAnalyze(Send send, String SRVIPADD) {
+    public CommandAnalyze(Send send, String SRVIPADD, PrivateVariable privateVariable, PauseListen pauseListen) {
         this.send = send;
         this.SRVIPADD = SRVIPADD;
         currentPath = Permission.defaultDir;
+        this.privateVariable = privateVariable;
+        this.pauseListen = pauseListen;
     }
 
     public void analyze(String command) {
         System.out.println(command);
+        pauseListen.resetTimeout();
         String cmd = null;
         String arg1 = null;
         String arg2 = null;
@@ -75,7 +81,12 @@ public class CommandAnalyze {
                         loginUser = arg1;
                         send.send(Dict.passwordRequired + loginUser + "." + "\r\n");
                         step = 2;
-                    } else {
+                    }
+                    else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
+                        send.send(Dict.bye);
+                        privateVariable.interrupted = true;
+                    }
+                    else {
                         unknownCommand();
                     }
                     break;
@@ -85,7 +96,12 @@ public class CommandAnalyze {
                         loginPass = arg1;
                         send.send(Dict.loggedIn + loginUser + " logged." + "\r\n");
                         step = 3;
-                    } else {
+                    }
+                    else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
+                        send.send(Dict.bye);
+                        privateVariable.interrupted = true;
+                    }
+                    else {
                         unknownCommand();
                     }
                     break;
@@ -118,8 +134,7 @@ public class CommandAnalyze {
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
-                        //TODO Close server socket connection
-                        interrupted = true;
+                        privateVariable.interrupted = true;
                     }
                     else if (cmd.equals("LIST")) {
                         send.send("150 Opening ASCII mode data connection for /bin/ls.\r\n");

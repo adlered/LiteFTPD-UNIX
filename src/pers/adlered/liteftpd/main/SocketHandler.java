@@ -1,9 +1,12 @@
 package pers.adlered.liteftpd.main;
 
 import pers.adlered.liteftpd.analyze.CommandAnalyze;
+import pers.adlered.liteftpd.analyze.PrivateVariable;
+import pers.adlered.liteftpd.variable.ChangeVar;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketImpl;
 
 public class SocketHandler extends Thread {
     private InputStream inputStream = null;
@@ -18,6 +21,12 @@ public class SocketHandler extends Thread {
     //Sign 2 to tell main thread kill itself
     private boolean interrupted = false;
 
+    Send send = null;
+    CommandAnalyze commandAnalyze = null;
+    Receive receive = null;
+
+    PrivateVariable privateVariable = null;
+
     public SocketHandler(Socket socket) {
         try {
             IPADD = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
@@ -29,6 +38,7 @@ public class SocketHandler extends Thread {
             bufferedInputStream = new BufferedInputStream(inputStream);
             bufferedOutputStream = new BufferedOutputStream(outputStream);
             this.socket = socket;
+            privateVariable = new PrivateVariable();
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
@@ -38,32 +48,13 @@ public class SocketHandler extends Thread {
     @Override
     public void run() {
         System.out.println(IPADD + " has been mounted into " + Thread.currentThread());
+        //Process while user quit forced or manually.
+        PauseListen pauseListen = new PauseListen(privateVariable, socket, receive, bufferedOutputStream, outputStream, bufferedInputStream, inputStream, IPADD);
+        pauseListen.start();
         //Start model
-        Send send = new Send(bufferedOutputStream, IPADD);
-        CommandAnalyze commandAnalyze = new CommandAnalyze(send, SRVIPADD);
-        Thread receive = new Receive(inputStream, IPADD, commandAnalyze);
+        send = new Send(bufferedOutputStream, IPADD, pauseListen);
+        commandAnalyze = new CommandAnalyze(send, SRVIPADD, privateVariable, pauseListen);
+        receive = new Receive(inputStream, IPADD, commandAnalyze, pauseListen);
         receive.start();
-        while (!commandAnalyze.interrupted) {
-            System.out.print(".");
-            try {
-                socket.sendUrgentData(0xFF);
-                Thread.sleep(500);
-            } catch (InterruptedException IE) {
-            } catch (IOException IOE) {
-                break;
-            }
-        }
-        System.out.println("Shutting down " + IPADD);
-        try {
-            receive.stop();
-            bufferedOutputStream.flush();
-            outputStream.flush();
-            bufferedInputStream.close();
-            inputStream.close();
-            bufferedOutputStream.close();
-            outputStream.close();
-        } catch (IOException IOE) {
-            IOE.printStackTrace();
-        }
     }
 }

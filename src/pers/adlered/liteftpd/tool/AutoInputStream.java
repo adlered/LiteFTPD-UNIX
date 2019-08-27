@@ -6,8 +6,6 @@ package pers.adlered.liteftpd.tool;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public class AutoInputStream {
     private InputStream inputStream;
@@ -23,8 +21,12 @@ public class AutoInputStream {
         int c2Cursor = 0;
         while (true) {
             int available = 0;
-            while (available == 0) {
-                available = inputStream.available();
+            try {
+                while (available == 0) {
+                    available = inputStream.available();
+                }
+            } catch (IOException IOE) {
+                break;
             }
             byte[] cache = new byte[available];
             inputStream.read(cache);
