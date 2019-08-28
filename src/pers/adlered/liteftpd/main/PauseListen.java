@@ -1,6 +1,7 @@
 package pers.adlered.liteftpd.main;
 
 import pers.adlered.liteftpd.analyze.PrivateVariable;
+import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.variable.ChangeVar;
 import pers.adlered.liteftpd.variable.Variable;
 
@@ -10,33 +11,37 @@ import java.net.Socket;
 public class PauseListen extends Thread {
     private PrivateVariable privateVariable = null;
     private Socket socket = null;
-    private Receive receive = null;
     private BufferedOutputStream bufferedOutputStream = null;
     private OutputStream outputStream = null;
     private BufferedInputStream bufferedInputStream = null;
     private InputStream inputStream = null;
-    private String IPADD = null;
+    private IPAddressBind ipAddressBind = null;
 
     private int timeout = 0;
 
     private boolean running = true;
 
-    public PauseListen(PrivateVariable privateVariable, Socket socket, Receive receive, BufferedOutputStream bufferedOutputStream, OutputStream outputStream, BufferedInputStream bufferedInputStream, InputStream inputStream, String IPADD) {
+    public PauseListen(PrivateVariable privateVariable, Socket socket, BufferedOutputStream bufferedOutputStream, OutputStream outputStream, BufferedInputStream bufferedInputStream, InputStream inputStream, IPAddressBind ipAddressBind) {
         this.privateVariable = privateVariable;
         this.socket = socket;
-        this.receive = receive;
         this.bufferedOutputStream = bufferedOutputStream;
         this.outputStream = outputStream;
         this.bufferedInputStream = bufferedInputStream;
         this.inputStream = inputStream;
-        this.IPADD = IPADD;
+        this.ipAddressBind = ipAddressBind;
     }
 
     @Override
     public void run() {
         String reason = "User quit manually";
         while (!privateVariable.interrupted) {
-            System.out.println(IPADD + " timeout: " + timeout);
+            if (privateVariable.isTimeoutLock()) {
+                resetTimeout();
+            }
+            //Display log every 10 seconds.
+            if (timeout % 10 == 0 && timeout != 0) {
+                System.out.println(ipAddressBind.getIPADD() + " timeout: " + timeout + "=>" + Variable.timeout);
+            }
             if (timeout >= Variable.timeout) {
                 reason = "Time is out";
                 break;
@@ -48,17 +53,24 @@ public class PauseListen extends Thread {
                 break;
             }
         }
-        System.out.println("\r\nShutting down " + IPADD + ", because: " + reason);
+        System.out.println("Shutting down " + ipAddressBind.getIPADD() + ", because: " + reason);
+        //Shutdown this hole connection.
         running = false;
         ChangeVar.reduceOnlineCount();
         try {
+            //BufferedStream
             bufferedInputStream.close();
-            inputStream.close();
             bufferedOutputStream.close();
+            //Stream
+            inputStream.close();
             outputStream.close();
+            //Socket
+            socket.close();
+            //Variables
             privateVariable = null;
         } catch (Exception E) {
-            System.out.println("Shutting " + IPADD + " with errors.");
+            E.getCause();
+            System.out.println("Shutting " + ipAddressBind.getIPADD() + " with errors.");
         }
     }
 

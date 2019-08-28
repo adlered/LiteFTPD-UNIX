@@ -4,16 +4,20 @@ package pers.adlered.liteftpd.tool;
  * AutoInputStream can analyze Chinese encoding from InputStream, and print it out correctly.
  */
 
+import pers.adlered.liteftpd.analyze.PrivateVariable;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 public class AutoInputStream {
-    private InputStream inputStream;
-    private int cacheSize;
+    private InputStream inputStream = null;
+    private int cacheSize = 0;
+    private PrivateVariable privateVariable = null;
 
-    public AutoInputStream(InputStream inputStream, int cacheSize) {
+    public AutoInputStream(InputStream inputStream, int cacheSize, PrivateVariable privateVariable) {
         this.inputStream = inputStream;
         this.cacheSize = cacheSize;
+        this.privateVariable = privateVariable;
     }
 
     public String readLineAuto() throws IOException {
@@ -68,6 +72,7 @@ public class AutoInputStream {
         String UTF8 = new String(cleaned, "UTF-8");
         String GB2312 = new String(cleaned, "GB2312");
         String charset = CharsetSelector.getCharset(cleaned);
+        privateVariable.setEncode(charset);
         String bestMatch = new String(cleaned, charset);
         return bestMatch;
     }

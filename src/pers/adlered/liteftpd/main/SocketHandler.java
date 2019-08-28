@@ -2,11 +2,10 @@ package pers.adlered.liteftpd.main;
 
 import pers.adlered.liteftpd.analyze.CommandAnalyze;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
-import pers.adlered.liteftpd.variable.ChangeVar;
+import pers.adlered.liteftpd.bind.IPAddressBind;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketImpl;
 
 public class SocketHandler extends Thread {
     private InputStream inputStream = null;
@@ -14,6 +13,7 @@ public class SocketHandler extends Thread {
     private BufferedInputStream bufferedInputStream = null;
     private BufferedOutputStream bufferedOutputStream = null;
     private Socket socket = null;
+    private IPAddressBind ipAddressBind = null;
 
     private String IPADD = null;
     private String SRVIPADD = null;
@@ -48,13 +48,14 @@ public class SocketHandler extends Thread {
     @Override
     public void run() {
         System.out.println(IPADD + " has been mounted into " + Thread.currentThread());
+        ipAddressBind = new IPAddressBind(IPADD, SRVIPADD);
         //Process while user quit forced or manually.
-        PauseListen pauseListen = new PauseListen(privateVariable, socket, receive, bufferedOutputStream, outputStream, bufferedInputStream, inputStream, IPADD);
+        PauseListen pauseListen = new PauseListen(privateVariable, socket, bufferedOutputStream, outputStream, bufferedInputStream, inputStream, ipAddressBind);
         pauseListen.start();
         //Start model
-        send = new Send(bufferedOutputStream, IPADD, pauseListen);
-        commandAnalyze = new CommandAnalyze(send, SRVIPADD, privateVariable, pauseListen);
-        receive = new Receive(inputStream, IPADD, commandAnalyze, pauseListen);
+        send = new Send(bufferedOutputStream, pauseListen, privateVariable, ipAddressBind);
+        commandAnalyze = new CommandAnalyze(send, SRVIPADD, privateVariable, pauseListen, ipAddressBind);
+        receive = new Receive(inputStream, commandAnalyze, pauseListen, privateVariable, ipAddressBind);
         receive.start();
     }
 }

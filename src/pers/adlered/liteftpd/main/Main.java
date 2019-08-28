@@ -7,7 +7,6 @@ import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -17,6 +16,7 @@ public class Main {
         try {
             //Listen socket connections, handle with SocketHandler.
             serverSocket = new ServerSocket(Variable.port);
+            System.out.println("Listening " + serverSocket.getLocalSocketAddress());
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();

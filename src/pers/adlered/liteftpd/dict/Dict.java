@@ -12,6 +12,8 @@ public class Dict {
     public static final String unknownCommand = Code.CMDUNKNOWN + " Command don't understood." + "\r\n";
     public static final String alreadyLogged = Code.CMDUNKNOWN + " You have already logged in." + "\r\n";
     public static final String bye = Code.SERVICESTOP + " See ya!" + "\r\n";
+    public static final String passiveDataFailed = Code.UNAVAILABLE + " Passive port is not connected.\r\n";
+    public static final String openPassiveASCII = Code.STATUSOK + " Opening ASCII mode data connection for /bin/sh.\r\n";
 
     public static final String passwordRequired = Code.PASSREQ + " Password required for ";
     public static final String loggedIn = Code.LOGGED + " User ";

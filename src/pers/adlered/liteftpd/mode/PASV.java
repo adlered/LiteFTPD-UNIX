@@ -1,6 +1,7 @@
 package pers.adlered.liteftpd.mode;
 
 import com.sun.security.ntlm.Server;
+import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.main.Send;
 
 import java.io.BufferedOutputStream;
@@ -12,15 +13,17 @@ public class PASV extends Thread {
     private ServerSocket serverSocket = null;
     private Socket socket = null;
     private Send send = null;
+    private PrivateVariable privateVariable = null;
 
     private String listening = null;
 
-    public PASV(int port, Send send) {
+    public PASV(int port, Send send, PrivateVariable privateVariable) {
         System.out.println("listening " + port);
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             this.serverSocket = serverSocket;
             this.send = send;
+            this.privateVariable = privateVariable;
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
@@ -47,6 +50,8 @@ public class PASV extends Thread {
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
+        } finally {
+            privateVariable.setTimeoutLock(false);
         }
     }
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Random;
 
+import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
@@ -36,19 +37,20 @@ public class CommandAnalyze {
     private String type = "A";
     //To change timeout when command input
     private PauseListen pauseListen = null;
+    private IPAddressBind ipAddressBind = null;
 
-    PrivateVariable privateVariable = null;
+    private PrivateVariable privateVariable = null;
 
-    public CommandAnalyze(Send send, String SRVIPADD, PrivateVariable privateVariable, PauseListen pauseListen) {
+    public CommandAnalyze(Send send, String SRVIPADD, PrivateVariable privateVariable, PauseListen pauseListen, IPAddressBind ipAddressBind) {
         this.send = send;
         this.SRVIPADD = SRVIPADD;
         currentPath = Permission.defaultDir;
         this.privateVariable = privateVariable;
         this.pauseListen = pauseListen;
+        this.ipAddressBind = ipAddressBind;
     }
 
     public void analyze(String command) {
-        System.out.println(command);
         pauseListen.resetTimeout();
         String cmd = null;
         String arg1 = null;
@@ -84,7 +86,7 @@ public class CommandAnalyze {
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
-                        privateVariable.interrupted = true;
+                        privateVariable.setInterrupted(true);
                     }
                     else {
                         unknownCommand();
@@ -99,7 +101,7 @@ public class CommandAnalyze {
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
-                        privateVariable.interrupted = true;
+                        privateVariable.setInterrupted(true);
                     }
                     else {
                         unknownCommand();
@@ -134,10 +136,11 @@ public class CommandAnalyze {
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
-                        privateVariable.interrupted = true;
+                        privateVariable.setInterrupted(true);
                     }
                     else if (cmd.equals("LIST")) {
-                        send.send("150 Opening ASCII mode data connection for /bin/ls.\r\n");
+                        send.send(Dict.openPassiveASCII);
+                        privateVariable.setTimeoutLock(true);
                         try {
                             Process process = Runtime.getRuntime().exec(new String[]{"ls", "-l", currentPath});
                             process.waitFor();
@@ -148,9 +151,11 @@ public class CommandAnalyze {
                                 result.append(line).append('\n');
                             }
                             System.out.println(result.toString());
-                            System.out.println("hello!");
-                            passiveMode.hello(result.toString());
-                            System.out.println("hello ok!");
+                            try {
+                                passiveMode.hello(result.toString());
+                            } catch (NullPointerException NPE) {
+                                send.send(Dict.passiveDataFailed);
+                            }
                         } catch (IOException IOE) {
                             //TODO
                             IOE.printStackTrace();
@@ -194,7 +199,7 @@ public class CommandAnalyze {
                         int randomSub = RandomNum.sumIntger(0, 64, false);
                         int calcPort = (randomPort - randomSub) / 256;
                         int finalPort = calcPort * 256 + randomSub;
-                        passiveMode = new PASV(finalPort, send);
+                        passiveMode = new PASV(finalPort, send, privateVariable);
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
                         send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
                         passiveMode.start();
@@ -214,17 +219,20 @@ public class CommandAnalyze {
 
     public void upperDirectory() {
         //Depart && Re-part path
-        String[] dir = currentPath.split("/");
-        currentPath = "";
-        for (int i = 0; i < dir.length - 1; i++) {
-            System.out.println("len: " + dir.length + " cur: " + i);
-            if (i == dir.length - 2) {
-                currentPath += dir[i];
-            } else {
-                currentPath += dir[i] + "/";
+        if (!currentPath.equals("/")) {
+            String[] dir = currentPath.split("/");
+            currentPath = "";
+            for (int i = 0; i < dir.length - 1; i++) {
+                System.out.println("len: " + dir.length + " cur: " + i);
+                if (i == dir.length - 2) {
+                    currentPath += dir[i];
+                } else {
+                    currentPath += dir[i] + "/";
+                }
             }
-            System.out.println(currentPath);
+            if (currentPath.isEmpty()) currentPath = "/";
         }
+        System.out.println(currentPath);
     }
 
 }

@@ -1,21 +1,24 @@
 package pers.adlered.liteftpd.main;
 
+import pers.adlered.liteftpd.analyze.PrivateVariable;
+import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.dict.Dict;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 public class Send {
     private BufferedOutputStream bufferedOutputStream = null;
-    private String IPADD = null;
 
     private PauseListen pauseListen = null;
+    private PrivateVariable privateVariable = null;
+    private IPAddressBind ipAddressBind = null;
 
-    public Send(BufferedOutputStream bufferedOutputStream, String IPADD, PauseListen pauseListen) {
+    public Send(BufferedOutputStream bufferedOutputStream, PauseListen pauseListen, PrivateVariable privateVariable, IPAddressBind ipAddressBind) {
         this.bufferedOutputStream = bufferedOutputStream;
-        this.IPADD = IPADD;
         this.pauseListen = pauseListen;
+        this.privateVariable = privateVariable;
+        this.ipAddressBind = ipAddressBind;
         try {
             //WELCOME MESSAGE
             bufferedOutputStream.write(Dict.connectionStarted.getBytes());
@@ -27,8 +30,9 @@ public class Send {
     }
 
     public boolean send(String message) {
+        System.out.println("Encode is: " + privateVariable.getEncode());
         try {
-            System.out.println(message);
+            System.out.println(ipAddressBind.getSRVIPADD() + "=>" + ipAddressBind.getIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();
             //WELCOME MESSAGE
             bufferedOutputStream.write(message.getBytes());
