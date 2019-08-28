@@ -30,6 +30,7 @@ public class AutoInputStream {
                     available = inputStream.available();
                 }
             } catch (IOException IOE) {
+                System.out.println("Auto Input Stream stopped.");
                 break;
             }
             byte[] cache = new byte[available];

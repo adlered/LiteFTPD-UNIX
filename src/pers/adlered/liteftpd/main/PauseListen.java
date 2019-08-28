@@ -1,7 +1,9 @@
 package pers.adlered.liteftpd.main;
 
+import pers.adlered.liteftpd.analyze.CommandAnalyze;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.bind.IPAddressBind;
+import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.variable.ChangeVar;
 import pers.adlered.liteftpd.variable.Variable;
 
@@ -17,11 +19,19 @@ public class PauseListen extends Thread {
     private InputStream inputStream = null;
     private IPAddressBind ipAddressBind = null;
 
+    private Send send = null;
+    private CommandAnalyze commandAnalyze = null;
+    private Receive receive = null;
+
     private int timeout = 0;
 
     private boolean running = true;
 
-    public PauseListen(PrivateVariable privateVariable, Socket socket, BufferedOutputStream bufferedOutputStream, OutputStream outputStream, BufferedInputStream bufferedInputStream, InputStream inputStream, IPAddressBind ipAddressBind) {
+    public PauseListen(PrivateVariable privateVariable, Socket socket,
+                       BufferedOutputStream bufferedOutputStream,
+                       OutputStream outputStream, BufferedInputStream bufferedInputStream,
+                       InputStream inputStream, IPAddressBind ipAddressBind,
+                       Send send, CommandAnalyze commandAnalyze, Receive receive) {
         this.privateVariable = privateVariable;
         this.socket = socket;
         this.bufferedOutputStream = bufferedOutputStream;
@@ -29,6 +39,9 @@ public class PauseListen extends Thread {
         this.bufferedInputStream = bufferedInputStream;
         this.inputStream = inputStream;
         this.ipAddressBind = ipAddressBind;
+        this.send = send;
+        this.commandAnalyze = commandAnalyze;
+        this.receive = receive;
     }
 
     @Override
@@ -66,11 +79,24 @@ public class PauseListen extends Thread {
             outputStream.close();
             //Socket
             socket.close();
-            //Variables
-            privateVariable = null;
         } catch (Exception E) {
             E.getCause();
             System.out.println("Shutting " + ipAddressBind.getIPADD() + " with errors.");
+        } finally {
+            //Variables
+            bufferedInputStream = null;
+            bufferedOutputStream = null;
+            inputStream = null;
+            outputStream = null;
+            ipAddressBind = null;
+            socket = null;
+            privateVariable = null;
+            send = null;
+            commandAnalyze = null;
+            receive = null;
+            System.out.println("Called Garbage Collection.");
+            System.gc();
+            System.out.println("Memory used: " + Status.memoryUsed());
         }
     }
 

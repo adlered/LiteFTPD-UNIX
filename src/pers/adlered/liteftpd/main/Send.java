@@ -32,7 +32,7 @@ public class Send {
     public boolean send(String message) {
         System.out.println("Encode is: " + privateVariable.getEncode());
         try {
-            System.out.println(ipAddressBind.getSRVIPADD() + "=>" + ipAddressBind.getIPADD() + ": " + message.replaceAll("\r|\n", ""));
+            System.out.println(ipAddressBind.getSRVIPADD() + " => " + ipAddressBind.getIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();
             //WELCOME MESSAGE
             bufferedOutputStream.write(message.getBytes());

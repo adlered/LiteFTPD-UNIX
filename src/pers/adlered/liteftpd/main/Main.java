@@ -2,6 +2,7 @@ package pers.adlered.liteftpd.main;
 
 import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.pool.Pool;
+import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.variable.ChangeVar;
 import pers.adlered.liteftpd.variable.Variable;
 
@@ -23,6 +24,7 @@ public class Main {
         }
         while (true) {
             try {
+                System.out.println("Memory used: " + Status.memoryUsed());
                 Socket socket = serverSocket.accept();
                 //Online limit checking
                 if (Variable.online >= Variable.maxUserLimit) {

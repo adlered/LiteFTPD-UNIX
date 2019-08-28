@@ -50,12 +50,16 @@ public class SocketHandler extends Thread {
         System.out.println(IPADD + " has been mounted into " + Thread.currentThread());
         ipAddressBind = new IPAddressBind(IPADD, SRVIPADD);
         //Process while user quit forced or manually.
-        PauseListen pauseListen = new PauseListen(privateVariable, socket, bufferedOutputStream, outputStream, bufferedInputStream, inputStream, ipAddressBind);
-        pauseListen.start();
+        PauseListen pauseListen = new PauseListen(privateVariable, socket,
+                bufferedOutputStream, outputStream, bufferedInputStream,
+                inputStream, ipAddressBind,
+                send, commandAnalyze, receive
+        );
         //Start model
         send = new Send(bufferedOutputStream, pauseListen, privateVariable, ipAddressBind);
         commandAnalyze = new CommandAnalyze(send, SRVIPADD, privateVariable, pauseListen, ipAddressBind);
         receive = new Receive(inputStream, commandAnalyze, pauseListen, privateVariable, ipAddressBind);
         receive.start();
+        pauseListen.start();
     }
 }

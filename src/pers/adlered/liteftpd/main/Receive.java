@@ -6,7 +6,6 @@ import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.tool.AutoInputStream;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 
 public class Receive extends Thread {
     private InputStream inputStream = null;
@@ -34,7 +33,7 @@ public class Receive extends Thread {
                     System.out.println("Receive stopped.");
                     break;
                 }
-                System.out.println(ipAddressBind.getIPADD() + "=>" + ipAddressBind.getSRVIPADD() + ": " + autoLine.replaceAll("\r|\n", ""));
+                System.out.println(ipAddressBind.getIPADD() + " => " + ipAddressBind.getSRVIPADD() + ": " + autoLine.replaceAll("\r|\n", ""));
                 commandAnalyze.analyze(autoLine);
             }
         } catch (IOException IOE) {
