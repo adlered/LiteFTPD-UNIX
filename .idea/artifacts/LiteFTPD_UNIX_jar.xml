@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="LiteFTPD-UNIX:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/LiteFTPD_UNIX_jar</output-path>
+    <root id="archive" name="LiteFTPD-UNIX.jar">
+      <element id="module-output" name="LiteFTPD-UNIX" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/juniversalchardet-1.0.3.jar" path-in-jar="/" />
+      <element id="library" level="project" name="juniversalchardet-1.0.3" />
+    </root>
+  </artifact>
+</component>

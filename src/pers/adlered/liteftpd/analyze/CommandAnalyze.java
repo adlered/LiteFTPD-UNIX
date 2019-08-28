@@ -11,6 +11,7 @@ import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.mode.PASV;
+import pers.adlered.liteftpd.tool.GoodXX;
 import pers.adlered.liteftpd.tool.RandomNum;
 import pers.adlered.liteftpd.user.Permission;
 
@@ -62,13 +63,12 @@ public class CommandAnalyze {
                 split[i] = split[i].replaceAll("(\r|\n)", "");
             }
             cmd = split[0];
-            switch (split.length) {
-                case 2:
-                    arg1 = split[1];
-                    break;
-                case 3:
-                    arg2 = split[2];
-                    break;
+            if (split.length == 2) {
+                arg1 = split[1];
+            }
+            else if (split.length > 2) {
+                arg1 = split[1];
+                arg2 = split[2];
             }
         } catch (Exception E) {
             //TODO
@@ -79,6 +79,9 @@ public class CommandAnalyze {
             switch (step) {
                 case 1:
                     if (cmd.equals("USER")) {
+                        if (arg1 == null) {
+                            arg1 = "anonymous";
+                        }
                         System.out.println(Thread.currentThread() + " login: " + arg1);
                         loginUser = arg1;
                         send.send(Dict.passwordRequired + loginUser + "." + "\r\n");
@@ -96,7 +99,7 @@ public class CommandAnalyze {
                     if (cmd.equals("PASS")) {
                         System.out.println("User " + loginUser + " login: " + arg1);
                         loginPass = arg1;
-                        send.send(Dict.loggedIn + loginUser + " logged." + "\r\n");
+                        send.send(Dict.loggedIn + "Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "! " + "\r\n");
                         step = 3;
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
@@ -172,10 +175,10 @@ public class CommandAnalyze {
                         String completePath = arg1;
                         if (arg2 != null) {
                             for (int i = 2; i < split.length; i++) {
-                                completePath += i;
+                                completePath += " " + split[i];
                             }
                         }
-                        if (arg1.equals("..")) {
+                        if (completePath.equals("..")) {
                             upperDirectory();
                         } else {
                             if (completePath.indexOf("/") != -1 && completePath.indexOf("./") == -1) {
@@ -184,7 +187,10 @@ public class CommandAnalyze {
                                 currentPath = currentPath + "/" + completePath;
                             }
                         }
-                        send.send("250 Directory changed to " + currentPath + "\r\n");
+                        send.send(Dict.changeDir + currentPath + "\r\n");
+                    }
+                    else if (cmd.equals("SYST")) {
+                        send.send(Dict.type);
                     }
                     /**
                      * TRANSMISSION COMMANDS

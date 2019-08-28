@@ -2,7 +2,9 @@ package pers.adlered.liteftpd.main;
 
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.bind.IPAddressBind;
+import pers.adlered.liteftpd.dict.Code;
 import pers.adlered.liteftpd.dict.Dict;
+import pers.adlered.liteftpd.tool.GoodXX;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -19,14 +21,7 @@ public class Send {
         this.pauseListen = pauseListen;
         this.privateVariable = privateVariable;
         this.ipAddressBind = ipAddressBind;
-        try {
-            //WELCOME MESSAGE
-            bufferedOutputStream.write(Dict.connectionStarted.getBytes());
-            bufferedOutputStream.flush();
-        } catch (IOException IOE) {
-            //TODO
-            IOE.printStackTrace();
-        }
+        send(Code.SERVICEREADY + " Hello: " + ipAddressBind.getIPADD() + "!" + Dict.connectionStarted);
     }
 
     public boolean send(String message) {
@@ -35,11 +30,11 @@ public class Send {
             System.out.println(ipAddressBind.getSRVIPADD() + " => " + ipAddressBind.getIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();
             //WELCOME MESSAGE
-            bufferedOutputStream.write(message.getBytes());
+            bufferedOutputStream.write(message.getBytes(privateVariable.encode));
             bufferedOutputStream.flush();
             return true;
         } catch (IOException IOE) {
-            //TODO
+            //TODOx
             IOE.printStackTrace();
             return false;
         }

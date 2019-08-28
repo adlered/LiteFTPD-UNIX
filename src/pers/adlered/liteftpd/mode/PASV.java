@@ -41,7 +41,7 @@ public class PASV extends Thread {
             while (listening == null) { System.out.print("."); try { Thread.sleep(500); } catch (InterruptedException IE) {}}
             System.out.print("\r\nService has response.");
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
-            bufferedOutputStream.write(listening.getBytes());
+            bufferedOutputStream.write(listening.getBytes(privateVariable.encode));
             bufferedOutputStream.flush();
             bufferedOutputStream.close();
             socket.close();

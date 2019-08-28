@@ -18,9 +18,6 @@ public class SocketHandler extends Thread {
     private String IPADD = null;
     private String SRVIPADD = null;
 
-    //Sign 2 to tell main thread kill itself
-    private boolean interrupted = false;
-
     Send send = null;
     CommandAnalyze commandAnalyze = null;
     Receive receive = null;
