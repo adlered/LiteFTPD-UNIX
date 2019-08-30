@@ -53,7 +53,7 @@ public class SocketHandler extends Thread {
                 send, commandAnalyze, receive
         );
         //Start model
-        send = new Send(bufferedOutputStream, pauseListen, privateVariable, ipAddressBind);
+        send = new Send(outputStream, pauseListen, privateVariable, ipAddressBind);
         commandAnalyze = new CommandAnalyze(send, SRVIPADD, privateVariable, pauseListen, ipAddressBind);
         receive = new Receive(inputStream, commandAnalyze, pauseListen, privateVariable, ipAddressBind);
         receive.start();

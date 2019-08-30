@@ -7,14 +7,16 @@ import pers.adlered.liteftpd.variable.Variable;
  */
 
 public class Dict {
-    public static final String connectionStarted = " " + Variable.welcomeMessage + "\r\n";
-    public static final String outOfOnlineLimit = Code.NOTLOGIN + " Too much users online." + "\r\n";
+    public static final String connectionStarted = " :) " + Variable.welcomeMessage + "\r\n";
+    public static final String outOfOnlineLimit = Code.NOTLOGIN + " :( Too much users online." + "\r\n";
     public static final String unknownCommand = Code.CMDUNKNOWN + " Command don't understood." + "\r\n";
     public static final String alreadyLogged = Code.CMDUNKNOWN + " You have already logged in." + "\r\n";
-    public static final String bye = Code.SERVICESTOP + " See ya!" + "\r\n";
+    public static final String bye = Code.SERVICESTOP + " :) See ya!" + "\r\n";
     public static final String passiveDataFailed = Code.UNAVAILABLE + " Passive port is not connected.\r\n";
-    public static final String openPassiveASCII = Code.STATUSOK + " Opening ASCII mode data connection for /bin/sh.\r\n";
+    public static final String openPassiveASCII = Code.STATUSOK + " Opening ASCII mode data, please wait.\r\n";
     public static final String type = Code.NAME + " UNIX Type: L8\r\n";
+    public static final String remind = " >>> LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX >>> " +
+            "If you got an encode problem, please change your client encode to *** UTF-8 ***!\r\n";
 
     public static final String passwordRequired = Code.PASSREQ + " Password required for ";
     public static final String loggedIn = Code.LOGGED + " ";
@@ -24,4 +26,5 @@ public class Dict {
     public static final String setType = Code.SUCCESS + " Type set to ";
     public static final String passiveMode = Code.PASSIVE + " Entering Passive Mode ";
     public static final String changeDir = Code.CORRECT + " Directory changed to ";
+    public static final String openPassiveBINARY = Code.STATUSOK + " Opening BINARY mode data connection for ";
 }

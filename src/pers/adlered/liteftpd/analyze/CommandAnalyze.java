@@ -1,9 +1,6 @@
 package pers.adlered.liteftpd.analyze;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Random;
 
 import pers.adlered.liteftpd.bind.IPAddressBind;
@@ -99,7 +96,7 @@ public class CommandAnalyze {
                     if (cmd.equals("PASS")) {
                         System.out.println("User " + loginUser + " login: " + arg1);
                         loginPass = arg1;
-                        send.send(Dict.loggedIn + "Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "! " + "\r\n");
+                        send.send(Dict.loggedIn + ":) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
                         step = 3;
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
@@ -205,10 +202,20 @@ public class CommandAnalyze {
                         int randomSub = RandomNum.sumIntger(0, 64, false);
                         int calcPort = (randomPort - randomSub) / 256;
                         int finalPort = calcPort * 256 + randomSub;
-                        passiveMode = new PASV(finalPort, send, privateVariable);
+                        passiveMode = new PASV(finalPort, send, privateVariable, pauseListen);
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
                         send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
                         passiveMode.start();
+                    }
+                    else if (cmd.equals("RETR")) {
+                        String filename = "/Users/adler/temp.jpg";
+                        try {
+                            File file = new File(filename);
+                            send.send(Dict.openPassiveBINARY + file.getPath() + " (" + file.length() + " Bytes)\r\n");
+                            passiveMode.hello(file);
+                        } catch (NullPointerException NPE) {
+                            send.send(Dict.passiveDataFailed);
+                        }
                     }
                     else {
                         unknownCommand();

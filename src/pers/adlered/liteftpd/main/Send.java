@@ -8,20 +8,21 @@ import pers.adlered.liteftpd.tool.GoodXX;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class Send {
-    private BufferedOutputStream bufferedOutputStream = null;
+    private OutputStream outputStream = null;
 
     private PauseListen pauseListen = null;
     private PrivateVariable privateVariable = null;
     private IPAddressBind ipAddressBind = null;
 
-    public Send(BufferedOutputStream bufferedOutputStream, PauseListen pauseListen, PrivateVariable privateVariable, IPAddressBind ipAddressBind) {
-        this.bufferedOutputStream = bufferedOutputStream;
+    public Send(OutputStream outputStream, PauseListen pauseListen, PrivateVariable privateVariable, IPAddressBind ipAddressBind) {
+        this.outputStream = outputStream;
         this.pauseListen = pauseListen;
         this.privateVariable = privateVariable;
         this.ipAddressBind = ipAddressBind;
-        send(Code.SERVICEREADY + " Hello: " + ipAddressBind.getIPADD() + "!" + Dict.connectionStarted);
+        send(Code.SERVICEREADY + " LiteFTPD > Have a nice day, " + ipAddressBind.getIPADD() + Dict.connectionStarted);
     }
 
     public boolean send(String message) {
@@ -30,8 +31,8 @@ public class Send {
             System.out.println(ipAddressBind.getSRVIPADD() + " => " + ipAddressBind.getIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();
             //WELCOME MESSAGE
-            bufferedOutputStream.write(message.getBytes(privateVariable.encode));
-            bufferedOutputStream.flush();
+            outputStream.write(message.getBytes(privateVariable.encode));
+            outputStream.flush();
             return true;
         } catch (IOException IOE) {
             //TODOx

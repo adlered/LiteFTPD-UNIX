@@ -9,9 +9,9 @@ public class Variable {
     public static int online = 0;
     public static long maxUserLimit = 10;
     //Time out per second
-    public static int timeout = 100;
+    public static int timeout = 60;
     //Service control
     public static int port = 21;
     //Info control
-    public static String welcomeMessage = "LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX";
+    public static String welcomeMessage = "";
 }
