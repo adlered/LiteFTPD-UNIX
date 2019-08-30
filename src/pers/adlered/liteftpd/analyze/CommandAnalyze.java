@@ -177,14 +177,23 @@ public class CommandAnalyze {
                         }
                         if (completePath.equals("..")) {
                             upperDirectory();
+                            send.send(Dict.changeDir + currentPath + Dict.newLine);
                         } else {
                             if (completePath.indexOf("/") != -1 && completePath.indexOf("./") == -1) {
-                                currentPath = completePath;
+                                //Absolute path.
+                                //currentPath = completePath;
                             } else {
-                                currentPath = currentPath + "/" + completePath;
+                                //Relative path.
+                                completePath = currentPath + "/" + completePath;
+                            }
+                            File file = new File(completePath);
+                            if(file.exists()) {
+                                currentPath = completePath;
+                                send.send(Dict.changeDir + currentPath + Dict.newLine);
+                            } else {
+                                send.send(Dict.noSuchFileOrDir + currentPath + Dict.noSuchFIleOrDir2);
                             }
                         }
-                        send.send(Dict.changeDir + currentPath + "\r\n");
                     }
                     else if (cmd.equals("SYST")) {
                         send.send(Dict.type);
@@ -208,11 +217,24 @@ public class CommandAnalyze {
                         passiveMode.start();
                     }
                     else if (cmd.equals("RETR")) {
-                        String filename = "/Users/adler/temp.jpg";
+                        String completePath = arg1;
+                        if (arg2 != null) {
+                            for (int i = 2; i < split.length; i++) {
+                                completePath += " " + split[i];
+                            }
+                        }
+                        if (completePath.indexOf("/") == -1 || completePath.indexOf("./") != -1) {
+                            //Relative path.
+                            completePath = currentPath + "/" + completePath;
+                        }
                         try {
-                            File file = new File(filename);
-                            send.send(Dict.openPassiveBINARY + file.getPath() + " (" + file.length() + " Bytes)\r\n");
-                            passiveMode.hello(file);
+                            File file = new File(completePath);
+                            if (file.exists()) {
+                                send.send(Dict.openPassiveBINARY + file.getPath() + " (" + file.length() + " Bytes)\r\n");
+                                passiveMode.hello(file);
+                            } else {
+                                send.send(Dict.noSuchFileOrDir + file.getPath() + Dict.noSuchFIleOrDir2);
+                            }
                         } catch (NullPointerException NPE) {
                             send.send(Dict.passiveDataFailed);
                         }

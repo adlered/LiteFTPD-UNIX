@@ -27,4 +27,7 @@ public class Dict {
     public static final String passiveMode = Code.PASSIVE + " Entering Passive Mode ";
     public static final String changeDir = Code.CORRECT + " Directory changed to ";
     public static final String openPassiveBINARY = Code.STATUSOK + " Opening BINARY mode data connection for ";
+    public static final String noSuchFileOrDir = Code.ERRTARGET + " ";
+    public static final String newLine = "\r\n";
+    public static final String noSuchFIleOrDir2 = ": No such file or directory.\r\n";
 }

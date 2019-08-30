@@ -46,10 +46,11 @@ public class PASV extends Thread {
                     break;
                 }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(50);
                 } catch (InterruptedException IE) {
                 }
             }
+            privateVariable.setTimeoutLock(true);
             if (pauseListen.isRunning()) {
                 System.out.print("\r\nService has response.");
                 long startTime = System.nanoTime();
