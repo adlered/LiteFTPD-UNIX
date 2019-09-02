@@ -172,8 +172,15 @@ public class CommandAnalyze {
                         String completePath = arg1;
                         if (arg2 != null) {
                             for (int i = 2; i < split.length; i++) {
+                                //Make "/Users/$" to "/Users$"
+                                if (i == split.length - 1) {
+                                    split[i] = split[i].replaceAll("/$", "");
+                                }
+                                //Add
                                 completePath += " " + split[i];
                             }
+                        } else {
+                            completePath = completePath.replaceAll("/$", "");
                         }
                         if (completePath.equals("..")) {
                             upperDirectory();
@@ -191,7 +198,7 @@ public class CommandAnalyze {
                                 currentPath = completePath;
                                 send.send(Dict.changeDir + currentPath + Dict.newLine);
                             } else {
-                                send.send(Dict.noSuchFileOrDir + currentPath + Dict.noSuchFIleOrDir2);
+                                send.send(Dict.noSuchFileOrDir + completePath + Dict.noSuchFIleOrDir2);
                             }
                         }
                     }

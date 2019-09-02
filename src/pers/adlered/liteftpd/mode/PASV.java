@@ -1,9 +1,9 @@
 package pers.adlered.liteftpd.mode;
 
-import jdk.internal.util.xml.impl.Input;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
+import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -46,7 +46,7 @@ public class PASV extends Thread {
                     break;
                 }
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(5);
                 } catch (InterruptedException IE) {
                 }
             }
@@ -61,7 +61,11 @@ public class PASV extends Thread {
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
                     listening = listening.replaceAll("\r\n", "\n");
                     listening = listening.replaceAll("\n", "\r\n");
-                    bufferedOutputStream.write(listening.getBytes(privateVariable.encode));
+                    if (Variable.smartEncode) {
+                        bufferedOutputStream.write(listening.getBytes(privateVariable.encode));
+                    } else {
+                        bufferedOutputStream.write(listening.getBytes(Variable.defaultEncode));
+                    }
                     bufferedOutputStream.flush();
                     bufferedOutputStream.close();
                     bts = (listening.getBytes(privateVariable.encode)).length;

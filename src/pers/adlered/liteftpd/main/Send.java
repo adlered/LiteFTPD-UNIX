@@ -5,6 +5,7 @@ import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.dict.Code;
 import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.tool.GoodXX;
+import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -31,7 +32,11 @@ public class Send {
             System.out.println(ipAddressBind.getSRVIPADD() + " => " + ipAddressBind.getIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();
             //WELCOME MESSAGE
-            outputStream.write(message.getBytes(privateVariable.encode));
+            if (Variable.smartEncode) {
+                outputStream.write(message.getBytes(privateVariable.encode));
+            } else {
+                outputStream.write(message.getBytes(Variable.defaultEncode));
+            }
             outputStream.flush();
             return true;
         } catch (IOException IOE) {
