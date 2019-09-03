@@ -52,7 +52,7 @@ public class PASV extends Thread {
             }
             privateVariable.setTimeoutLock(true);
             if (pauseListen.isRunning()) {
-                System.out.print("\r\nService has response.");
+                System.out.println("Service has response.");
                 long startTime = System.nanoTime();
                 double kb = 0;
                 long bts = 0;

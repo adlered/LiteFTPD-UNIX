@@ -27,7 +27,7 @@ public class Main {
                 System.out.println("Memory used: " + Status.memoryUsed());
                 Socket socket = serverSocket.accept();
                 //Online limit checking
-                if (Variable.online >= Variable.maxUserLimit) {
+                if (Variable.online >= Variable.maxUserLimit && Variable.maxUserLimit != 0) {
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
                     bufferedOutputStream.write(Dict.outOfOnlineLimit.getBytes());
                     bufferedOutputStream.flush();

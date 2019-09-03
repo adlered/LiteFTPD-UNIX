@@ -1,6 +1,7 @@
 package pers.adlered.liteftpd.analyze;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.util.Random;
 
 import pers.adlered.liteftpd.bind.IPAddressBind;
@@ -11,6 +12,7 @@ import pers.adlered.liteftpd.mode.PASV;
 import pers.adlered.liteftpd.tool.GoodXX;
 import pers.adlered.liteftpd.tool.RandomNum;
 import pers.adlered.liteftpd.user.Permission;
+import pers.adlered.liteftpd.variable.Variable;
 
 public class CommandAnalyze {
     /**
@@ -30,6 +32,7 @@ public class CommandAnalyze {
     PASV passiveMode = null;
 
     private String currentPath = "";
+    private String lockPath = "";
     //Trans type default A
     //A: ASCII I: BINARY
     private String type = "A";
@@ -116,7 +119,7 @@ public class CommandAnalyze {
                      */
                     else if (cmd.equals("PWD")) {
                         //if (file.isDirectory()) {
-                            send.send(Dict.currentDir + "\"" + currentPath + "\" is current directory." + "\r\n");
+                            send.send(Dict.currentDir + "\"" + getLockPath(currentPath, Permission.defaultDir) + "\" is current directory." + "\r\n");
                         //} else {
                         //    send.send(Dict.isFile + file.getName() + "\r\n");
                         //}
@@ -166,40 +169,36 @@ public class CommandAnalyze {
                     }
                     else if (cmd.equals("CDUP")) {
                         upperDirectory();
-                        send.send("250 Directory changed to " + currentPath + "\r\n");
+                        send.send("250 Directory changed to " + getLockPath(currentPath, Permission.defaultDir) + "\r\n");
                     }
                     else if (cmd.equals("CWD")) {
-                        String completePath = arg1;
-                        if (arg2 != null) {
-                            for (int i = 2; i < split.length; i++) {
-                                //Make "/Users/$" to "/Users$"
-                                if (i == split.length - 1) {
-                                    split[i] = split[i].replaceAll("/$", "");
+                        if (arg1 != null) {
+                            String completePath = arg1;
+                            if (arg2 != null) {
+                                for (int i = 2; i < split.length; i++) {
+                                    //Make "/Users/$" to "/Users$"
+                                    if (i == split.length - 1) {
+                                        split[i] = split[i].replaceAll("/$", "");
+                                    }
+                                    //Add
+                                    completePath += " " + split[i];
                                 }
-                                //Add
-                                completePath += " " + split[i];
+                            }
+                            if (completePath.equals("..") || completePath.equals("../")) {
+                                upperDirectory();
+                                send.send(Dict.changeDir + getLockPath(currentPath, Permission.defaultDir) + Dict.newLine);
+                            } else {
+                                completePath = getAbsolutePath(completePath);
+                                File file = new File(completePath);
+                                if (file.exists()) {
+                                    currentPath = completePath;
+                                    send.send(Dict.changeDir + getLockPath(currentPath, Permission.defaultDir) + Dict.newLine);
+                                } else {
+                                    send.send(Dict.noSuchFileOrDir + completePath + Dict.noSuchFIleOrDir2);
+                                }
                             }
                         } else {
-                            completePath = completePath.replaceAll("/$", "");
-                        }
-                        if (completePath.equals("..")) {
-                            upperDirectory();
-                            send.send(Dict.changeDir + currentPath + Dict.newLine);
-                        } else {
-                            if (completePath.indexOf("/") != -1 && completePath.indexOf("./") == -1) {
-                                //Absolute path.
-                                //currentPath = completePath;
-                            } else {
-                                //Relative path.
-                                completePath = currentPath + "/" + completePath;
-                            }
-                            File file = new File(completePath);
-                            if(file.exists()) {
-                                currentPath = completePath;
-                                send.send(Dict.changeDir + currentPath + Dict.newLine);
-                            } else {
-                                send.send(Dict.noSuchFileOrDir + completePath + Dict.noSuchFIleOrDir2);
-                            }
+                            send.send(Dict.unknownCommand);
                         }
                     }
                     else if (cmd.equals("SYST")) {
@@ -210,10 +209,6 @@ public class CommandAnalyze {
                      */
                     else if (cmd.equals("PASV")) {
                         Random random = new Random();
-                        /*int randomPort = random.nextInt(55296) + 10240;
-                        int randomSub = random.nextInt(5000) + 5000;
-                        int calcPort = (randomPort - randomSub) / 256;
-                        int finalPort = calcPort * 256 + randomSub;*/
                         int randomPort = RandomNum.sumIntger(1024, 40960, false);
                         int randomSub = RandomNum.sumIntger(0, 64, false);
                         int calcPort = (randomPort - randomSub) / 256;
@@ -230,20 +225,51 @@ public class CommandAnalyze {
                                 completePath += " " + split[i];
                             }
                         }
-                        if (completePath.indexOf("/") == -1 || completePath.indexOf("./") != -1) {
-                            //Relative path.
-                            completePath = currentPath + "/" + completePath;
-                        }
+                        completePath = getAbsolutePath(completePath);
                         try {
                             File file = new File(completePath);
                             if (file.exists()) {
-                                send.send(Dict.openPassiveBINARY + file.getPath() + " (" + file.length() + " Bytes)\r\n");
+                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, Permission.defaultDir) + " (" + file.length() + " Bytes)\r\n");
                                 passiveMode.hello(file);
                             } else {
-                                send.send(Dict.noSuchFileOrDir + file.getPath() + Dict.noSuchFIleOrDir2);
+                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
                             }
                         } catch (NullPointerException NPE) {
                             send.send(Dict.passiveDataFailed);
+                        }
+                    }
+                    else if (cmd.equals("SIZE")) {
+                        String completePath = arg1;
+                        if (arg2 != null) {
+                            for (int i = 2; i < split.length; i++) {
+                                completePath += " " + split[i];
+                            }
+                        }
+                        completePath = getAbsolutePath(completePath);
+                        File file = new File(completePath);
+                        if (file.exists() && file.isFile()) {
+                            send.send("213 " + file.length() + Dict.newLine);
+                        } else {
+                            send.send("550 " + completePath + ": No such file." + Dict.newLine);
+                        }
+                    }
+                    else if (cmd.equals("OPTS")) {
+                        if (arg1 != null) {
+                            arg1 = arg1.toUpperCase();
+                            if (arg1.equals("UTF8")) {
+                                if (arg2 != null) {
+                                    arg2 = arg2.toUpperCase();
+                                    if (arg2.equals("ON")) {
+                                        privateVariable.setEncode("UTF-8");
+                                        privateVariable.setEncodeLock(true);
+                                        send.send("200 OPTS UTF8 command successful - UTF8 encoding now ON." + Dict.newLine);
+                                    } else if (arg2.equals("OFF")) {
+                                        privateVariable.setEncode(Variable.defaultEncode);
+                                        privateVariable.setEncodeLock(true);
+                                        send.send("200 OPTS UTF8 command successful - UTF8 encoding now OFF." + Dict.newLine);
+                                    }
+                                }
+                            }
                         }
                     }
                     else {
@@ -257,6 +283,12 @@ public class CommandAnalyze {
     public boolean unknownCommand() {
         send.send(Dict.unknownCommand);
         return true;
+    }
+
+    public String getLockPath(String absolutePath, String lockPath) {
+        String resolve = absolutePath.replaceAll("^(" + lockPath + ")", "");
+        if (resolve.isEmpty()) resolve = "/";
+        return resolve;
     }
 
     public void upperDirectory() {
@@ -277,4 +309,28 @@ public class CommandAnalyze {
         System.out.println(currentPath);
     }
 
+    @SuppressWarnings("deprecation")
+    public String getAbsolutePath(String path) {
+        path = URLDecoder.decode(path);
+        if (path.matches("^(./).*")) {
+            path = path.replaceAll("^(./)", "");
+            //Not totally equals "./"
+            if (path.isEmpty()) {
+                path = currentPath;
+            } else {
+                path = currentPath + "/" + path;
+            }
+        } else if (path.matches("^(/).*")) {
+            path = path.replaceAll("^(/)", "");
+            if (path.isEmpty()) {
+                path = Permission.defaultDir;
+            } else {
+                path = Permission.defaultDir + "/" + path;
+            }
+        } else {
+            path = currentPath + "/" + path;
+        }
+        System.out.println("Absolute path: " + path);
+        return path;
+    }
 }

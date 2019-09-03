@@ -73,7 +73,12 @@ public class AutoInputStream {
         String UTF8 = new String(cleaned, "UTF-8");
         String GB2312 = new String(cleaned, "GB2312");
         String charset = CharsetSelector.getCharset(cleaned);
-        privateVariable.setEncode(charset);
+        if (!privateVariable.isEncodeLock()) {
+            privateVariable.setEncode(charset);
+            if (charset.equals("GB2312")) {
+                privateVariable.setEncodeLock(true);
+            }
+        }
         String bestMatch = new String(cleaned, charset);
         return bestMatch;
     }

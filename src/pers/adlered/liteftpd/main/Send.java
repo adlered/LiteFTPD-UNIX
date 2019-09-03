@@ -32,11 +32,7 @@ public class Send {
             System.out.println(ipAddressBind.getSRVIPADD() + " => " + ipAddressBind.getIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();
             //WELCOME MESSAGE
-            if (Variable.smartEncode) {
-                outputStream.write(message.getBytes(privateVariable.encode));
-            } else {
-                outputStream.write(message.getBytes(Variable.defaultEncode));
-            }
+            outputStream.write(message.getBytes(privateVariable.encode));
             outputStream.flush();
             return true;
         } catch (IOException IOE) {
