@@ -28,11 +28,12 @@ public class AutoInputStream {
             try {
                 while (available == 0) {
                     available = inputStream.available();
+                    Thread.sleep(5);
                 }
             } catch (IOException IOE) {
                 System.out.println("Auto Input Stream stopped.");
                 break;
-            }
+            } catch (InterruptedException IE) {}
             byte[] cache = new byte[available];
             inputStream.read(cache);
             int cursor = 0;
