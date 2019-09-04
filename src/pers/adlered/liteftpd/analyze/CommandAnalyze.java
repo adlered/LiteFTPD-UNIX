@@ -294,6 +294,10 @@ public class CommandAnalyze {
                             }
                         }
                     }
+                    else if (cmd.equals("ABOR")) {
+                        send.send(Dict.bye);
+                        privateVariable.setInterrupted(true);
+                    }
                     else {
                         unknownCommand();
                     }
