@@ -237,6 +237,7 @@ public class CommandAnalyze {
                                 completePath += " " + split[i];
                             }
                         }
+                        System.out.println("Complete path: " + completePath);
                         completePath = getAbsolutePath(completePath);
                         try {
                             File file = new File(completePath);
@@ -337,7 +338,7 @@ public class CommandAnalyze {
 
     @SuppressWarnings("deprecation")
     public String getAbsolutePath(String path) {
-        path = URLDecoder.decode(path);
+        //path = URLDecoder.decode(path);
         if (path.matches("^(./).*")) {
             path = path.replaceAll("^(./)", "");
             //Not totally equals "./"
