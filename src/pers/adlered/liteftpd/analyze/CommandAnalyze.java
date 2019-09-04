@@ -191,8 +191,12 @@ public class CommandAnalyze {
                                 completePath = getAbsolutePath(completePath);
                                 File file = new File(completePath);
                                 if (file.exists()) {
-                                    currentPath = completePath;
-                                    send.send(Dict.changeDir + getLockPath(currentPath, Permission.defaultDir) + Dict.newLine);
+                                    if (file.isFile()) {
+                                        send.send("550 " + completePath + ": No such file or directory." + Dict.newLine);
+                                    } else {
+                                        currentPath = completePath;
+                                        send.send(Dict.changeDir + getLockPath(currentPath, Permission.defaultDir) + Dict.newLine);
+                                    }
                                 } else {
                                     send.send(Dict.noSuchFileOrDir + completePath + Dict.noSuchFIleOrDir2);
                                 }
