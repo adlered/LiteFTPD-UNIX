@@ -115,6 +115,14 @@ public class CommandAnalyze {
                         send.send(Dict.alreadyLogged);
                     }
                     /**
+                     * INFO COMMANDS
+                     */
+                    else if (cmd.equals("FEAT")) {
+                        send.send("211-Features:\r\n" +
+                                "UTF8\r\n" +
+                                "211 End\r\n");
+                    }
+                    /**
                      * NORMAL COMMANDS
                      */
                     else if (cmd.equals("PWD")) {
@@ -273,6 +281,16 @@ public class CommandAnalyze {
                                         send.send("200 OPTS UTF8 command successful - UTF8 encoding now OFF." + Dict.newLine);
                                     }
                                 }
+                            }
+                        }
+                    }
+                    else if (cmd.equals("REST")) {
+                        if (arg1 != null) {
+                            send.send("350 Restarting at " + arg1 + ". Send STORE or RETRIEVE." + Dict.newLine);
+                            try {
+                                privateVariable.setRest(Long.parseLong(arg1));
+                            } catch (Exception E) {
+                                E.printStackTrace();
                             }
                         }
                     }

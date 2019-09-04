@@ -7,6 +7,8 @@ public class PrivateVariable {
     private boolean timeoutLock = false;
     //If Encode Lock is on, smart encode will not working.
     private boolean encodeLock = false;
+    //Rest
+    private long rest = 0l;
 
     public boolean isEncodeLock() {
         return encodeLock;
@@ -38,5 +40,17 @@ public class PrivateVariable {
 
     public void setEncode(String encode) {
         this.encode = encode;
+    }
+
+    public long getRest() {
+        return rest;
+    }
+
+    public void setRest(long rest) {
+        this.rest = rest;
+    }
+
+    public void resetRest() {
+        rest = 0l;
     }
 }

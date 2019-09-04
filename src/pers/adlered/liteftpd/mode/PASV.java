@@ -69,20 +69,32 @@ public class PASV extends Thread {
                     bufferedOutputStream.flush();
                     bufferedOutputStream.close();
                     bts = (listening.getBytes(privateVariable.encode)).length;
-                    kb = bts / 1000;
                 } else if (file != null) {
                     InputStream inputStream = new FileInputStream(file);
                     OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-                    int temp;
-                    while ((temp = inputStream.read()) != -1) {
-                        outputStream.write(temp);
+                    if (privateVariable.getRest() == 0l) {
+                        int temp;
+                        while ((temp = inputStream.read()) != -1) {
+                            outputStream.write(temp);
+                        }
+                        inputStream.close();
+                        outputStream.close();
+                        bts = file.length();
+                    } else {
+                        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+                        randomAccessFile.seek(privateVariable.getRest());
+                        System.out.println("SEEK at " + privateVariable.getRest());
+                        int temp;
+                        while ((temp = randomAccessFile.read()) != -1) {
+                            outputStream.write(temp);
+                        }
+                        inputStream.close();
+                        outputStream.close();
+                        bts = file.length() - privateVariable.getRest();
+                        privateVariable.resetRest();
                     }
-                    inputStream.close();
-                    outputStream.close();
-                    //outputStream.write("\r\n".getBytes());
-                    bts = file.length();
-                    kb = bts / 1000;
                 }
+                kb = bts / 1000;
                 socket.close();
                 serverSocket.close();
                 long stopTime = System.nanoTime();
