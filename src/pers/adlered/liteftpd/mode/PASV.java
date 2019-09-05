@@ -4,10 +4,12 @@ import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.variable.Variable;
+import sun.reflect.FieldInfo;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class PASV extends Thread {
     private ServerSocket serverSocket = null;
@@ -73,21 +75,24 @@ public class PASV extends Thread {
                     InputStream inputStream = new FileInputStream(file);
                     OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
                     if (privateVariable.getRest() == 0l) {
-                        int temp;
-                        while ((temp = inputStream.read()) != -1) {
-                            outputStream.write(temp);
+                        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                        byte[] buffer = new byte[8192];
+                        while ((bufferedInputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer);
                         }
+                        outputStream.flush();
+                        bufferedInputStream.close();
                         inputStream.close();
                         outputStream.close();
                         bts = file.length();
                     } else {
-                        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-                        randomAccessFile.seek(privateVariable.getRest());
-                        System.out.println("SEEK at " + privateVariable.getRest());
-                        int temp;
-                        while ((temp = randomAccessFile.read()) != -1) {
-                            outputStream.write(temp);
-                        }
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        fileInputStream.skip(privateVariable.getRest());
+                        byte[] bytes = new byte[8192];
+                        while ((fileInputStream.read(bytes)) != -1) {
+                            outputStream.write(bytes);
+                    }
+                        outputStream.flush();
                         inputStream.close();
                         outputStream.close();
                         bts = file.length() - privateVariable.getRest();

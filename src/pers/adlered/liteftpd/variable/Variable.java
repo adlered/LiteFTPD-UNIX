@@ -10,7 +10,7 @@ public class Variable {
     //Set to 0, will be ignore the limit.
     public static long maxUserLimit = 0;
     //Time out per second
-    public static int timeout = 10;
+    public static int timeout = 100;
     // ** Data control **
     //Smart choose translating encode.
     public static boolean smartEncode = true;
