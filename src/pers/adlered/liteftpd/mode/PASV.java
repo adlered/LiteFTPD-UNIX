@@ -4,12 +4,10 @@ import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.variable.Variable;
-import sun.reflect.FieldInfo;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class PASV extends Thread {
     private ServerSocket serverSocket = null;
@@ -91,7 +89,7 @@ public class PASV extends Thread {
                         byte[] bytes = new byte[8192];
                         while ((fileInputStream.read(bytes)) != -1) {
                             outputStream.write(bytes);
-                    }
+                        }
                         outputStream.flush();
                         inputStream.close();
                         outputStream.close();
