@@ -1,6 +1,7 @@
 package pers.adlered.liteftpd.analyze;
 
 import java.io.*;
+import java.net.Socket;
 import java.net.URLDecoder;
 import java.util.Random;
 
@@ -221,10 +222,20 @@ public class CommandAnalyze {
                      */
                     else if (cmd.equals("PASV")) {
                         Random random = new Random();
-                        int randomPort = RandomNum.sumIntger(1024, 40960, false);
-                        int randomSub = RandomNum.sumIntger(0, 64, false);
-                        int calcPort = (randomPort - randomSub) / 256;
-                        int finalPort = calcPort * 256 + randomSub;
+                        int randomPort;
+                        int randomSub;
+                        int calcPort;
+                        int finalPort;
+                        do {
+                            randomPort = RandomNum.sumIntger(Variable.minPort, Variable.maxPort, false);
+                            randomSub = RandomNum.sumIntger(0, 64, false);
+                            calcPort = (randomPort - randomSub) / 256;
+                            finalPort = calcPort * 256 + randomSub;
+                            System.out.println("Port is " + finalPort);
+                        } while (finalPort < Variable.minPort || finalPort > Variable.maxPort || randomSub < 0 || randomSub > 64);
+                        if (passiveMode != null) {
+                            passiveMode.stopSocket();
+                        }
                         passiveMode = new PASV(finalPort, send, privateVariable, pauseListen);
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
                         send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
@@ -359,5 +370,17 @@ public class CommandAnalyze {
         }
         System.out.println("Absolute path: " + path);
         return path;
+    }
+
+    public static boolean isPortUsing(String host,int port) {
+        boolean flag = false;
+        try {
+            Socket socket = new Socket(host, port);
+            flag = true;
+            socket.close();
+        } catch (IOException IOE) {
+            System.out.println("Port " + port + " already in use, re-generating...");
+        }
+        return flag;
     }
 }

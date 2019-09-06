@@ -114,6 +114,9 @@ public class PASV extends Thread {
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
+        } catch (Exception E) {
+            System.out.println("err");
+            E.printStackTrace();
         } finally {
             if (pauseListen.isRunning()) {
                 privateVariable.setTimeoutLock(false);
@@ -127,5 +130,24 @@ public class PASV extends Thread {
 
     public void hello(File file) {
         this.file = file;
+    }
+
+    public void stopSocket() {
+        try {
+            socket.close();
+            serverSocket.close();
+            send = null;
+            privateVariable = null;
+            pauseListen = null;
+            serverSocket = null;
+            socket = null;
+            listening = null;
+            file = null;
+            System.out.println("Server socket on " + serverSocket.getLocalSocketAddress() + "stopped.");
+        } catch (IOException IOE) {
+            IOE.printStackTrace();
+        } catch (NullPointerException NPE) {
+            System.out.println("Latest passive port not connected. Closing forced.");
+        }
     }
 }

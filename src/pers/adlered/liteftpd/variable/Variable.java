@@ -20,4 +20,7 @@ public class Variable {
     public static int port = 21;
     // ** Info control **
     public static String welcomeMessage = "";
+    // ** Appoint passive mode port range **
+    public static int minPort = 1024;
+    public static int maxPort = 65535;
 }
