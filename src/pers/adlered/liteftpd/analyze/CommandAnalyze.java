@@ -195,21 +195,24 @@ public class CommandAnalyze {
                                     completePath += " " + split[i];
                                 }
                             }
-                            if (completePath.equals("..") || completePath.equals("../")) {
+                            if (completePath.equals("..")) {
                                 upperDirectory();
                                 send.send(Dict.changeDir + getLockPath(currentPath, Permission.defaultDir) + Dict.newLine);
                             } else {
+                                if (completePath.indexOf("../") != -1) {
+                                    completePath = completePath.replaceAll("\\.\\./", "");
+                                }
                                 completePath = getAbsolutePath(completePath);
                                 File file = new File(completePath);
                                 if (file.exists()) {
                                     if (file.isFile()) {
-                                        send.send("550 " + completePath + ": No such file or directory." + Dict.newLine);
+                                        send.send("550 " + getLockPath(completePath, Permission.defaultDir) + ": No such file or directory." + Dict.newLine);
                                     } else {
                                         currentPath = completePath;
                                         send.send(Dict.changeDir + getLockPath(currentPath, Permission.defaultDir) + Dict.newLine);
                                     }
                                 } else {
-                                    send.send(Dict.noSuchFileOrDir + completePath + Dict.noSuchFIleOrDir2);
+                                    send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
                                 }
                             }
                         } else {
@@ -249,6 +252,9 @@ public class CommandAnalyze {
                             for (int i = 2; i < split.length; i++) {
                                 completePath += " " + split[i];
                             }
+                        }
+                        if (completePath.indexOf("../") != -1) {
+                            completePath = completePath.replaceAll("\\.\\./", "");
                         }
                         System.out.println("Complete path: " + completePath);
                         completePath = getAbsolutePath(completePath);
