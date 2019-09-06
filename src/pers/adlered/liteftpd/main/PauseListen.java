@@ -47,16 +47,25 @@ public class PauseListen extends Thread {
     @Override
     public void run() {
         String reason = "User quit manually";
+        int skipCount = 0;
         while (!privateVariable.interrupted) {
             if (privateVariable.isTimeoutLock()) {
+                ++skipCount;
                 resetTimeout();
+            }
+            if (skipCount % 10 == 0 && skipCount != 0) {
+                System.out.println(ipAddressBind.getIPADD() + " skipped timeout: " + skipCount);
+                if (skipCount > Variable.maxTimeout) {
+                    reason = "Max timeout";
+                    break;
+                }
             }
             //Display log every 10 seconds.
             if (timeout % 10 == 0 && timeout != 0) {
                 System.out.println(ipAddressBind.getIPADD() + " timeout: " + timeout + "=>" + Variable.timeout);
             }
             if (timeout >= Variable.timeout) {
-                reason = "Time is out";
+                reason = "Timeout";
                 break;
             }
             try {

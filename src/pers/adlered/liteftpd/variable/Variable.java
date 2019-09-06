@@ -9,8 +9,10 @@ public class Variable {
     public static int online = 0;
     //Set to 0, will be ignore the limit.
     public static long maxUserLimit = 0;
-    //Time out per second
+    //Timeout in second
     public static int timeout = 100;
+    //On mode timeout when client is on passive or initiative mode (default: 21600 sec = 6 hrs)
+    public static int maxTimeout = 21600;
     // ** Data control **
     //Smart choose translating encode.
     public static boolean smartEncode = true;

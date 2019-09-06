@@ -222,6 +222,10 @@ public class CommandAnalyze {
                     else if (cmd.equals("SYST")) {
                         send.send(Dict.type);
                     }
+                    else if (cmd.equals("NOOP")) {
+                        privateVariable.setTimeoutLock(true);
+                        send.send("200 Command okay." + Dict.newLine);
+                    }
                     /**
                      * TRANSMISSION COMMANDS
                      */
