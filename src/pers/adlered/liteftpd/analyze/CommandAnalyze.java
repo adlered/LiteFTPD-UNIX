@@ -3,6 +3,8 @@ package pers.adlered.liteftpd.analyze;
 import java.io.*;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import pers.adlered.liteftpd.bind.IPAddressBind;
@@ -221,22 +223,22 @@ public class CommandAnalyze {
                      * TRANSMISSION COMMANDS
                      */
                     else if (cmd.equals("PASV")) {
-                        Random random = new Random();
+                        if (passiveMode != null) {
+                            passiveMode.stopSocket();
+                        }
+                        passiveMode = new PASV(send, privateVariable, pauseListen);
                         int randomPort;
                         int randomSub;
                         int calcPort;
                         int finalPort;
                         do {
-                            randomPort = RandomNum.sumIntger(Variable.minPort, Variable.maxPort, false);
-                            randomSub = RandomNum.sumIntger(0, 64, false);
-                            calcPort = (randomPort - randomSub) / 256;
-                            finalPort = calcPort * 256 + randomSub;
-                            System.out.println("Port is " + finalPort);
-                        } while (finalPort < Variable.minPort || finalPort > Variable.maxPort || randomSub < 0 || randomSub > 64);
-                        if (passiveMode != null) {
-                            passiveMode.stopSocket();
-                        }
-                        passiveMode = new PASV(finalPort, send, privateVariable, pauseListen);
+                            Map<String, Integer> map = generatePort();
+                            randomPort = map.get("randomPort");
+                            randomSub = map.get("randomSub");
+                            calcPort = map.get("calcPort");
+                            finalPort = map.get("finalPort");
+                            System.out.println("Port listening to: " + finalPort);
+                        } while (!passiveMode.listen(finalPort));
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
                         send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
                         passiveMode.start();
@@ -382,5 +384,27 @@ public class CommandAnalyze {
             System.out.println("Port " + port + " already in use, re-generating...");
         }
         return flag;
+    }
+
+    public Map<String, Integer> generatePort() {
+        Map<String, Integer> map = new HashMap();
+        int randomPort;
+        int randomSub;
+        int calcPort;
+        int finalPort;
+        int count = 0;
+        do {
+            randomPort = RandomNum.sumIntger(Variable.minPort, Variable.maxPort, false);
+            randomSub = RandomNum.sumIntger(0, 64, false);
+            calcPort = (randomPort - randomSub) / 256;
+            finalPort = calcPort * 256 + randomSub;
+            ++count;
+        } while (finalPort < Variable.minPort || finalPort > Variable.maxPort || randomSub < 0 || randomSub > 64);
+        System.out.println(count + " times while generating port: " + finalPort);
+        map.put("randomPort", randomPort);
+        map.put("randomSub", randomSub);
+        map.put("calcPort", calcPort);
+        map.put("finalPort", finalPort);
+        return map;
     }
 }

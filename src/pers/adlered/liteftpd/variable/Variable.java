@@ -21,6 +21,7 @@ public class Variable {
     // ** Info control **
     public static String welcomeMessage = "";
     // ** Appoint passive mode port range **
+    //Recommend 100+ ports in the range to make sure generation have high-performance
     public static int minPort = 1024;
-    public static int maxPort = 65535;
+    public static int maxPort = 10240;
 }

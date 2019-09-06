@@ -6,8 +6,10 @@ import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.*;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class PASV extends Thread {
     private ServerSocket serverSocket = null;
@@ -19,18 +21,24 @@ public class PASV extends Thread {
     private String listening = null;
     private File file = null;
 
-    public PASV(int port, Send send, PrivateVariable privateVariable, PauseListen pauseListen) {
-        System.out.println("Listening " + port + "...");
+    public PASV(Send send, PrivateVariable privateVariable, PauseListen pauseListen) {
+        this.send = send;
+        this.privateVariable = privateVariable;
+        this.pauseListen = pauseListen;
+    }
+
+    public boolean listen(int port) {
+        boolean result = true;
         try {
             ServerSocket serverSocket = new ServerSocket(port);
+            System.out.println("Listening " + port + "...");
             this.serverSocket = serverSocket;
-            this.send = send;
-            this.privateVariable = privateVariable;
-            this.pauseListen = pauseListen;
+        } catch (BindException BE) {
+            result = false;
         } catch (IOException IOE) {
-            //TODO
-            IOE.printStackTrace();
+            result = false;
         }
+        return result;
     }
 
     @Override
@@ -111,6 +119,8 @@ public class PASV extends Thread {
                 }
                 send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec.\r\n");
             }
+        } catch (SocketException SE) {
+            System.out.println("Listening stopped.");
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
@@ -121,6 +131,14 @@ public class PASV extends Thread {
             if (pauseListen.isRunning()) {
                 privateVariable.setTimeoutLock(false);
             }
+            send = null;
+            privateVariable = null;
+            pauseListen = null;
+            serverSocket = null;
+            socket = null;
+            listening = null;
+            file = null;
+            System.out.println("PASV Closed.");
         }
     }
 
@@ -134,15 +152,10 @@ public class PASV extends Thread {
 
     public void stopSocket() {
         try {
-            socket.close();
             serverSocket.close();
-            send = null;
-            privateVariable = null;
-            pauseListen = null;
-            serverSocket = null;
-            socket = null;
-            listening = null;
-            file = null;
+            socket.shutdownInput();
+            socket.shutdownOutput();
+            socket.close();
             System.out.println("Server socket on " + serverSocket.getLocalSocketAddress() + "stopped.");
         } catch (IOException IOE) {
             IOE.printStackTrace();
