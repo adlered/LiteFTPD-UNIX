@@ -66,7 +66,7 @@ public class PauseListen extends Thread {
                 break;
             }
         }
-        System.out.println("Shutting down " + ipAddressBind.getIPADD() + ", because: " + reason);
+        System.out.println("Shutting down " + ipAddressBind.getIPADD() + ", reason: " + reason);
         //Shutdown this hole connection.
         running = false;
         ChangeVar.reduceOnlineCount();

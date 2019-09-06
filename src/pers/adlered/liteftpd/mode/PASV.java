@@ -44,7 +44,7 @@ public class PASV extends Thread {
     @Override
     public void run() {
         try {
-            System.out.println("WAITING...");
+            System.out.println("Transmitter is waiting the port " + serverSocket.getLocalPort() + " for the client.");
             Socket socket = serverSocket.accept();
             this.socket = socket;
             System.out.println("Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");

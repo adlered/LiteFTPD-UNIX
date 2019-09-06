@@ -29,7 +29,7 @@ public class Send {
     public boolean send(String message) {
         System.out.println("Encode is: " + privateVariable.getEncode());
         try {
-            System.out.println(ipAddressBind.getSRVIPADD() + " => " + ipAddressBind.getIPADD() + ": " + message.replaceAll("\r|\n", ""));
+            System.out.println(ipAddressBind.getIPADD() + " <== " + ipAddressBind.getSRVIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();
             //WELCOME MESSAGE
             outputStream.write(message.getBytes(privateVariable.encode));
