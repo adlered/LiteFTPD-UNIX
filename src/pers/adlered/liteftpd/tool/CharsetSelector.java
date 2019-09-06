@@ -1,7 +1,5 @@
 package pers.adlered.liteftpd.tool;
 
-import org.mozilla.universalchardet.UniversalDetector;
-
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
@@ -72,24 +70,7 @@ public class CharsetSelector {
         } else if (UTF8ERR > GB2312ERR) {
             return "GB2312";
         } else {
-            String secondStepGuess = guessEncoding(bytes);
-            if (secondStepGuess.equals("UTF-8") || secondStepGuess.equals("GB2312")) {
-                return secondStepGuess;
-            } else {
-                return "UTF-8";
-            }
+            return "GB2312";
         }
-    }
-
-    public static String guessEncoding(byte[] bytes) {
-        UniversalDetector detector = new UniversalDetector(null);
-        detector.handleData(bytes, 0, bytes.length);
-        detector.dataEnd();
-        String encoding = detector.getDetectedCharset();
-        detector.reset();
-        if (encoding == null) {
-            return "UTF-8";
-        }
-        return encoding;
     }
 }
