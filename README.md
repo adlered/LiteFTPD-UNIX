@@ -6,7 +6,7 @@
 
 ## 当前开发进度：
 ✳️ 目标：强兼容，高性能，低占用  
-当前进度：** 已支持FileZilla、FlashFXP、迅雷、Chrome、Windows资源管理器的文件下载功能，上传功能正在开发中 **
+当前进度： **已支持FileZilla、FlashFXP、迅雷、Chrome、Windows资源管理器的文件下载功能，上传功能正在开发中**
 
 - [ ] 用户身份识别  
 - [x] 用户目录锁定  
