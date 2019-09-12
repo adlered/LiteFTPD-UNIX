@@ -7,8 +7,8 @@ package pers.adlered.liteftpd.variable;
 public class Variable {
     // ** User control **
     public static int online = 0;
-    //Set to 0, will be ignore the limit.
-    public static long maxUserLimit = 0;
+    //Set to 0, will be ignore the limit. Too small value may make multi-thread ftp client not working.
+    public static long maxUserLimit = 100;
     //Timeout in second
     public static int timeout = 100;
     //On mode timeout when client is on passive or initiative mode (default: 21600 sec = 6 hrs)
@@ -21,9 +21,9 @@ public class Variable {
     // ** Service control **
     public static int port = 21;
     // ** Info control **
-    public static String welcomeMessage = "";
+    public static String welcomeMessage = "This is a demo version.";
     // ** Appoint passive mode port range **
     //Recommend 100+ ports in the range to make sure generation have high-performance
     public static int minPort = 1024;
-    public static int maxPort = 10240;
+    public static int maxPort = 1124;
 }

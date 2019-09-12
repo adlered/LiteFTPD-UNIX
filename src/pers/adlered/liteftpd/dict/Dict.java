@@ -15,11 +15,11 @@ public class Dict {
     public static final String passiveDataFailed = Code.UNAVAILABLE + " Passive port is not connected.\r\n";
     public static final String openPassiveASCII = Code.STATUSOK + " Opening ASCII mode data, please wait.\r\n";
     public static final String type = Code.NAME + " UNIX Type: L8\r\n";
-    public static final String remind = " >>> LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX >>> " +
-            "If you got an encode problem, please change your client encode to *** UTF-8 ***!\r\n";
+    public static final String remind = "\r\n>>> LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX\r\n" +
+            "230 ===------===\r\n";
 
     public static final String passwordRequired = Code.PASSREQ + " Password required for ";
-    public static final String loggedIn = Code.LOGGED + " ";
+    public static final String loggedIn = Code.LOGGED + "-";
     public static final String isFile = Code.ERRTARGET + " CWD Failed to change directory to ";
     public static final String openSuccessful = Code.CORRECT + " CWD command successful. ";
     public static final String currentDir = Code.CPATH + " ";

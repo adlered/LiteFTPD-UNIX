@@ -102,7 +102,7 @@ public class CommandAnalyze {
                     if (cmd.equals("PASS")) {
                         System.out.println("User " + loginUser + " login: " + arg1);
                         loginPass = arg1;
-                        send.send(Dict.loggedIn + ":) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
+                        send.send(Dict.loggedIn + "===------===\r\n>>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
                         step = 3;
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
@@ -124,6 +124,9 @@ public class CommandAnalyze {
                         send.send("211-Features:\r\n" +
                                 "UTF8\r\n" +
                                 "211 End\r\n");
+                    }
+                    else if (cmd.equals("SITE")) {
+                        send.send("501 SITE option not supported." + Dict.newLine);
                     }
                     /**
                      * NORMAL COMMANDS
@@ -164,7 +167,7 @@ public class CommandAnalyze {
                             while ((line = bufferedReader.readLine()) != null) {
                                 result.append(line).append('\n');
                             }
-                            System.out.println(result.toString());
+                            //System.out.println(result.toString());
                             try {
                                 passiveMode.hello(result.toString());
                             } catch (NullPointerException NPE) {
@@ -226,6 +229,26 @@ public class CommandAnalyze {
                         privateVariable.setTimeoutLock(true);
                         send.send("200 Command okay." + Dict.newLine);
                     }
+                    else if (cmd.equals("MKD")) {
+                        String completePath = arg1;
+                        if (arg2 != null) {
+                            for (int i = 2; i < split.length; i++) {
+                                completePath += " " + split[i];
+                            }
+                        }
+                        if (completePath.indexOf("../") != -1) {
+                            completePath = completePath.replaceAll("\\.\\./", "");
+                        }
+                        //System.out.println("Complete path: " + completePath);
+                        completePath = getAbsolutePath(completePath);
+                        File file = new File(completePath);
+                        if (!file.exists()) {
+                            file.mkdirs();
+                            send.send("257 \"" + getLockPath(completePath, Permission.defaultDir) + "\" directory created." + Dict.newLine);
+                        } else {
+                            send.send("550 " + getLockPath(completePath, Permission.defaultDir) + ": Failed to create." + Dict.newLine);
+                        }
+                    }
                     /**
                      * TRANSMISSION COMMANDS
                      */
@@ -244,7 +267,7 @@ public class CommandAnalyze {
                             randomSub = map.get("randomSub");
                             calcPort = map.get("calcPort");
                             finalPort = map.get("finalPort");
-                            System.out.println("Port listening to: " + finalPort);
+                            //System.out.println("Port listening to: " + finalPort);
                         } while (!passiveMode.listen(finalPort));
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
                         send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
@@ -260,7 +283,7 @@ public class CommandAnalyze {
                         if (completePath.indexOf("../") != -1) {
                             completePath = completePath.replaceAll("\\.\\./", "");
                         }
-                        System.out.println("Complete path: " + completePath);
+                        //System.out.println("Complete path: " + completePath);
                         completePath = getAbsolutePath(completePath);
                         try {
                             File file = new File(completePath);
@@ -270,6 +293,32 @@ public class CommandAnalyze {
                             } else {
                                 send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
                             }
+                        } catch (NullPointerException NPE) {
+                            send.send(Dict.passiveDataFailed);
+                        }
+                    }
+                    else if (cmd.equals("STOR")) {
+                        String completePath = arg1;
+                        if (arg2 != null) {
+                            for (int i = 2; i < split.length; i++) {
+                                completePath += " " + split[i];
+                            }
+                        }
+                        if (completePath.indexOf("../") != -1) {
+                            completePath = completePath.replaceAll("\\.\\./", "");
+                        }
+                        //System.out.println("Complete path: " + completePath);
+                        completePath = getAbsolutePath(completePath);
+                        send.send("150 Opening ASCII mode data connection for " + getLockPath(completePath, Permission.defaultDir) + "." + Dict.newLine);
+                        try {
+                            /*File file = new File(completePath);
+                            if (file.exists()) {
+                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, Permission.defaultDir) + " (" + file.length() + " Bytes)\r\n");
+                                passiveMode.hello(file);
+                            } else {
+                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                            }*/
+                            passiveMode.helloSTOR(completePath);
                         } catch (NullPointerException NPE) {
                             send.send(Dict.passiveDataFailed);
                         }
@@ -380,7 +429,7 @@ public class CommandAnalyze {
         } else {
             path = currentPath + "/" + path;
         }
-        System.out.println("Absolute path: " + path);
+        //System.out.println("Absolute path: " + path);
         return path;
     }
 
@@ -410,7 +459,7 @@ public class CommandAnalyze {
             finalPort = calcPort * 256 + randomSub;
             ++count;
         } while (finalPort < Variable.minPort || finalPort > Variable.maxPort || randomSub < 0 || randomSub > 64);
-        System.out.println(count + " times while generating port: " + finalPort);
+        //System.out.println(count + " times while generating port: " + finalPort);
         map.put("randomPort", randomPort);
         map.put("randomSub", randomSub);
         map.put("calcPort", calcPort);

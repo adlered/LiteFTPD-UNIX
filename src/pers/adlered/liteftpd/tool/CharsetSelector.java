@@ -48,7 +48,7 @@ public class CharsetSelector {
                 }
             }
             UTF8ERR = count;
-            System.out.println("UTF8 " + count);
+            //System.out.println("UTF8 " + count);
         }
         if (GB2312 != null) {
             int fromIndex = 0;
@@ -63,7 +63,7 @@ public class CharsetSelector {
                 }
             }
             GB2312ERR = count;
-            System.out.println("GB2312 " + count);
+            //System.out.println("GB2312 " + count);
         }
         if (UTF8ERR < GB2312ERR) {
             return "UTF-8";

@@ -23,11 +23,11 @@ public class Send {
         this.pauseListen = pauseListen;
         this.privateVariable = privateVariable;
         this.ipAddressBind = ipAddressBind;
-        send(Code.SERVICEREADY + " LiteFTPD > Have a nice day, " + ipAddressBind.getIPADD() + Dict.connectionStarted);
+        send(Code.SERVICEREADY + "-LiteFTPD\r\n>>> Please log in, my honored guest.\r\n>>> Your IP address: " + ipAddressBind.getIPADD() + "\r\n220" + Dict.connectionStarted);
     }
 
     public boolean send(String message) {
-        System.out.println("Encode is: " + privateVariable.getEncode());
+        //System.out.println("Encode is: " + privateVariable.getEncode());
         try {
             System.out.println(ipAddressBind.getIPADD() + " <== " + ipAddressBind.getSRVIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();

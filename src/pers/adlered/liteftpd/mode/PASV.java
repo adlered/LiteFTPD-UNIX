@@ -1,6 +1,8 @@
 package pers.adlered.liteftpd.mode;
 
+import org.omg.CORBA.SystemException;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
+import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.variable.Variable;
@@ -20,6 +22,7 @@ public class PASV extends Thread {
 
     private String listening = null;
     private File file = null;
+    private String path = null;
 
     public PASV(Send send, PrivateVariable privateVariable, PauseListen pauseListen) {
         this.send = send;
@@ -31,7 +34,7 @@ public class PASV extends Thread {
         boolean result = true;
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            System.out.println("Listening " + port + "...");
+            //System.out.println("Listening " + port + "...");
             this.serverSocket = serverSocket;
         } catch (BindException BE) {
             result = false;
@@ -47,8 +50,8 @@ public class PASV extends Thread {
             System.out.println("Transmitter is waiting the port " + serverSocket.getLocalPort() + " for the client.");
             Socket socket = serverSocket.accept();
             this.socket = socket;
-            System.out.println("Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");
-            while (listening == null && file == null) {
+            //System.out.println("Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");
+            while (listening == null && file == null && path == null) {
                 if (!pauseListen.isRunning()) {
                     System.out.println("Passive mode listener paused.");
                     break;
@@ -60,7 +63,7 @@ public class PASV extends Thread {
             }
             privateVariable.setTimeoutLock(true);
             if (pauseListen.isRunning()) {
-                System.out.println("Service has response.");
+                //System.out.println("Service has response.");
                 long startTime = System.nanoTime();
                 double kb = 0;
                 long bts = 0;
@@ -104,28 +107,51 @@ public class PASV extends Thread {
                         bts = file.length() - privateVariable.getRest();
                         privateVariable.resetRest();
                     }
+                } else if (path != null) {
+                    File file = new File(path);
+                    if (!file.getParentFile().exists()) {
+                        file.getParentFile().mkdirs();
+                    }
+                    System.out.println("Already exists and deleted: " + file.delete());
+                    //FileOutputStream will be create a new file auto.
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(socket.getInputStream());
+                    byte[] bytes = new byte[8192];
+                    while ((bufferedInputStream.read(bytes)) != -1) {
+                        fileOutputStream.write(bytes);
+                    }
+                    fileOutputStream.flush();
+                    bufferedInputStream.close();
+                    fileOutputStream.close();
+                    System.out.println("PASV STOR. PATH: " + path);
                 }
-                kb = bts / 1000;
-                socket.close();
-                serverSocket.close();
-                long stopTime = System.nanoTime();
-                long nanoEndTime = stopTime - startTime;
-                double endTime = nanoEndTime / 1000000000;
-                double perSecond = 0;
-                if (endTime == 0) {
-                    perSecond = kb;
+                if (path != null) {
+                    socket.close();
+                    serverSocket.close();
+                    send.send("226 Transfer complete." + Dict.newLine);
                 } else {
-                    perSecond = kb / endTime;
+                    kb = bts / 1000;
+                    socket.close();
+                    serverSocket.close();
+                    long stopTime = System.nanoTime();
+                    long nanoEndTime = stopTime - startTime;
+                    double endTime = nanoEndTime / 1000000000;
+                    double perSecond = 0;
+                    if (endTime == 0) {
+                        perSecond = kb;
+                    } else {
+                        perSecond = kb / endTime;
+                    }
+                    send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec.\r\n");
                 }
-                send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec.\r\n");
             }
         } catch (SocketException SE) {
-            System.out.println("Listening stopped.");
+            //System.out.println("Listening stopped.");
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
         } catch (Exception E) {
-            System.out.println("err");
+            //System.out.println("err");
             E.printStackTrace();
         } finally {
             if (pauseListen.isRunning()) {
@@ -138,7 +164,7 @@ public class PASV extends Thread {
             socket = null;
             listening = null;
             file = null;
-            System.out.println("PASV Closed.");
+            //System.out.println("PASV Closed.");
         }
     }
 
@@ -150,17 +176,21 @@ public class PASV extends Thread {
         this.file = file;
     }
 
+    public void helloSTOR(String path) {
+        this.path = path;
+    }
+
     public void stopSocket() {
         try {
             serverSocket.close();
             socket.shutdownInput();
             socket.shutdownOutput();
             socket.close();
-            System.out.println("Server socket on " + serverSocket.getLocalSocketAddress() + "stopped.");
+            //System.out.println("Server socket on " + serverSocket.getLocalSocketAddress() + "stopped.");
         } catch (IOException IOE) {
             IOE.printStackTrace();
         } catch (NullPointerException NPE) {
-            System.out.println("Latest passive port not connected. Closing forced.");
+            //System.out.println("Latest passive port not connected. Closing forced.");
         }
     }
 }
