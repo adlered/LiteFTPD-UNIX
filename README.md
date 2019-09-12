@@ -6,7 +6,7 @@
 
 ## 当前开发进度：
 ✳️ 目标：强兼容，高性能，低占用  
-当前进度： **已支持Windows、Linux、MacOS系统FileZilla、FlashFXP、迅雷、Chrome、Windows资源管理器等FTP客户端（或支持FTP的程序）的文件上传下载功能**
+当前进度： **已支持Windows、Linux、MacOS系统FileZilla、FlashFXP、迅雷、Chrome、Windows资源管理器等FTP客户端（或支持FTP的程序）的文件上传、下载、删除、移动、重命名功能**
 
 - [ ] 用户身份识别  
 - [x] 用户目录锁定  
