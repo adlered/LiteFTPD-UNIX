@@ -2,10 +2,8 @@ package pers.adlered.liteftpd.analyze;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.dict.Dict;
@@ -36,6 +34,7 @@ public class CommandAnalyze {
 
     private String currentPath = "";
     private String lockPath = "";
+    private String RNFR = null;
     //Trans type default A
     //A: ASCII I: BINARY
     private String type = "A";
@@ -277,7 +276,6 @@ public class CommandAnalyze {
                         if (completePath.indexOf("../") != -1) {
                             completePath = completePath.replaceAll("\\.\\./", "");
                         }
-                        //System.out.println("Complete path: " + completePath);
                         completePath = getAbsolutePath(completePath);
                         File file = new File(completePath);
                         if (file.isFile()) {
@@ -286,6 +284,44 @@ public class CommandAnalyze {
                         } else {
                             send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
                         }
+                    }
+                    else if (cmd.equals("RNFR")) {
+                        String completePath = arg1;
+                        if (arg2 != null) {
+                            for (int i = 2; i < split.length; i++) {
+                                completePath += " " + split[i];
+                            }
+                        }
+                        if (completePath.indexOf("../") != -1) {
+                            completePath = completePath.replaceAll("\\.\\./", "");
+                        }
+                        completePath = getAbsolutePath(completePath);
+                        File file = new File(completePath);
+                        if (file.exists()) {
+                            RNFR = completePath;
+                            send.send("350 File or directory exists, ready for destination name" + Dict.newLine);
+                        } else {
+                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                        }
+                    }
+                    else if (cmd.equals("RNTO")) {
+                        String completePath = arg1;
+                        if (arg2 != null) {
+                            for (int i = 2; i < split.length; i++) {
+                                completePath += " " + split[i];
+                            }
+                        }
+                        if (completePath.indexOf("../") != -1) {
+                            completePath = completePath.replaceAll("\\.\\./", "");
+                        }
+                        completePath = getAbsolutePath(completePath);
+                        File file = new File(RNFR);
+                        if (file.renameTo(new File(completePath))) {
+                            send.send("250 RNTO command successful." + Dict.newLine);
+                        } else {
+                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                        }
+                        RNFR = null;
                     }
                     /**
                      * TRANSMISSION COMMANDS
