@@ -383,7 +383,7 @@ public class CommandAnalyze {
                         }
                         //System.out.println("Complete path: " + completePath);
                         completePath = getAbsolutePath(completePath);
-                        send.send("150 Opening ASCII mode data connection for " + getLockPath(completePath, Permission.defaultDir) + "." + Dict.newLine);
+                        send.send("150 Opening BINARY mode data connection for " + getLockPath(completePath, Permission.defaultDir) + "." + Dict.newLine);
                         try {
                             /*File file = new File(completePath);
                             if (file.exists()) {

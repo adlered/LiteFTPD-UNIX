@@ -51,15 +51,15 @@ public class PASV extends Thread {
             Socket socket = serverSocket.accept();
             this.socket = socket;
             //System.out.println("Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");
-            while (listening == null && file == null && path == null) {
-                if (!pauseListen.isRunning()) {
-                    System.out.println("Passive mode listener paused.");
-                    break;
-                }
-                try {
+            try {
+                while (listening == null && file == null && path == null) {
+                    if (!pauseListen.isRunning()) {
+                        System.out.println("Passive mode listener paused.");
+                        break;
+                    }
                     Thread.sleep(5);
-                } catch (InterruptedException IE) {
                 }
+            } catch (InterruptedException IE) {
             }
             privateVariable.setTimeoutLock(true);
             if (pauseListen.isRunning()) {
@@ -81,54 +81,69 @@ public class PASV extends Thread {
                     bufferedOutputStream.close();
                     bts = (listening.getBytes(privateVariable.encode)).length;
                 } else if (file != null) {
-                    InputStream inputStream = new FileInputStream(file);
+                    FileInputStream fileInputStream = new FileInputStream(file);
                     OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+                    byte[] bytes = new byte[8192];
+                    int len = -1;
                     if (privateVariable.getRest() == 0l) {
-                        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                        byte[] buffer = new byte[8192];
-                        while ((bufferedInputStream.read(buffer)) != -1) {
-                            outputStream.write(buffer);
+                        //Not rest mode
+                        while ((len = fileInputStream.read(bytes)) != -1) {
+                            //System.out.println("Length: " + len);
+                            outputStream.write(bytes, 0, len);
                         }
                         outputStream.flush();
-                        bufferedInputStream.close();
-                        inputStream.close();
+                        fileInputStream.close();
                         outputStream.close();
                         bts = file.length();
                     } else {
-                        FileInputStream fileInputStream = new FileInputStream(file);
+                        //Rest mode on
                         fileInputStream.skip(privateVariable.getRest());
-                        byte[] bytes = new byte[8192];
-                        while ((fileInputStream.read(bytes)) != -1) {
-                            outputStream.write(bytes);
+                        while ((len = fileInputStream.read(bytes)) != -1) {
+                            //System.out.println("Length: " + len);
+                            outputStream.write(bytes, 0, len);
                         }
                         outputStream.flush();
-                        inputStream.close();
+                        fileInputStream.close();
                         outputStream.close();
                         bts = file.length() - privateVariable.getRest();
                         privateVariable.resetRest();
                     }
                 } else if (path != null) {
+                    System.out.println("PASV STOR. PATH: " + path);
                     File file = new File(path);
                     if (!file.getParentFile().exists()) {
                         file.getParentFile().mkdirs();
                     }
-                    System.out.println("Already exists and deleted: " + file.delete());
-                    //FileOutputStream will be create a new file auto.
-                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    BufferedInputStream bufferedInputStream = new BufferedInputStream(socket.getInputStream());
-                    byte[] bytes = new byte[8192];
-                    while ((bufferedInputStream.read(bytes)) != -1) {
-                        fileOutputStream.write(bytes);
+                    if (privateVariable.getRest() == 0l) {
+                        boolean deleted = file.delete();
+                        System.out.println("Already exists and deleted: " + deleted);
+                    } else {
+                        System.out.println("Continue receive.");
                     }
-                    fileOutputStream.flush();
-                    bufferedInputStream.close();
-                    fileOutputStream.close();
-                    System.out.println("PASV STOR. PATH: " + path);
+                    //FileOutputStream will be create a new file auto.
+                    FileOutputStream fileOutputStream = null;
+                    try {
+                        fileOutputStream = new FileOutputStream(file);
+                        InputStream inputStream = socket.getInputStream();
+                        byte[] bytes = new byte[8192];
+                        int len = -1;
+                        while ((len = inputStream.read(bytes)) != -1) {
+                            //System.out.println("Length: " + len);
+                            fileOutputStream.write(bytes, 0, len);
+                        }
+                        fileOutputStream.flush();
+                        send.send("226 Transfer complete." + Dict.newLine);
+                        inputStream.close();
+                        fileOutputStream.close();
+                    } catch (FileNotFoundException FNFE) {
+                        send.send("550 Permission denied." + Dict.newLine);
+                        FNFE.printStackTrace();
+                    }
+                    privateVariable.resetRest();
                 }
                 if (path != null) {
                     socket.close();
                     serverSocket.close();
-                    send.send("226 Transfer complete." + Dict.newLine);
                 } else {
                     kb = bts / 1000;
                     socket.close();

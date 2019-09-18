@@ -13,7 +13,7 @@ public class Dict {
     public static final String alreadyLogged = Code.CMDUNKNOWN + " You have already logged in." + "\r\n";
     public static final String bye = Code.SERVICESTOP + " :) See ya!" + "\r\n";
     public static final String passiveDataFailed = Code.UNAVAILABLE + " Passive port is not connected.\r\n";
-    public static final String openPassiveASCII = Code.STATUSOK + " Opening ASCII mode data, please wait.\r\n";
+    public static final String openPassiveASCII = Code.STATUSOK + " Opening BINARY mode data, please wait.\r\n";
     public static final String type = Code.NAME + " UNIX Type: L8\r\n";
     public static final String remind = "\r\n>>> LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX\r\n" +
             "230 ===------===\r\n";
