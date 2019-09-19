@@ -9,13 +9,19 @@ import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Main {
     public static void main(String[] args) {
+        Runtime runtime = Runtime.getRuntime();
+        runtime.addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                System.out.println("LiteFTPD stopped.");
+            }
+        });
         ServerSocket serverSocket = null;
         try {
             System.out.println("LiteFTPD by AdlerED <- GitHub");

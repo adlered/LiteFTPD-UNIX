@@ -5,6 +5,6 @@ package pers.adlered.liteftpd.user;
  */
 
 public class Permission {
-    public static String defaultDir = "/";
+    public static String defaultDir = "/Users/adler";
     public static String type = "I";
 }

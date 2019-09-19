@@ -16,8 +16,8 @@ public class Variable {
     // ** Data control **
     //Smart choose translating encode.
     public static boolean smartEncode = true;
-    //Set the default translating encode.
-    public static String defaultEncode = "GB2312";
+    //Set the default translating encode. Unix is UTF-8, Windows is GB2312.
+    public static String defaultEncode = "UTF-8";
     // ** Service control **
     public static int port = 21;
     // ** Info control **

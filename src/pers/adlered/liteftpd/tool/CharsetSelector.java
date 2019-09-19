@@ -1,5 +1,8 @@
 package pers.adlered.liteftpd.tool;
 
+import pers.adlered.liteftpd.analyze.PrivateVariable;
+import pers.adlered.liteftpd.variable.Variable;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
@@ -70,7 +73,7 @@ public class CharsetSelector {
         } else if (UTF8ERR > GB2312ERR) {
             return "GB2312";
         } else {
-            return "GB2312";
+            return Variable.defaultEncode;
         }
     }
 }

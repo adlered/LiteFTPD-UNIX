@@ -503,6 +503,7 @@ public class CommandAnalyze {
         } else {
             path = currentPath + "/" + path;
         }
+        path = path.replaceAll("//", "/");
         System.out.println("Absolute path: " + path);
         return path;
     }
