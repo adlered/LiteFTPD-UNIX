@@ -5,6 +5,9 @@ package pers.adlered.liteftpd.tool;
  */
 
 import pers.adlered.liteftpd.analyze.PrivateVariable;
+import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.Logger;
+import pers.adlered.liteftpd.logger.Types;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +34,7 @@ public class AutoInputStream {
                     Thread.sleep(5);
                 }
             } catch (IOException IOE) {
-                System.out.println("Auto Input Stream stopped.");
+                Logger.log(Types.SEND, Levels.WARN,"Auto Input Stream stopped.");
                 break;
             } catch (InterruptedException IE) {}
             byte[] cache = new byte[available];

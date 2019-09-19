@@ -1,6 +1,9 @@
 package pers.adlered.liteftpd.main;
 
 import pers.adlered.liteftpd.dict.Dict;
+import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.Logger;
+import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.pool.Pool;
 import pers.adlered.liteftpd.tool.LocalAddress;
 import pers.adlered.liteftpd.tool.Status;
@@ -19,29 +22,31 @@ public class Main {
         runtime.addShutdownHook(new Thread() {
             @Override
             public void run() {
-                System.out.println("LiteFTPD stopped.");
+                Logger.log(Types.SYS, Levels.INFO, "LiteFTPD stopped.");
             }
         });
         ServerSocket serverSocket = null;
         try {
-            System.out.println("LiteFTPD by AdlerED <- GitHub");
+            Logger.log(Types.SYS, Levels.INFO, "LiteFTPD by AdlerED <- GitHub");
             //Listen socket connections, handle with SocketHandler.
             serverSocket = new ServerSocket(Variable.port);
-            System.out.println("Listening " + serverSocket.getLocalSocketAddress());
+            Logger.log(Types.SYS, Levels.INFO, "Listening " + serverSocket.getLocalSocketAddress());
             InetAddress inetAddress = null;
-            System.out.println("You can connect to the FTP Server via following IP address:");
-            System.out.print(" | ");
-            for (String i : LocalAddress.getLocalIPList()) {
-                System.out.print(i + " | ");
+            Logger.log(Types.SYS, Levels.INFO, "You can connect to the FTP Server via following IP address:");
+            if (Variable.debugLevel >= 1) {
+                System.out.print(" | ");
+                for (String i : LocalAddress.getLocalIPList()) {
+                    System.out.print(i + " | ");
+                }
+                System.out.println();
             }
-            System.out.println();
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
         }
         while (true) {
             try {
-                System.out.println("Memory used: " + Status.memoryUsed());
+                Logger.log(Types.SYS, Levels.INFO, "Memory used: " + Status.memoryUsed());
                 Socket socket = serverSocket.accept();
                 //Online limit checking
                 if (Variable.online >= Variable.maxUserLimit && Variable.maxUserLimit != 0) {

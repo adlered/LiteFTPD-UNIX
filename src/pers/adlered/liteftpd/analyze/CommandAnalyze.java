@@ -7,6 +7,9 @@ import java.util.Map;
 
 import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.dict.Dict;
+import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.Logger;
+import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.mode.PASV;
@@ -84,7 +87,7 @@ public class CommandAnalyze {
                         if (arg1 == null) {
                             arg1 = "anonymous";
                         }
-                        System.out.println(Thread.currentThread() + " login: " + arg1);
+                        Logger.log(Types.SYS, Levels.DEBUG,Thread.currentThread() + " User login: " + arg1);
                         loginUser = arg1;
                         send.send(Dict.passwordRequired + loginUser + "." + "\r\n");
                         step = 2;
@@ -99,9 +102,10 @@ public class CommandAnalyze {
                     break;
                 case 2:
                     if (cmd.equals("PASS")) {
-                        System.out.println("User " + loginUser + " login: " + arg1);
+                        Logger.log(Types.SYS, Levels.DEBUG,"User " + loginUser + "'s password: " + arg1);
                         loginPass = arg1;
                         send.send(Dict.loggedIn + "===------===\r\n>>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
+                        Logger.log(Types.SYS, Levels.INFO,"User " + loginUser + " logged in.");
                         step = 3;
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
@@ -166,7 +170,6 @@ public class CommandAnalyze {
                             while ((line = bufferedReader.readLine()) != null) {
                                 result.append(line).append('\n');
                             }
-                            //System.out.println(result.toString());
                             try {
                                 passiveMode.hello(result.toString());
                             } catch (NullPointerException NPE) {
@@ -238,7 +241,6 @@ public class CommandAnalyze {
                         if (completePath.indexOf("../") != -1) {
                             completePath = completePath.replaceAll("\\.\\./", "");
                         }
-                        //System.out.println("Complete path: " + completePath);
                         completePath = getAbsolutePath(completePath);
                         File file = new File(completePath);
                         if (!file.exists()) {
@@ -257,7 +259,6 @@ public class CommandAnalyze {
                         if (completePath.indexOf("../") != -1) {
                             completePath = completePath.replaceAll("\\.\\./", "");
                         }
-                        //System.out.println("Complete path: " + completePath);
                         completePath = getAbsolutePath(completePath);
                         File file = new File(completePath);
                         if (file.isDirectory()) {
@@ -341,7 +342,6 @@ public class CommandAnalyze {
                             randomSub = map.get("randomSub");
                             calcPort = map.get("calcPort");
                             finalPort = map.get("finalPort");
-                            //System.out.println("Port listening to: " + finalPort);
                         } while (!passiveMode.listen(finalPort));
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
                         send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
@@ -357,7 +357,6 @@ public class CommandAnalyze {
                         if (completePath.indexOf("../") != -1) {
                             completePath = completePath.replaceAll("\\.\\./", "");
                         }
-                        //System.out.println("Complete path: " + completePath);
                         completePath = getAbsolutePath(completePath);
                         try {
                             File file = new File(completePath);
@@ -381,7 +380,6 @@ public class CommandAnalyze {
                         if (completePath.indexOf("../") != -1) {
                             completePath = completePath.replaceAll("\\.\\./", "");
                         }
-                        //System.out.println("Complete path: " + completePath);
                         completePath = getAbsolutePath(completePath);
                         send.send("150 Opening BINARY mode data connection for " + getLockPath(completePath, Permission.defaultDir) + "." + Dict.newLine);
                         try {
@@ -470,7 +468,7 @@ public class CommandAnalyze {
             String[] dir = currentPath.split("/");
             currentPath = "";
             for (int i = 0; i < dir.length - 1; i++) {
-                System.out.println("len: " + dir.length + " cur: " + i);
+                Logger.log(Types.SYS, Levels.DEBUG,"len: " + dir.length + " cur: " + i);
                 if (i == dir.length - 2) {
                     currentPath += dir[i];
                 } else {
@@ -479,7 +477,7 @@ public class CommandAnalyze {
             }
             if (currentPath.isEmpty()) currentPath = "/";
         }
-        System.out.println(currentPath);
+        Logger.log(Types.SYS, Levels.DEBUG, currentPath);
     }
 
     @SuppressWarnings("deprecation")
@@ -504,7 +502,7 @@ public class CommandAnalyze {
             path = currentPath + "/" + path;
         }
         path = path.replaceAll("//", "/");
-        System.out.println("Absolute path: " + path);
+        Logger.log(Types.SYS, Levels.DEBUG,"Absolute path: " + path);
         return path;
     }
 
@@ -515,7 +513,7 @@ public class CommandAnalyze {
             flag = true;
             socket.close();
         } catch (IOException IOE) {
-            System.out.println("Port " + port + " already in use, re-generating...");
+            Logger.log(Types.SYS, Levels.DEBUG,"Port " + port + " already in use, re-generating...");
         }
         return flag;
     }
@@ -534,7 +532,7 @@ public class CommandAnalyze {
             finalPort = calcPort * 256 + randomSub;
             ++count;
         } while (finalPort < Variable.minPort || finalPort > Variable.maxPort || randomSub < 0 || randomSub > 64);
-        //System.out.println(count + " times while generating port: " + finalPort);
+        Logger.log(Types.SYS, Levels.DEBUG,count + " times while generating port: " + finalPort);
         map.put("randomPort", randomPort);
         map.put("randomSub", randomSub);
         map.put("calcPort", calcPort);

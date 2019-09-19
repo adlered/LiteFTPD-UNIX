@@ -1,6 +1,9 @@
 package pers.adlered.liteftpd.tool;
 
 import pers.adlered.liteftpd.analyze.PrivateVariable;
+import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.Logger;
+import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.UnsupportedEncodingException;
@@ -51,7 +54,7 @@ public class CharsetSelector {
                 }
             }
             UTF8ERR = count;
-            //System.out.println("UTF8 " + count);
+            Logger.log(Types.SYS, Levels.DEBUG,"UTF8 " + count);
         }
         if (GB2312 != null) {
             int fromIndex = 0;
@@ -66,7 +69,7 @@ public class CharsetSelector {
                 }
             }
             GB2312ERR = count;
-            //System.out.println("GB2312 " + count);
+            Logger.log(Types.SYS, Levels.DEBUG,"GB2312 " + count);
         }
         if (UTF8ERR < GB2312ERR) {
             return "UTF-8";

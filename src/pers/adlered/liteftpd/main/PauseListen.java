@@ -3,6 +3,9 @@ package pers.adlered.liteftpd.main;
 import pers.adlered.liteftpd.analyze.CommandAnalyze;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.bind.IPAddressBind;
+import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.Logger;
+import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.variable.ChangeVar;
 import pers.adlered.liteftpd.variable.Variable;
@@ -54,7 +57,7 @@ public class PauseListen extends Thread {
                 resetTimeout();
             }
             if (skipCount % 10 == 0 && skipCount != 0) {
-                System.out.println(ipAddressBind.getIPADD() + " skipped timeout: " + skipCount);
+                Logger.log(Types.SYS, Levels.DEBUG, ipAddressBind.getIPADD() + " skipped timeout: " + skipCount);
                 if (skipCount > Variable.maxTimeout) {
                     reason = "Max timeout";
                     break;
@@ -62,7 +65,7 @@ public class PauseListen extends Thread {
             }
             //Display log every 10 seconds.
             if (timeout % 10 == 0 && timeout != 0) {
-                System.out.println(ipAddressBind.getIPADD() + " timeout: " + timeout + "=>" + Variable.timeout);
+                Logger.log(Types.SYS, Levels.DEBUG, ipAddressBind.getIPADD() + " timeout: " + timeout + "=>" + Variable.timeout);
             }
             if (timeout >= Variable.timeout) {
                 reason = "Timeout";
@@ -75,7 +78,7 @@ public class PauseListen extends Thread {
                 break;
             }
         }
-        System.out.println("Shutting down " + ipAddressBind.getIPADD() + ", reason: " + reason);
+        Logger.log(Types.SYS, Levels.INFO, "Shutting down " + ipAddressBind.getIPADD() + ", reason: " + reason);
         //Shutdown this hole connection.
         running = false;
         ChangeVar.reduceOnlineCount();
@@ -90,7 +93,7 @@ public class PauseListen extends Thread {
             socket.close();
         } catch (Exception E) {
             E.getCause();
-            System.out.println("Shutting " + ipAddressBind.getIPADD() + " with errors.");
+            Logger.log(Types.SYS, Levels.WARN, "Shutting " + ipAddressBind.getIPADD() + " with errors.");
         } finally {
             //Variables
             bufferedInputStream = null;
@@ -103,9 +106,9 @@ public class PauseListen extends Thread {
             send = null;
             commandAnalyze = null;
             receive = null;
-            System.out.println("Called Garbage Collection.");
+            Logger.log(Types.SYS, Levels.DEBUG, "Called Garbage Collection.");
             System.gc();
-            System.out.println("Memory used: " + Status.memoryUsed());
+            Logger.log(Types.SYS, Levels.INFO,"Memory used: " + Status.memoryUsed());
         }
     }
 

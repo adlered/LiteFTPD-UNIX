@@ -3,6 +3,9 @@ package pers.adlered.liteftpd.main;
 import pers.adlered.liteftpd.analyze.CommandAnalyze;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.bind.IPAddressBind;
+import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.Logger;
+import pers.adlered.liteftpd.logger.Types;
 
 import java.io.*;
 import java.net.Socket;
@@ -44,7 +47,7 @@ public class SocketHandler extends Thread {
 
     @Override
     public void run() {
-        System.out.println(IPADD + " has been mounted into " + Thread.currentThread());
+        Logger.log(Types.SYS, Levels.INFO, IPADD + " has been mounted into " + Thread.currentThread());
         ipAddressBind = new IPAddressBind(IPADD, SRVIPADD);
         //Process while user quit forced or manually.
         PauseListen pauseListen = new PauseListen(privateVariable, socket,

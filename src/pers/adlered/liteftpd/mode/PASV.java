@@ -3,6 +3,9 @@ package pers.adlered.liteftpd.mode;
 import org.omg.CORBA.SystemException;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.dict.Dict;
+import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.Logger;
+import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.variable.Variable;
@@ -34,7 +37,7 @@ public class PASV extends Thread {
         boolean result = true;
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            //System.out.println("Listening " + port + "...");
+            Logger.log(Types.SYS, Levels.DEBUG,"Listening " + port + "...");
             this.serverSocket = serverSocket;
         } catch (BindException BE) {
             result = false;
@@ -47,14 +50,14 @@ public class PASV extends Thread {
     @Override
     public void run() {
         try {
-            System.out.println("Transmitter is waiting the port " + serverSocket.getLocalPort() + " for the client.");
+            Logger.log(Types.SYS, Levels.DEBUG,"Transmitter is waiting the port " + serverSocket.getLocalPort() + " for the client.");
             Socket socket = serverSocket.accept();
             this.socket = socket;
-            //System.out.println("Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");
+            Logger.log(Types.SYS, Levels.DEBUG,"Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");
             try {
                 while (listening == null && file == null && path == null) {
                     if (!pauseListen.isRunning()) {
-                        System.out.println("Passive mode listener paused.");
+                        Logger.log(Types.SYS, Levels.WARN,"Passive mode listener paused.");
                         break;
                     }
                     Thread.sleep(5);
@@ -63,7 +66,7 @@ public class PASV extends Thread {
             }
             privateVariable.setTimeoutLock(true);
             if (pauseListen.isRunning()) {
-                //System.out.println("Service has response.");
+                Logger.log(Types.SYS, Levels.DEBUG,"Service has response.");
                 long startTime = System.nanoTime();
                 double kb = 0;
                 long bts = 0;
@@ -88,7 +91,6 @@ public class PASV extends Thread {
                     if (privateVariable.getRest() == 0l) {
                         //Not rest mode
                         while ((len = fileInputStream.read(bytes)) != -1) {
-                            //System.out.println("Length: " + len);
                             outputStream.write(bytes, 0, len);
                         }
                         outputStream.flush();
@@ -99,7 +101,6 @@ public class PASV extends Thread {
                         //Rest mode on
                         fileInputStream.skip(privateVariable.getRest());
                         while ((len = fileInputStream.read(bytes)) != -1) {
-                            //System.out.println("Length: " + len);
                             outputStream.write(bytes, 0, len);
                         }
                         outputStream.flush();
@@ -109,16 +110,16 @@ public class PASV extends Thread {
                         privateVariable.resetRest();
                     }
                 } else if (path != null) {
-                    System.out.println("PASV STOR. PATH: " + path);
+                    Logger.log(Types.RECV, Levels.DEBUG,"Passive mode store. Path: " + path);
                     File file = new File(path);
                     if (!file.getParentFile().exists()) {
                         file.getParentFile().mkdirs();
                     }
                     if (privateVariable.getRest() == 0l) {
                         boolean deleted = file.delete();
-                        System.out.println("Already exists and deleted: " + deleted);
+                        Logger.log(Types.RECV, Levels.DEBUG,"The file is already exists but deleted: " + deleted);
                     } else {
-                        System.out.println("Continue receive.");
+                        Logger.log(Types.RECV, Levels.DEBUG,"Continue file receive.");
                     }
                     //FileOutputStream will be create a new file auto.
                     FileOutputStream fileOutputStream = null;
@@ -128,7 +129,6 @@ public class PASV extends Thread {
                         byte[] bytes = new byte[8192];
                         int len = -1;
                         while ((len = inputStream.read(bytes)) != -1) {
-                            //System.out.println("Length: " + len);
                             fileOutputStream.write(bytes, 0, len);
                         }
                         fileOutputStream.flush();
@@ -161,12 +161,11 @@ public class PASV extends Thread {
                 }
             }
         } catch (SocketException SE) {
-            //System.out.println("Listening stopped.");
+            Logger.log(Types.SYS, Levels.ERROR,"Listening stopped.");
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
         } catch (Exception E) {
-            //System.out.println("err");
             E.printStackTrace();
         } finally {
             if (pauseListen.isRunning()) {
@@ -179,7 +178,7 @@ public class PASV extends Thread {
             socket = null;
             listening = null;
             file = null;
-            //System.out.println("PASV Closed.");
+            Logger.log(Types.SYS, Levels.DEBUG,"PASV Closed.");
         }
     }
 
@@ -201,11 +200,11 @@ public class PASV extends Thread {
             socket.shutdownInput();
             socket.shutdownOutput();
             socket.close();
-            //System.out.println("Server socket on " + serverSocket.getLocalSocketAddress() + "stopped.");
+            Logger.log(Types.SYS, Levels.DEBUG,"Server socket on " + serverSocket.getLocalSocketAddress() + "stopped.");
         } catch (IOException IOE) {
             IOE.printStackTrace();
         } catch (NullPointerException NPE) {
-            //System.out.println("Latest passive port not connected. Closing forced.");
+            Logger.log(Types.SYS, Levels.WARN, "Latest passive port not connected. Closing forced.");
         }
     }
 }

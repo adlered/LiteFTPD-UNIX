@@ -4,6 +4,10 @@ import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.dict.Code;
 import pers.adlered.liteftpd.dict.Dict;
+import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.Logger;
+import pers.adlered.liteftpd.logger.Types;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -23,9 +27,9 @@ public class Send {
     }
 
     public boolean send(String message) {
-        //System.out.println("Encode is: " + privateVariable.getEncode());
+        Logger.log(Types.SEND, Levels.DEBUG, "Encode is: " + privateVariable.getEncode());
         try {
-            System.out.println(ipAddressBind.getIPADD() + " <== [ " + privateVariable.encode + " ] " + ipAddressBind.getSRVIPADD() + ": " + message.replaceAll("\r|\n", ""));
+            Logger.log(Types.SEND, Levels.INFO, ipAddressBind.getIPADD() + " <== [ " + privateVariable.encode + " ] " + ipAddressBind.getSRVIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();
             //WELCOME MESSAGE
             outputStream.write(message.getBytes(privateVariable.encode));

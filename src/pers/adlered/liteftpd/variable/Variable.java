@@ -5,6 +5,16 @@ package pers.adlered.liteftpd.variable;
  */
 
 public class Variable {
+    // ** System control **
+    /* Debug level
+    Too high level will be in performance trouble!
+    0: NONE;
+    1: INFO;
+    2: WARN && INFO;
+    3: ERROR && WARN && INFO;
+    4: DEBUG && ERROR && WARN && INFO;
+     */
+    public static int debugLevel = 3;
     // ** User control **
     public static int online = 0;
     //Set to 0, will be ignore the limit. Too small value may make multi-thread ftp client not working.

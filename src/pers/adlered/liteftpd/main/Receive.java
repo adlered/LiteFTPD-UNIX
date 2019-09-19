@@ -3,6 +3,9 @@ package pers.adlered.liteftpd.main;
 import pers.adlered.liteftpd.analyze.CommandAnalyze;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.bind.IPAddressBind;
+import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.Logger;
+import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.tool.AutoInputStream;
 
 import java.io.*;
@@ -30,10 +33,10 @@ public class Receive extends Thread {
             while (true) {
                 String autoLine = autoInputStream.readLineAuto();
                 if (!pauseListen.isRunning()) {
-                    System.out.println("Receive stopped.");
+                    Logger.log(Types.RECV, Levels.WARN, "Receive stopped.");
                     break;
                 }
-                System.out.println(ipAddressBind.getIPADD() + " ==> " + ipAddressBind.getSRVIPADD() + ": " + autoLine.replaceAll("\r|\n", ""));
+                Logger.log(Types.RECV, Levels.INFO, ipAddressBind.getIPADD() + " ==> " + ipAddressBind.getSRVIPADD() + ": " + autoLine.replaceAll("\r|\n", ""));
                 commandAnalyze.analyze(autoLine);
             }
         } catch (IOException IOE) {
