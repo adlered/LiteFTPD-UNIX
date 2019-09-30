@@ -66,7 +66,7 @@ public class PORT extends Thread {
                 Logger.log(Types.SYS, Levels.DEBUG,"Connected. Translating with " + socket.getLocalSocketAddress() + " to " + socket.getRemoteSocketAddress() + "...");
                 privateVariable.setTimeoutLock(true);
                 if (pauseListen.isRunning()) {
-                    Logger.log(Types.SYS, Levels.DEBUG,"Service has response.");
+                    Logger.log(Types.SYS, Levels.DEBUG,"Port mode is in transmission.");
                     long startTime = System.nanoTime();
                     double kb = 0;
                     long bts = 0;
@@ -110,7 +110,7 @@ public class PORT extends Thread {
                             privateVariable.resetRest();
                         }
                     } else if (path != null) {
-                        Logger.log(Types.RECV, Levels.DEBUG,"Passive mode store. Path: " + path);
+                        Logger.log(Types.RECV, Levels.DEBUG,"Port mode store. Path: " + path);
                         File file = new File(path);
                         if (!file.getParentFile().exists()) {
                             file.getParentFile().mkdirs();

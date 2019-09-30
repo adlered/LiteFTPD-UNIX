@@ -200,24 +200,20 @@ public class CommandAnalyze {
                             while ((line = bufferedReader.readLine()) != null) {
                                 result.append(line).append('\n');
                             }
-                            try {
-                                if (mode != null) {
-                                    Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
-                                    String mode = this.mode;
-                                    this.mode = null;
-                                    Logger.log(Types.TRANS, Levels.DEBUG, "Hello " + mode + " mode.");
-                                    switch (mode) {
-                                        case "port":
-                                            portMode.hello(result.toString());
-                                            portMode.start();
-                                            break;
-                                        case "passive":
-                                            passiveMode.hello(result.toString());
-                                            break;
-                                    }
+                            if (mode != null) {
+                                Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
+                                String mode = this.mode;
+                                this.mode = null;
+                                Logger.log(Types.TRANS, Levels.DEBUG, "Hello " + mode + " mode.");
+                                switch (mode) {
+                                    case "port":
+                                        portMode.hello(result.toString());
+                                        portMode.start();
+                                        break;
+                                    case "passive":
+                                        passiveMode.hello(result.toString());
+                                        break;
                                 }
-                            } catch (NullPointerException NPE) {
-                                send.send(Dict.passiveDataFailed);
                             }
                         } catch (IOException IOE) {
                             //TODO
@@ -441,7 +437,21 @@ public class CommandAnalyze {
                             File file = new File(completePath);
                             if (file.exists()) {
                                 send.send(Dict.openPassiveBINARY + getLockPath(completePath, Permission.defaultDir) + " (" + file.length() + " Bytes)\r\n");
-                                passiveMode.hello(file);
+                                if (mode != null) {
+                                    Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
+                                    String mode = this.mode;
+                                    this.mode = null;
+                                    Logger.log(Types.TRANS, Levels.DEBUG, "Hello " + mode + " mode.");
+                                    switch (mode) {
+                                        case "port":
+                                            portMode.hello(file);
+                                            portMode.start();
+                                            break;
+                                        case "passive":
+                                            passiveMode.hello(file);
+                                            break;
+                                    }
+                                }
                             } else {
                                 send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
                             }
@@ -469,7 +479,21 @@ public class CommandAnalyze {
                             } else {
                                 send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
                             }*/
-                            passiveMode.helloSTOR(completePath);
+                            if (mode != null) {
+                                Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
+                                String mode = this.mode;
+                                this.mode = null;
+                                Logger.log(Types.TRANS, Levels.DEBUG, "Hello " + mode + " mode.");
+                                switch (mode) {
+                                    case "port":
+                                        portMode.helloSTOR(completePath);
+                                        portMode.start();
+                                        break;
+                                    case "passive":
+                                        passiveMode.helloSTOR(completePath);
+                                        break;
+                                }
+                            }
                         } catch (NullPointerException NPE) {
                             send.send(Dict.passiveDataFailed);
                         }
