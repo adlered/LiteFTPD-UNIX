@@ -535,9 +535,13 @@ public class CommandAnalyze {
         return true;
     }
 
+    /*
+    根据绝对目录和锁定目录，计算相对目录
+     */
     public String getLockPath(String absolutePath, String lockPath) {
         String resolve = absolutePath.replaceAll("^(" + lockPath + ")", "");
         if (resolve.isEmpty()) resolve = "/";
+        if (!resolve.startsWith("/")) resolve = "/" + resolve;
         return resolve;
     }
 
@@ -559,6 +563,9 @@ public class CommandAnalyze {
         Logger.log(Types.SYS, Levels.DEBUG, currentPath);
     }
 
+    /*
+    根据CWD定位的目录，计算绝对目录的位置。
+     */
     @SuppressWarnings("deprecation")
     public String getAbsolutePath(String path) {
         //path = URLDecoder.decode(path);
