@@ -18,8 +18,8 @@ public class Dict {
     public static final String passiveDataFailed = Code.UNAVAILABLE + " Passive port is not connected.\r\n";
     public static final String openPassiveASCII = Code.STATUSOK + " Opening BINARY mode data, please wait.\r\n";
     public static final String type = Code.NAME + " UNIX Type: L8\r\n";
-    public static final String remind = "\r\n>>> LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX\r\n" +
-            "230 ===------===\r\n";
+    public static final String remind = "\r\n>>> LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX\r\n===------===\r\n" +
+            "IS THE CHINESE ON THE RIGHT NORMAL? -> 中文 <- If not, type \"quote gb\" to change the encode type.\r\n230 OK\r\n";
 
     public static final String passwordRequired = Code.PASSREQ + " Password required for ";
     public static final String loggedIn = Code.LOGGED + "-";

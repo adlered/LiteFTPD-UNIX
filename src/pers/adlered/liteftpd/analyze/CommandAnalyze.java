@@ -1,7 +1,6 @@
 package pers.adlered.liteftpd.analyze;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -134,7 +133,7 @@ public class CommandAnalyze {
                     if (cmd.equals("PASS")) {
                         Logger.log(Types.SYS, Levels.DEBUG,"User " + loginUser + "'s password: " + arg1);
                         loginPass = arg1;
-                        send.send(Dict.loggedIn + "===------===\r\n>>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
+                        send.send(Dict.loggedIn + "\r\n===------===\r\n>>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
                         Logger.log(Types.SYS, Levels.INFO,"User " + loginUser + " logged in.");
                         step = 3;
                     }
@@ -545,6 +544,11 @@ public class CommandAnalyze {
                     else if (cmd.equals("ABOR")) {
                         send.send(Dict.bye);
                         privateVariable.setInterrupted(true);
+                    }
+                    else if (cmd.equals("GB")) {
+                        privateVariable.setEncode("GB2312");
+                        privateVariable.setEncodeLock(true);
+                        send.send("220 编码已适应Windows FTP客户端，您现在看到的这条信息应是正常的简体中文。" + Dict.newLine);
                     }
                     else {
                         unknownCommand();
