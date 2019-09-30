@@ -32,3 +32,37 @@
 你可以将项目clone或直接下载到本地，~~使用Intellij IDEA打开，运行src/pers/adlered/liteftpd/main/Main类中的主方法即可~~进入release文件夹，运行java -jar LiteFTPD-UNIX.jar即可。LiteFTPD默认会自动监听21端口。  
 在`Permission.java`中调整自己的默认FTP目录；  
 在`Variable.java`中调整FTP服务端设置（超时、欢迎信息，被动端口范围等)；  
+
+## 中文不乱码
+
+MacOS Finder：
+
+![屏幕快照 2019-09-30 下午8.32.54.png](https://pic.stackoverflow.wiki/uploadImages/0b1f4d52-16f0-447f-9e00-ac01d2d0309c.png)
+
+Windows 资源管理器：
+
+![屏幕快照 2019-09-30 下午8.33.14.png](https://pic.stackoverflow.wiki/uploadImages/cb097630-5819-4d97-9c2a-18cbc77e9cb3.png)
+
+MacOS FileZilla：
+
+![屏幕快照 2019-09-30 下午8.29.02.png](https://pic.stackoverflow.wiki/uploadImages/1afb6892-7bbd-43e5-aa41-3adf6ac33db6.png)
+
+Windows FlashFXP：
+
+![屏幕快照 2019-09-30 下午8.30.00.png](https://pic.stackoverflow.wiki/uploadImages/8903355f-a31b-41cf-83df-5a7e534d8855.png)
+
+Windows自带客户端（由于客户端特殊性，需要先输入`quote gb`适应中文）：
+
+![屏幕快照 2019-09-30 下午8.26.40.png](https://pic.stackoverflow.wiki/uploadImages/4a9b1c25-90df-44c1-ba14-c463b98089f5.png)
+
+Windows Chrome：
+
+![屏幕快照 2019-09-30 下午8.27.58.png](https://pic.stackoverflow.wiki/uploadImages/c8962604-35b3-49c8-b840-36c7a54ede08.png)
+
+Unix自带客户端：
+
+![屏幕快照 2019-09-30 下午8.28.32.png](https://pic.stackoverflow.wiki/uploadImages/067ea9f1-3bc1-4841-b45a-9375b0b53128.png)
+
+MacOS Chrome：
+
+![屏幕快照 2019-09-30 下午8.27.41.png](https://pic.stackoverflow.wiki/uploadImages/f7257a4a-b892-4401-82bf-c92b92abe00d.png)
