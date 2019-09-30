@@ -10,6 +10,13 @@ import pers.adlered.liteftpd.tool.AutoInputStream;
 
 import java.io.*;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>To receive commands.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class Receive extends Thread {
     private InputStream inputStream = null;
     private CommandAnalyze commandAnalyze = null;

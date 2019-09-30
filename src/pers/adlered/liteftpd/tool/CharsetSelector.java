@@ -1,6 +1,5 @@
 package pers.adlered.liteftpd.tool;
 
-import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
@@ -9,6 +8,13 @@ import pers.adlered.liteftpd.variable.Variable;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>Analyze string's encode.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class CharsetSelector {
     public static String getCharset(byte[] bytes) {
         //return guessEncoding(bytes);

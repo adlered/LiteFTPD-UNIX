@@ -13,6 +13,13 @@ import pers.adlered.liteftpd.variable.Variable;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>Listening thread shutdown signal, and recycle the threads of this connection.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class PauseListen extends Thread {
     private PrivateVariable privateVariable = null;
     private Socket socket = null;

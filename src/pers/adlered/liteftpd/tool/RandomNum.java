@@ -2,6 +2,13 @@ package pers.adlered.liteftpd.tool;
 
 import java.util.Random;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>Sum random num.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class RandomNum {
     public static boolean debugMode = false; //为true 控制台会显示计算过程输出(影响取随机数性能)
 

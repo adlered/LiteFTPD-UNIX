@@ -3,9 +3,12 @@ package pers.adlered.liteftpd.dict;
 import pers.adlered.liteftpd.variable.Variable;
 
 /**
- * Store status messages with response format
- */
-
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>Store status messages with response format.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class Dict {
     public static final String connectionStarted = " :) " + Variable.welcomeMessage + "\r\n";
     public static final String outOfOnlineLimit = Code.NOTLOGIN + " :( Too much users online." + "\r\n";

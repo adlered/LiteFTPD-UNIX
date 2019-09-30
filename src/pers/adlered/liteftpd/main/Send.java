@@ -11,6 +11,13 @@ import pers.adlered.liteftpd.logger.Types;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>Send method can be called by other threads in the same thread pool, and send a message to client.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class Send {
     private OutputStream outputStream = null;
 

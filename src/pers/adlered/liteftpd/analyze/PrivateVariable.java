@@ -1,5 +1,12 @@
 package pers.adlered.liteftpd.analyze;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>Store values when service is running to make sure every model works together.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class PrivateVariable {
     public boolean interrupted = false;
     public String encode = "UTF-8";

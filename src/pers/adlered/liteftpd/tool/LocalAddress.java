@@ -8,6 +8,13 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>Get IP Address of the server.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class LocalAddress {
     public static List<String> getLocalIPList() {
         List<String> ipList = new ArrayList<String>();

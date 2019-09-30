@@ -1,6 +1,7 @@
 package pers.adlered.liteftpd.analyze;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +14,19 @@ import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.main.PauseListen;
 import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.mode.PASV;
+import pers.adlered.liteftpd.mode.PORT;
 import pers.adlered.liteftpd.tool.GoodXX;
 import pers.adlered.liteftpd.tool.RandomNum;
 import pers.adlered.liteftpd.user.Permission;
 import pers.adlered.liteftpd.variable.Variable;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>To analyze user input into command, and execute it.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class CommandAnalyze {
     /**
      * Step 1: Required username;
@@ -32,8 +41,10 @@ public class CommandAnalyze {
 
     private Send send = null;
 
-    File file = null;
-    PASV passiveMode = null;
+    private File file = null;
+    private PASV passiveMode = null;
+    private PORT portMode = null;
+    private String mode = null;
 
     private String currentPath = "";
     private String lockPath = "";
@@ -327,6 +338,41 @@ public class CommandAnalyze {
                     /**
                      * TRANSMISSION COMMANDS
                      */
+                    else if (cmd.equals("PORT")) {
+                        String completePath = arg1;
+                        if (arg2 != null) {
+                            for (int i = 2; i < split.length; i++) {
+                                completePath += " " + split[i];
+                            }
+                        }
+                        String[] analyzeStep1 = completePath.split(",");
+                        int[] analyzeStep2 = new int[analyzeStep1.length];
+                        for (int i = 0; i < analyzeStep1.length; i++) {
+                            analyzeStep2[i] = Integer.parseInt(analyzeStep1[i]);
+                        }
+                        String ip = "";
+                        int port = -1;
+                        try {
+                            for (int i = 0; i < 4; i++) {
+                                if (i < 3) {
+                                    ip += analyzeStep2[i] + ".";
+                                } else {
+                                    ip += analyzeStep2[i];
+                                }
+                            }
+                            port = (analyzeStep2[4] * 256) + analyzeStep2[5];
+                        } catch (ArrayIndexOutOfBoundsException AIOOBE) {
+                            AIOOBE.printStackTrace();
+                        }
+                        if (portMode != null) {
+                            portMode.stopSocket();
+                        }
+                        portMode = new PORT(send, privateVariable, pauseListen);
+                        portMode.setTarget(ip, port);
+                        send.send("200 PORT Command successful.\r\n");
+                        portMode.start();
+                        mode = "port";
+                    }
                     else if (cmd.equals("PASV")) {
                         if (passiveMode != null) {
                             passiveMode.stopSocket();
@@ -346,6 +392,7 @@ public class CommandAnalyze {
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
                         send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
                         passiveMode.start();
+                        mode = "passive";
                     }
                     else if (cmd.equals("RETR")) {
                         String completePath = arg1;

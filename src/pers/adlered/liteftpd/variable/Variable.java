@@ -1,9 +1,12 @@
 package pers.adlered.liteftpd.variable;
 
 /**
- * Store params && settings.
- */
-
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>User interface settings.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class Variable {
     // ** System control **
     /* Debug level
@@ -14,7 +17,7 @@ public class Variable {
     3: ERROR && WARN && INFO;
     4: DEBUG && ERROR && WARN && INFO;
      */
-    public static int debugLevel = 3;
+    public static int debugLevel = 4;
     // ** User control **
     public static int online = 0;
     //Set to 0, will be ignore the limit. Too small value may make multi-thread ftp client not working.

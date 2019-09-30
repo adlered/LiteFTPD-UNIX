@@ -3,6 +3,13 @@ package pers.adlered.liteftpd.tool;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>Greetings for users.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class GoodXX {
     public static String getTimeAsWord() {
         Date date = new Date();

@@ -16,6 +16,13 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>Main method of LiteFTPD, listening connections and create a new thread into thread pool.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class Main {
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();

@@ -1,9 +1,12 @@
 package pers.adlered.liteftpd.tool;
 
 /**
- * AutoInputStream can analyze Chinese encoding from InputStream, and print it out correctly.
- */
-
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>AutoInputStream can analyze Chinese encoding from InputStream, and print it out correctly.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;

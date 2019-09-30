@@ -10,10 +10,7 @@ import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.*;
-import java.net.BindException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
+import java.net.*;
 
 /**
  * <h3>LiteFTPD-UNIX</h3>
@@ -22,8 +19,7 @@ import java.net.SocketException;
  * @author : https://github.com/AdlerED
  * @date : 2019-09-19 09:21
  **/
-public class PASV extends Thread {
-    private ServerSocket serverSocket = null;
+public class PORT extends Thread {
     private Socket socket = null;
     private Send send = null;
     private PrivateVariable privateVariable = null;
@@ -33,19 +29,29 @@ public class PASV extends Thread {
     private File file = null;
     private String path = null;
 
-    public PASV(Send send, PrivateVariable privateVariable, PauseListen pauseListen) {
+    private String ip = null;
+    private int port = -1;
+
+    public PORT(Send send, PrivateVariable privateVariable, PauseListen pauseListen) {
         this.send = send;
         this.privateVariable = privateVariable;
         this.pauseListen = pauseListen;
     }
 
-    public boolean listen(int port) {
+    public void setTarget(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
+    }
+
+    private boolean connect() {
         boolean result = true;
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            Logger.log(Types.SYS, Levels.DEBUG,"Listening " + port + "...");
-            this.serverSocket = serverSocket;
-        } catch (BindException BE) {
+            Logger.log(Types.SYS, Levels.DEBUG,"Connecting to " + ip + ":" + port + "...");
+            Socket socket = new Socket(ip, port);
+            this.socket = socket;
+        } catch (UnknownHostException UHE) {
+            result = false;
+        } catch (IllegalArgumentException IAE) {
             result = false;
         } catch (IOException IOE) {
             result = false;
@@ -55,15 +61,17 @@ public class PASV extends Thread {
 
     @Override
     public void run() {
-        try {
-            Logger.log(Types.SYS, Levels.DEBUG,"Transmitter is waiting the port " + serverSocket.getLocalPort() + " for the client.");
-            Socket socket = serverSocket.accept();
-            this.socket = socket;
+        if (connect()) {
+            System.out.println("OK");
+        } else {
+            System.out.println("NOT OK");
+        }
+        /*try {
             Logger.log(Types.SYS, Levels.DEBUG,"Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");
             try {
                 while (listening == null && file == null && path == null) {
                     if (!pauseListen.isRunning()) {
-                        Logger.log(Types.SYS, Levels.WARN,"Passive mode listener paused.");
+                        Logger.log(Types.SYS, Levels.WARN,"Port mode listener paused.");
                         break;
                     }
                     Thread.sleep(5);
@@ -149,11 +157,9 @@ public class PASV extends Thread {
                 }
                 if (path != null) {
                     socket.close();
-                    serverSocket.close();
                 } else {
                     kb = bts / 1000;
                     socket.close();
-                    serverSocket.close();
                     long stopTime = System.nanoTime();
                     long nanoEndTime = stopTime - startTime;
                     double endTime = nanoEndTime / 1000000000;
@@ -180,12 +186,11 @@ public class PASV extends Thread {
             send = null;
             privateVariable = null;
             pauseListen = null;
-            serverSocket = null;
             socket = null;
             listening = null;
             file = null;
             Logger.log(Types.SYS, Levels.DEBUG,"PASV Closed.");
-        }
+        }*/
     }
 
     public void hello(String message) {
@@ -202,11 +207,10 @@ public class PASV extends Thread {
 
     public void stopSocket() {
         try {
-            serverSocket.close();
             socket.shutdownInput();
             socket.shutdownOutput();
             socket.close();
-            Logger.log(Types.SYS, Levels.DEBUG,"Server socket on " + serverSocket.getLocalSocketAddress() + "stopped.");
+            Logger.log(Types.SYS, Levels.DEBUG,"Socket on " + socket.getLocalSocketAddress() + "stopped.");
         } catch (IOException IOE) {
             IOE.printStackTrace();
         } catch (NullPointerException NPE) {

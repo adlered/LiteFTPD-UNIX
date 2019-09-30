@@ -1,5 +1,12 @@
 package pers.adlered.liteftpd.bind;
 
+/**
+ * <h3>LiteFTPD-UNIX</h3>
+ * <p>A bind of server/client IP Address.</p>
+ *
+ * @author : https://github.com/AdlerED
+ * @date : 2019-09-19 09:21
+ **/
 public class IPAddressBind {
     private String IPADD;
     private String SRVIPADD;
