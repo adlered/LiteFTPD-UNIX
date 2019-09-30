@@ -62,135 +62,124 @@ public class PORT extends Thread {
     @Override
     public void run() {
         if (connect()) {
-            System.out.println("OK");
-        } else {
-            System.out.println("NOT OK");
-        }
-        /*try {
-            Logger.log(Types.SYS, Levels.DEBUG,"Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");
             try {
-                while (listening == null && file == null && path == null) {
-                    if (!pauseListen.isRunning()) {
-                        Logger.log(Types.SYS, Levels.WARN,"Port mode listener paused.");
-                        break;
-                    }
-                    Thread.sleep(5);
-                }
-            } catch (InterruptedException IE) {
-            }
-            privateVariable.setTimeoutLock(true);
-            if (pauseListen.isRunning()) {
-                Logger.log(Types.SYS, Levels.DEBUG,"Service has response.");
-                long startTime = System.nanoTime();
-                double kb = 0;
-                long bts = 0;
-                if (listening != null) {
-                    //To avoid bare line feeds.
-                    BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
-                    listening = listening.replaceAll("\r\n", "\n");
-                    listening = listening.replaceAll("\n", "\r\n");
-                    if (Variable.smartEncode) {
-                        bufferedOutputStream.write(listening.getBytes(privateVariable.encode));
-                    } else {
-                        bufferedOutputStream.write(listening.getBytes(Variable.defaultEncode));
-                    }
-                    bufferedOutputStream.flush();
-                    bufferedOutputStream.close();
-                    bts = (listening.getBytes(privateVariable.encode)).length;
-                } else if (file != null) {
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-                    byte[] bytes = new byte[8192];
-                    int len = -1;
-                    if (privateVariable.getRest() == 0l) {
-                        //Not rest mode
-                        while ((len = fileInputStream.read(bytes)) != -1) {
-                            outputStream.write(bytes, 0, len);
+                Logger.log(Types.SYS, Levels.DEBUG,"Connected. Translating with " + socket.getLocalSocketAddress() + " to " + socket.getRemoteSocketAddress() + "...");
+                privateVariable.setTimeoutLock(true);
+                if (pauseListen.isRunning()) {
+                    Logger.log(Types.SYS, Levels.DEBUG,"Service has response.");
+                    long startTime = System.nanoTime();
+                    double kb = 0;
+                    long bts = 0;
+                    if (listening != null) {
+                        //To avoid bare line feeds.
+                        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
+                        listening = listening.replaceAll("\r\n", "\n");
+                        listening = listening.replaceAll("\n", "\r\n");
+                        if (Variable.smartEncode) {
+                            bufferedOutputStream.write(listening.getBytes(privateVariable.encode));
+                        } else {
+                            bufferedOutputStream.write(listening.getBytes(Variable.defaultEncode));
                         }
-                        outputStream.flush();
-                        fileInputStream.close();
-                        outputStream.close();
-                        bts = file.length();
-                    } else {
-                        //Rest mode on
-                        fileInputStream.skip(privateVariable.getRest());
-                        while ((len = fileInputStream.read(bytes)) != -1) {
-                            outputStream.write(bytes, 0, len);
-                        }
-                        outputStream.flush();
-                        fileInputStream.close();
-                        outputStream.close();
-                        bts = file.length() - privateVariable.getRest();
-                        privateVariable.resetRest();
-                    }
-                } else if (path != null) {
-                    Logger.log(Types.RECV, Levels.DEBUG,"Passive mode store. Path: " + path);
-                    File file = new File(path);
-                    if (!file.getParentFile().exists()) {
-                        file.getParentFile().mkdirs();
-                    }
-                    if (privateVariable.getRest() == 0l) {
-                        boolean deleted = file.delete();
-                        Logger.log(Types.RECV, Levels.DEBUG,"The file is already exists but deleted: " + deleted);
-                    } else {
-                        Logger.log(Types.RECV, Levels.DEBUG,"Continue file receive.");
-                    }
-                    //FileOutputStream will be create a new file auto.
-                    FileOutputStream fileOutputStream = null;
-                    try {
-                        fileOutputStream = new FileOutputStream(file);
-                        InputStream inputStream = socket.getInputStream();
+                        bufferedOutputStream.flush();
+                        bufferedOutputStream.close();
+                        bts = (listening.getBytes(privateVariable.encode)).length;
+                    } else if (file != null) {
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
                         byte[] bytes = new byte[8192];
                         int len = -1;
-                        while ((len = inputStream.read(bytes)) != -1) {
-                            fileOutputStream.write(bytes, 0, len);
+                        if (privateVariable.getRest() == 0l) {
+                            //Not rest mode
+                            while ((len = fileInputStream.read(bytes)) != -1) {
+                                outputStream.write(bytes, 0, len);
+                            }
+                            outputStream.flush();
+                            fileInputStream.close();
+                            outputStream.close();
+                            bts = file.length();
+                        } else {
+                            //Rest mode on
+                            fileInputStream.skip(privateVariable.getRest());
+                            while ((len = fileInputStream.read(bytes)) != -1) {
+                                outputStream.write(bytes, 0, len);
+                            }
+                            outputStream.flush();
+                            fileInputStream.close();
+                            outputStream.close();
+                            bts = file.length() - privateVariable.getRest();
+                            privateVariable.resetRest();
                         }
-                        fileOutputStream.flush();
-                        send.send("226 Transfer complete." + Dict.newLine);
-                        inputStream.close();
-                        fileOutputStream.close();
-                    } catch (FileNotFoundException FNFE) {
-                        send.send("550 Permission denied." + Dict.newLine);
-                        FNFE.printStackTrace();
+                    } else if (path != null) {
+                        Logger.log(Types.RECV, Levels.DEBUG,"Passive mode store. Path: " + path);
+                        File file = new File(path);
+                        if (!file.getParentFile().exists()) {
+                            file.getParentFile().mkdirs();
+                        }
+                        if (privateVariable.getRest() == 0l) {
+                            boolean deleted = file.delete();
+                            Logger.log(Types.RECV, Levels.DEBUG,"The file is already exists but deleted: " + deleted);
+                        } else {
+                            Logger.log(Types.RECV, Levels.DEBUG,"Continue file receive.");
+                        }
+                        //FileOutputStream will be create a new file auto.
+                        FileOutputStream fileOutputStream = null;
+                        try {
+                            fileOutputStream = new FileOutputStream(file);
+                            InputStream inputStream = socket.getInputStream();
+                            byte[] bytes = new byte[8192];
+                            int len = -1;
+                            while ((len = inputStream.read(bytes)) != -1) {
+                                fileOutputStream.write(bytes, 0, len);
+                            }
+                            fileOutputStream.flush();
+                            send.send("226 Transfer complete." + Dict.newLine);
+                            inputStream.close();
+                            fileOutputStream.close();
+                        } catch (FileNotFoundException FNFE) {
+                            send.send("550 Permission denied." + Dict.newLine);
+                            FNFE.printStackTrace();
+                        }
+                        privateVariable.resetRest();
                     }
-                    privateVariable.resetRest();
-                }
-                if (path != null) {
-                    socket.close();
-                } else {
-                    kb = bts / 1000;
-                    socket.close();
-                    long stopTime = System.nanoTime();
-                    long nanoEndTime = stopTime - startTime;
-                    double endTime = nanoEndTime / 1000000000;
-                    double perSecond = 0;
-                    if (endTime == 0) {
-                        perSecond = kb;
+                    if (path != null) {
+                        socket.close();
                     } else {
-                        perSecond = kb / endTime;
+                        kb = bts / 1000;
+                        socket.close();
+                        long stopTime = System.nanoTime();
+                        long nanoEndTime = stopTime - startTime;
+                        double endTime = nanoEndTime / 1000000000;
+                        double perSecond = 0;
+                        if (endTime == 0) {
+                            perSecond = kb;
+                        } else {
+                            perSecond = kb / endTime;
+                        }
+                        send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec.\r\n");
                     }
-                    send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec.\r\n");
                 }
+            } catch (SocketException SE) {
+                Logger.log(Types.SYS, Levels.ERROR,"Listening stopped.");
+            } catch (IOException IOE) {
+                //TODO
+                IOE.printStackTrace();
+            } catch (Exception E) {
+                E.printStackTrace();
+            } finally {
+                if (pauseListen.isRunning()) {
+                    privateVariable.setTimeoutLock(false);
+                }
+                send = null;
+                privateVariable = null;
+                pauseListen = null;
+                socket = null;
+                listening = null;
+                file = null;
+                Logger.log(Types.SYS, Levels.DEBUG,"PORT Closed.");
             }
-        } catch (SocketException SE) {
-            Logger.log(Types.SYS, Levels.ERROR,"Listening stopped.");
-        } catch (IOException IOE) {
-            //TODO
-            IOE.printStackTrace();
-        } catch (Exception E) {
-            E.printStackTrace();
-        } finally {
-            if (pauseListen.isRunning()) {
-                privateVariable.setTimeoutLock(false);
-            }
-            send = null;
-            privateVariable = null;
-            pauseListen = null;
-            socket = null;
-            listening = null;
-            file = null;
-            Logger.log(Types.SYS, Levels.DEBUG,"PASV Closed.");
-        }*/
+        } else {
+            privateVariable.setInterrupted(true);
+        }
     }
 
     public void hello(String message) {
@@ -214,7 +203,7 @@ public class PORT extends Thread {
         } catch (IOException IOE) {
             IOE.printStackTrace();
         } catch (NullPointerException NPE) {
-            Logger.log(Types.SYS, Levels.WARN, "Latest passive port not connected. Closing forced.");
+            Logger.log(Types.SYS, Levels.WARN, "Latest port mode port not connected. Closing forced.");
         }
     }
 }

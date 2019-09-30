@@ -107,6 +107,25 @@ public class CommandAnalyze {
                         send.send(Dict.bye);
                         privateVariable.setInterrupted(true);
                     }
+                    else if (cmd.equals("OPTS")) {
+                        if (arg1 != null) {
+                            arg1 = arg1.toUpperCase();
+                            if (arg1.equals("UTF8")) {
+                                if (arg2 != null) {
+                                    arg2 = arg2.toUpperCase();
+                                    if (arg2.equals("ON")) {
+                                        privateVariable.setEncode("UTF-8");
+                                        privateVariable.setEncodeLock(true);
+                                        send.send("200 OPTS UTF8 command successful - UTF8 encoding now ON." + Dict.newLine);
+                                    } else if (arg2.equals("OFF")) {
+                                        privateVariable.setEncode(Variable.defaultEncode);
+                                        privateVariable.setEncodeLock(true);
+                                        send.send("200 OPTS UTF8 command successful - UTF8 encoding now OFF." + Dict.newLine);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     else {
                         unknownCommand();
                     }
@@ -182,7 +201,21 @@ public class CommandAnalyze {
                                 result.append(line).append('\n');
                             }
                             try {
-                                passiveMode.hello(result.toString());
+                                if (mode != null) {
+                                    Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
+                                    String mode = this.mode;
+                                    this.mode = null;
+                                    Logger.log(Types.TRANS, Levels.DEBUG, "Hello " + mode + " mode.");
+                                    switch (mode) {
+                                        case "port":
+                                            portMode.hello(result.toString());
+                                            portMode.start();
+                                            break;
+                                        case "passive":
+                                            passiveMode.hello(result.toString());
+                                            break;
+                                    }
+                                }
                             } catch (NullPointerException NPE) {
                                 send.send(Dict.passiveDataFailed);
                             }
@@ -370,7 +403,6 @@ public class CommandAnalyze {
                         portMode = new PORT(send, privateVariable, pauseListen);
                         portMode.setTarget(ip, port);
                         send.send("200 PORT Command successful.\r\n");
-                        portMode.start();
                         mode = "port";
                     }
                     else if (cmd.equals("PASV")) {
