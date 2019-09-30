@@ -8,6 +8,6 @@ package pers.adlered.liteftpd.user;
  * @date : 2019-09-19 09:21
  **/
 public class Permission {
-    public static String defaultDir = "/Users/adler";
+    public static String defaultDir = "/";
     public static String type = "I";
 }

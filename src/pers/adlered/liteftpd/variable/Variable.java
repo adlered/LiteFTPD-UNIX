@@ -37,6 +37,6 @@ public class Variable {
     public static String welcomeMessage = "This is a demo version.";
     // ** Appoint passive mode port range **
     //Recommend 100+ ports in the range to make sure generation have high-performance
-    public static int minPort = 1024;
-    public static int maxPort = 1124;
+    public static int minPort = 10240;
+    public static int maxPort = 20480;
 }
