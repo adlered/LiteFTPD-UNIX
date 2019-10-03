@@ -33,9 +33,9 @@
 由于目前项目进展原因，暂不支持用户账户，输入任意用户名密码即可登入，拥有全部权限，暂时仅供测试/本地使用，尽情期待！
 
 该服务端**支持绝大部分系统的绝大部分FTP客户端连接**，但服务端本身由于需要保证稳定，仅支持在Linux/MacOS系统上运行（由于文件系统和编码）。  
-你可以将项目clone或直接下载到本地，~~使用Intellij IDEA打开，运行src/pers/adlered/liteftpd/main/Main类中的主方法即可~~进入release文件夹，运行java -jar LiteFTPD-UNIX.jar即可。LiteFTPD默认会自动监听21端口。  
-在`Permission.java`中调整自己的默认FTP目录；  
-在`Variable.java`中调整FTP服务端设置（超时、欢迎信息，被动端口范围等)； 
+你可以将项目clone或直接下载到本地，进入release文件夹，运行java -jar LiteFTPD-UNIX.jar即可。LiteFTPD默认会自动监听21端口。  
+如果在同目录下不存在配置文件`config.prop`，在你第一次运行时它会自动生成一个。  
+修改`config.prop`中的文件，就可以修改LiteFTPD的配置了，十分简单易用。
 
 简单来讲，这么启动就行了：
 
