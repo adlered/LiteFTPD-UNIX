@@ -25,6 +25,7 @@
 - [x] 小功能：登录成功后自动判断时间问候信息 ( Good morning / noon / afternoon / evening / night )
 - [x] 长连接（noop）
 - [ ] 单用户连接数限制及设置
+- [x] 配置文件（删除会自动生成）
 - [ ] 图形控制面板
 
 ## 如何体验？

@@ -1,11 +1,15 @@
 package pers.adlered.liteftpd.wizard.config;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
+import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * <h3>LiteFTPD-UNIX</h3>
@@ -15,13 +19,12 @@ import java.util.Properties;
  * @date : 2019-10-03 23:45
  **/
 public class Prop {
-    private static Properties properties = null;
+    private static Properties properties = new Properties();
 
     private static Prop prop = null;
 
     private Prop() {
         try {
-            properties = new Properties();
             BufferedReader bufferedReader = new BufferedReader(new FileReader("config.prop"));
             properties.load(bufferedReader);
         } catch (FileNotFoundException FNFE) {
@@ -29,11 +32,10 @@ public class Prop {
             try {
                 File file = new File("config.prop");
                 file.createNewFile();
-                BufferedReader bufferedReader = new BufferedReader(new FileReader("config.prop"));
-                properties.load(bufferedReader);
                 // Set default props
                 addAnnotation("# ================================================================================================")
                         .addAnnotation("# >>> LiteFTPD-UNIX Configure File")
+                        .addAnnotation("# ")
                         .addAnnotation("# >> Debug level")
                         .addAnnotation("#     Too high level can affect performance!")
                         .addAnnotation("#     0: NONE;")
@@ -72,11 +74,39 @@ public class Prop {
                         .addProperty("welcomeMessage", "This is a demo version.")
                         .addProperty("minPort", "10240")
                         .addProperty("maxPort", "20480");
+                BufferedReader bufferedReader = new BufferedReader(new FileReader("config.prop"));
+                properties.load(bufferedReader);
             } catch (IOException IOE) {
                 IOE.printStackTrace();
             }
         } catch (IOException IOE) {
             IOE.printStackTrace();
+        }
+        // 反射并应用配置
+        try {
+            Class clazz = Variable.class;
+            Set<Object> keys = properties.keySet();
+            for (Object key : keys) {
+                Field field = clazz.getDeclaredField(key.toString());
+                switch (field.getType().toString()) {
+                    case "int":
+                        field.set(clazz, Integer.parseInt(getProperty(key.toString())));
+                        break;
+                    case "long":
+                        field.set(clazz, Long.parseLong(getProperty(key.toString())));
+                        break;
+                    case "boolean":
+                        field.set(clazz, Boolean.parseBoolean(getProperty(key.toString())));
+                        break;
+                    case "class java.lang.String":
+                        field.set(clazz, getProperty(key.toString()));
+                        break;
+                }
+            }
+        } catch (IllegalAccessException IAE) {
+            IAE.printStackTrace();
+        } catch (NoSuchFieldException NSFE) {
+            NSFE.printStackTrace();
         }
     }
 

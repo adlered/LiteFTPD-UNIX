@@ -9,6 +9,7 @@ import pers.adlered.liteftpd.tool.LocalAddress;
 import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.variable.ChangeVar;
 import pers.adlered.liteftpd.variable.Variable;
+import pers.adlered.liteftpd.wizard.config.Prop;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -25,6 +26,8 @@ import java.net.Socket;
  **/
 public class Main {
     public static void main(String[] args) {
+        //先读取配置文件
+        Prop.getInstance();
         Runtime runtime = Runtime.getRuntime();
         runtime.addShutdownHook(new Thread() {
             @Override
