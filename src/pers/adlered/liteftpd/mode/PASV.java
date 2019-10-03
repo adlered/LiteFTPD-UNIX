@@ -121,16 +121,17 @@ public class PASV extends Thread {
                     if (!file.getParentFile().exists()) {
                         file.getParentFile().mkdirs();
                     }
+                    FileOutputStream fileOutputStream = null;
                     if (privateVariable.getRest() == 0l) {
                         boolean deleted = file.delete();
                         Logger.log(Types.RECV, Levels.DEBUG,"The file is already exists but deleted: " + deleted);
+                        fileOutputStream = new FileOutputStream(file, false);
                     } else {
                         Logger.log(Types.RECV, Levels.DEBUG,"Continue file receive.");
+                        fileOutputStream = new FileOutputStream(file, true);
                     }
                     //FileOutputStream will be create a new file auto.
-                    FileOutputStream fileOutputStream = null;
                     try {
-                        fileOutputStream = new FileOutputStream(file);
                         InputStream inputStream = socket.getInputStream();
                         byte[] bytes = new byte[8192];
                         int len = -1;

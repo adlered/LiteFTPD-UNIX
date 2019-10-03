@@ -29,7 +29,7 @@ public class LocalAddress {
                 inetAddresses = networkInterface.getInetAddresses();
                 while (inetAddresses.hasMoreElements()) {
                     inetAddress = inetAddresses.nextElement();
-                    if (inetAddress != null && inetAddress instanceof Inet4Address) { // IPV4
+                    if (inetAddress != null && inetAddress instanceof Inet4Address) {
                         ip = inetAddress.getHostAddress();
                         ipList.add(ip);
                     }
