@@ -5,6 +5,7 @@ import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.pool.Pool;
+import pers.adlered.liteftpd.tool.ConsoleTable;
 import pers.adlered.liteftpd.tool.LocalAddress;
 import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.variable.ChangeVar;
@@ -13,7 +14,6 @@ import pers.adlered.liteftpd.wizard.config.Prop;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -41,15 +41,18 @@ public class Main {
             //Listen socket connections, handle with SocketHandler.
             serverSocket = new ServerSocket(Variable.port);
             Logger.log(Types.SYS, Levels.INFO, "Listening " + serverSocket.getLocalSocketAddress());
-            InetAddress inetAddress = null;
             Logger.log(Types.SYS, Levels.INFO, "You can connect to the FTP Server via following IP address:");
+            ConsoleTable consoleTable = new ConsoleTable(LocalAddress.getLocalIPList().size(), true);
+            consoleTable.appendRow();
+            consoleTable.appendColum("Listening IP:Port")
+                    .appendColum("github.com/AdlerED");
+            consoleTable.appendRow();
             if (Variable.debugLevel >= 1) {
-                System.out.print(" | ");
                 for (String i : LocalAddress.getLocalIPList()) {
-                    System.out.print(i + " | ");
+                    consoleTable.appendColum(i + ":" + serverSocket.getLocalPort());
                 }
-                System.out.println();
             }
+            System.out.println(consoleTable.toString());
         } catch (IOException IOE) {
             //TODO
             IOE.printStackTrace();
