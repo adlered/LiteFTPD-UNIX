@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pers.adlered.liteftpd.bind.IPAddressBind;
+import pers.adlered.liteftpd.dict.Code;
 import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
@@ -548,7 +549,7 @@ public class CommandAnalyze {
                     else if (cmd.equals("GB")) {
                         privateVariable.setEncode("GB2312");
                         privateVariable.setEncodeLock(true);
-                        send.send("220 编码已适应Windows FTP客户端，您现在看到的这条信息应是正常的简体中文。" + Dict.newLine);
+                        send.send(Code.SERVICEREADY + "-LiteFTPD\r\n>>> 编码已适应Windows FTP客户端，您现在看到的这条信息应是正常的简体中文。\r\n>>> Your IP address: " + ipAddressBind.getIPADD() + "\r\n220" + Dict.connectionStarted);
                     }
                     else {
                         unknownCommand();

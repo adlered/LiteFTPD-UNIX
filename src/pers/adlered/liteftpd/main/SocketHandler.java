@@ -60,10 +60,11 @@ public class SocketHandler extends Thread {
         PauseListen pauseListen = new PauseListen(privateVariable, socket,
                 bufferedOutputStream, outputStream, bufferedInputStream,
                 inputStream, ipAddressBind,
-                send, commandAnalyze, receive
+                commandAnalyze, receive
         );
         //Start model
         send = new Send(outputStream, pauseListen, privateVariable, ipAddressBind);
+        pauseListen.setSend(send);
         commandAnalyze = new CommandAnalyze(send, SRVIPADD, privateVariable, pauseListen, ipAddressBind);
         receive = new Receive(inputStream, commandAnalyze, pauseListen, privateVariable, ipAddressBind);
         receive.start();

@@ -27,8 +27,9 @@ public class Prop {
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader("config.prop"));
             properties.load(bufferedReader);
+            Logger.log(Types.SYS, Levels.INFO, "Profile \"config.prop\" loaded successfully.");
         } catch (FileNotFoundException FNFE) {
-            Logger.log(Types.SYS, Levels.WARN, "Cannot found properties file \"config.prop\" at the root path, re-generating...");
+            Logger.log(Types.SYS, Levels.WARN, "Cannot found properties file \"config.prop\" at the root path, re-generating default...");
             try {
                 File file = new File("config.prop");
                 file.createNewFile();
@@ -36,7 +37,7 @@ public class Prop {
                 addAnnotation("# ================================================================================================")
                         .addAnnotation("# >>> LiteFTPD-UNIX Configure File")
                         .addAnnotation("# ")
-                        .addAnnotation("# >> Debug level")
+                        .addAnnotation("# >> debugLevel")
                         .addAnnotation("#     Too high level can affect performance!")
                         .addAnnotation("#     0: NONE;")
                         .addAnnotation("#     1: INFO;")
@@ -71,7 +72,7 @@ public class Prop {
                         .addProperty("smartEncode", "true")
                         .addProperty("defaultEncode", "UTF-8")
                         .addProperty("port", "21")
-                        .addProperty("welcomeMessage", "This is a demo version.")
+                        .addProperty("welcomeMessage", "オレは ルフィ、海賊王になる男だ")
                         .addProperty("minPort", "10240")
                         .addProperty("maxPort", "20480");
                 BufferedReader bufferedReader = new BufferedReader(new FileReader("config.prop"));
@@ -103,10 +104,8 @@ public class Prop {
                         break;
                 }
             }
-        } catch (IllegalAccessException IAE) {
-            IAE.printStackTrace();
-        } catch (NoSuchFieldException NSFE) {
-            NSFE.printStackTrace();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 
@@ -147,9 +146,5 @@ public class Prop {
 
     private String getProperty(String key) {
         return properties.getProperty(key);
-    }
-
-    public static void main(String[] args) {
-        getInstance();
     }
 }

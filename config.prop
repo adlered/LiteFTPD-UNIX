@@ -1,7 +1,7 @@
 # ================================================================================================
 # >>> LiteFTPD-UNIX Configure File
 # 
-# >> Debug level
+# >> debugLevel
 #     Too high level can affect performance!
 #     0: NONE;
 #     1: INFO;
@@ -36,6 +36,6 @@ maxTimeout=21600
 smartEncode=true
 defaultEncode=UTF-8
 port=21
-welcomeMessage=This is a demo version.
+welcomeMessage=オレは ルフィ、海賊王になる男だ
 minPort=10240
 maxPort=20480

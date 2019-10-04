@@ -41,7 +41,7 @@ public class PauseListen extends Thread {
                        BufferedOutputStream bufferedOutputStream,
                        OutputStream outputStream, BufferedInputStream bufferedInputStream,
                        InputStream inputStream, IPAddressBind ipAddressBind,
-                       Send send, CommandAnalyze commandAnalyze, Receive receive) {
+                       CommandAnalyze commandAnalyze, Receive receive) {
         this.privateVariable = privateVariable;
         this.socket = socket;
         this.bufferedOutputStream = bufferedOutputStream;
@@ -52,6 +52,10 @@ public class PauseListen extends Thread {
         this.send = send;
         this.commandAnalyze = commandAnalyze;
         this.receive = receive;
+    }
+
+    public void setSend(Send send) {
+        this.send = send;
     }
 
     @Override
@@ -66,7 +70,7 @@ public class PauseListen extends Thread {
             if (skipCount % 10 == 0 && skipCount != 0) {
                 Logger.log(Types.SYS, Levels.DEBUG, ipAddressBind.getIPADD() + " skipped timeout: " + skipCount);
                 if (skipCount > Variable.maxTimeout) {
-                    reason = "Max timeout";
+                    reason = "Time is out while in transmission.";
                     break;
                 }
             }
@@ -75,7 +79,7 @@ public class PauseListen extends Thread {
                 Logger.log(Types.SYS, Levels.DEBUG, ipAddressBind.getIPADD() + " timeout: " + timeout + "=>" + Variable.timeout);
             }
             if (timeout >= Variable.timeout) {
-                reason = "Timeout";
+                reason = "Time is out";
                 break;
             }
             try {
@@ -85,6 +89,7 @@ public class PauseListen extends Thread {
                 break;
             }
         }
+        send.send("LiteFTPD > :( Sorry, the connection is closed from server! Reason: " + reason + ".\r\n");
         Logger.log(Types.SYS, Levels.INFO, "Shutting down " + ipAddressBind.getIPADD() + ", reason: " + reason);
         //Shutdown this hole connection.
         running = false;
