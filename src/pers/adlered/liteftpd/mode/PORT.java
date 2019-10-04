@@ -73,8 +73,8 @@ public class PORT extends Thread {
                     if (listening != null) {
                         // To avoid bare line feeds.
                         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
-                        listening = listening.replaceAll("\r\n", "\n");
-                        listening = listening.replaceAll("\n", "\r\n");
+                        listening = listening.replaceAll("" + Dict.newLine + "", "\n");
+                        listening = listening.replaceAll("\n", "" + Dict.newLine + "");
                         if (Variable.smartEncode) {
                             bufferedOutputStream.write(listening.getBytes(privateVariable.encode));
                         } else {
@@ -156,7 +156,7 @@ public class PORT extends Thread {
                         } else {
                             perSecond = kb / endTime;
                         }
-                        send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec.\r\n");
+                        send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec." + Dict.newLine + "");
                     }
                 }
             } catch (SocketException SE) {

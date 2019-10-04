@@ -45,7 +45,7 @@ user=anonymous;;r;/;/;admin;123456;r;/;/root;
 ```
 用户1登录名：anonymous
 用户1密码：空
-用户1权限：r 只读（r代表read-读，w代表write-写，d代表delete-删除, c代表create-创建）
+用户1权限：r 只读（r代表read-读，w代表write-写，d代表delete-删除, c代表create-创建，m代表move-移动）
 用户1允许访问的目录：/（根目录下的所有子目录和文件） 
 用户1登录后默认定位到目录：/
 

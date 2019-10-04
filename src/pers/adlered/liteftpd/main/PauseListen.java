@@ -3,6 +3,7 @@ package pers.adlered.liteftpd.main;
 import pers.adlered.liteftpd.analyze.CommandAnalyze;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.bind.IPAddressBind;
+import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
@@ -89,7 +90,7 @@ public class PauseListen extends Thread {
                 break;
             }
         }
-        send.send("LiteFTPD > :( Sorry, the connection is closed from server! Reason: " + reason + ".\r\n");
+        send.send("LiteFTPD > :( Sorry, the connection is closed from server! Reason: " + reason + "." + Dict.newLine + "");
         Logger.log(Types.SYS, Levels.INFO, "Shutting down " + ipAddressBind.getIPADD() + ", reason: " + reason);
         // Shutdown this hole connection.
         running = false;

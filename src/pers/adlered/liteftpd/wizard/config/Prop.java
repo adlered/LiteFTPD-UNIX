@@ -1,6 +1,5 @@
 package pers.adlered.liteftpd.wizard.config;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
@@ -72,6 +71,7 @@ public class Prop {
                         .addAnnotation("#     w = write")
                         .addAnnotation("#     d = delete")
                         .addAnnotation("#     c = create")
+                        .addAnnotation("#     m = move")
                         .addAnnotation("#     Example: rw means read and write permission.")
                         .addAnnotation("#     permitDir: Set dir that user can access.")
                         .addAnnotation("#     Example: \"/\" means user can access the hole disk; \"/home\" means user can access folder/subFolder/files under \"/home\" directory.")

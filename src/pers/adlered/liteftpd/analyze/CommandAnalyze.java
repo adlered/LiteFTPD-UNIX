@@ -102,7 +102,7 @@ public class CommandAnalyze {
                         }
                         Logger.log(Types.SYS, Levels.DEBUG,Thread.currentThread() + " User login: " + arg1);
                         loginUser = arg1;
-                        send.send(Dict.passwordRequired + loginUser + "." + "\r\n");
+                        send.send(Dict.passwordRequired + loginUser + "." + "" + Dict.newLine + "");
                         step = 2;
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
@@ -137,7 +137,7 @@ public class CommandAnalyze {
                         Logger.log(Types.SYS, Levels.DEBUG,"User " + loginUser + "'s password: " + arg1);
                         loginPass = arg1;
                         if (User.checkPassword(loginUser, loginPass)) {
-                            send.send(Dict.loggedIn + "\r\n===------===\r\n>>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
+                            send.send(Dict.loggedIn + "" + Dict.newLine + "===------===" + Dict.newLine + ">>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
                             Logger.log(Types.SYS, Levels.INFO,"User " + loginUser + " logged in.");
                             userProps = User.getUserProps(loginUser);
                             lockPath = userProps.getPermitDir();
@@ -164,9 +164,9 @@ public class CommandAnalyze {
                      * INFO COMMANDS
                      */
                     else if (cmd.equals("FEAT")) {
-                        send.send("211-Features:\r\n" +
-                                "UTF8\r\n" +
-                                "211 End\r\n");
+                        send.send("211-Features:" + Dict.newLine + "" +
+                                "UTF8" + Dict.newLine + "" +
+                                "211 End" + Dict.newLine + "");
                     }
                     else if (cmd.equals("SITE")) {
                         send.send("501 SITE option not supported." + Dict.newLine);
@@ -176,9 +176,9 @@ public class CommandAnalyze {
                      */
                     else if (cmd.equals("PWD")) {
                         //if (file.isDirectory()) {
-                            send.send(Dict.currentDir + "\"" + getLockPath(currentPath, lockPath) + "\" is current directory." + "\r\n");
+                            send.send(Dict.currentDir + "\"" + getLockPath(currentPath, lockPath) + "\" is current directory." + "" + Dict.newLine + "");
                         //} else {
-                        //    send.send(Dict.isFile + file.getName() + "\r\n");
+                        //    send.send(Dict.isFile + file.getName() + "" + Dict.newLine + "");
                         //}
                     }
                     else if (cmd.equals("TYPE")) {
@@ -186,11 +186,11 @@ public class CommandAnalyze {
                         switch (arg1) {
                             case "I":
                                 type = "I";
-                                send.send(Dict.setType + "I." + "\r\n");
+                                send.send(Dict.setType + "I." + "" + Dict.newLine + "");
                                 break;
                             case "A":
                                 type = "A";
-                                send.send(Dict.setType + "A." + "\r\n");
+                                send.send(Dict.setType + "A." + "" + Dict.newLine + "");
                                 break;
                         }
                     }
@@ -235,7 +235,7 @@ public class CommandAnalyze {
                     }
                     else if (cmd.equals("CDUP")) {
                         upperDirectory();
-                        send.send("250 Directory changed to " + getLockPath(currentPath, lockPath) + "\r\n");
+                        send.send("250 Directory changed to " + getLockPath(currentPath, lockPath) + "" + Dict.newLine + "");
                     }
                     else if (cmd.equals("CWD")) {
                         if (arg1 != null) {
@@ -282,97 +282,117 @@ public class CommandAnalyze {
                         send.send("200 Command okay." + Dict.newLine);
                     }
                     else if (cmd.equals("MKD")) {
-                        String completePath = arg1;
-                        if (arg2 != null) {
-                            for (int i = 2; i < split.length; i++) {
-                                completePath += " " + split[i];
+                        if (userProps.getPermission().contains("c")) {
+                            String completePath = arg1;
+                            if (arg2 != null) {
+                                for (int i = 2; i < split.length; i++) {
+                                    completePath += " " + split[i];
+                                }
                             }
-                        }
-                        if (completePath.indexOf("../") != -1) {
-                            completePath = completePath.replaceAll("\\.\\./", "");
-                        }
-                        completePath = getAbsolutePath(completePath);
-                        File file = new File(completePath);
-                        if (!file.exists()) {
-                            file.mkdirs();
-                            send.send("257 \"" + getLockPath(completePath, lockPath) + "\" directory created." + Dict.newLine);
+                            if (completePath.indexOf("../") != -1) {
+                                completePath = completePath.replaceAll("\\.\\./", "");
+                            }
+                            completePath = getAbsolutePath(completePath);
+                            File file = new File(completePath);
+                            if (!file.exists()) {
+                                file.mkdirs();
+                                send.send("257 \"" + getLockPath(completePath, lockPath) + "\" directory created." + Dict.newLine);
+                            } else {
+                                send.send("550 " + getLockPath(completePath, lockPath) + ": Failed to create." + Dict.newLine);
+                            }
                         } else {
-                            send.send("550 " + getLockPath(completePath, lockPath) + ": Failed to create." + Dict.newLine);
+                            send.send(Dict.noPermission);
                         }
                     } else if (cmd.equals("RMD")) {
-                        String completePath = arg1;
-                        if (arg2 != null) {
-                            for (int i = 2; i < split.length; i++) {
-                                completePath += " " + split[i];
+                        if (userProps.getPermission().contains("d")) {
+                            String completePath = arg1;
+                            if (arg2 != null) {
+                                for (int i = 2; i < split.length; i++) {
+                                    completePath += " " + split[i];
+                                }
                             }
-                        }
-                        if (completePath.indexOf("../") != -1) {
-                            completePath = completePath.replaceAll("\\.\\./", "");
-                        }
-                        completePath = getAbsolutePath(completePath);
-                        File file = new File(completePath);
-                        if (file.isDirectory()) {
-                            delFolder(completePath);
-                            send.send("250 RMD command successful." + Dict.newLine);
+                            if (completePath.indexOf("../") != -1) {
+                                completePath = completePath.replaceAll("\\.\\./", "");
+                            }
+                            completePath = getAbsolutePath(completePath);
+                            File file = new File(completePath);
+                            if (file.isDirectory()) {
+                                delFolder(completePath);
+                                send.send("250 RMD command successful." + Dict.newLine);
+                            } else {
+                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            }
                         } else {
-                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            send.send(Dict.noPermission);
                         }
                     } else if (cmd.equals("DELE")) {
-                        String completePath = arg1;
-                        if (arg2 != null) {
-                            for (int i = 2; i < split.length; i++) {
-                                completePath += " " + split[i];
+                        if (userProps.getPermission().contains("d")) {
+                            String completePath = arg1;
+                            if (arg2 != null) {
+                                for (int i = 2; i < split.length; i++) {
+                                    completePath += " " + split[i];
+                                }
                             }
-                        }
-                        if (completePath.indexOf("../") != -1) {
-                            completePath = completePath.replaceAll("\\.\\./", "");
-                        }
-                        completePath = getAbsolutePath(completePath);
-                        File file = new File(completePath);
-                        if (file.isFile()) {
-                            file.delete();
-                            send.send("250 DELE command successful." + Dict.newLine);
+                            if (completePath.indexOf("../") != -1) {
+                                completePath = completePath.replaceAll("\\.\\./", "");
+                            }
+                            completePath = getAbsolutePath(completePath);
+                            File file = new File(completePath);
+                            if (file.isFile()) {
+                                file.delete();
+                                send.send("250 DELE command successful." + Dict.newLine);
+                            } else {
+                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            }
                         } else {
-                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            send.send(Dict.noPermission);
                         }
                     }
                     else if (cmd.equals("RNFR")) {
-                        String completePath = arg1;
-                        if (arg2 != null) {
-                            for (int i = 2; i < split.length; i++) {
-                                completePath += " " + split[i];
+                        if (userProps.getPermission().contains("m")) {
+                            String completePath = arg1;
+                            if (arg2 != null) {
+                                for (int i = 2; i < split.length; i++) {
+                                    completePath += " " + split[i];
+                                }
                             }
-                        }
-                        if (completePath.indexOf("../") != -1) {
-                            completePath = completePath.replaceAll("\\.\\./", "");
-                        }
-                        completePath = getAbsolutePath(completePath);
-                        File file = new File(completePath);
-                        if (file.exists()) {
-                            RNFR = completePath;
-                            send.send("350 File or directory exists, ready for destination name" + Dict.newLine);
+                            if (completePath.indexOf("../") != -1) {
+                                completePath = completePath.replaceAll("\\.\\./", "");
+                            }
+                            completePath = getAbsolutePath(completePath);
+                            File file = new File(completePath);
+                            if (file.exists()) {
+                                RNFR = completePath;
+                                send.send("350 File or directory exists, ready for destination name" + Dict.newLine);
+                            } else {
+                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            }
                         } else {
-                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            send.send(Dict.noPermission);
                         }
                     }
                     else if (cmd.equals("RNTO")) {
-                        String completePath = arg1;
-                        if (arg2 != null) {
-                            for (int i = 2; i < split.length; i++) {
-                                completePath += " " + split[i];
+                        if (userProps.getPermission().contains("m")) {
+                            String completePath = arg1;
+                            if (arg2 != null) {
+                                for (int i = 2; i < split.length; i++) {
+                                    completePath += " " + split[i];
+                                }
                             }
-                        }
-                        if (completePath.indexOf("../") != -1) {
-                            completePath = completePath.replaceAll("\\.\\./", "");
-                        }
-                        completePath = getAbsolutePath(completePath);
-                        File file = new File(RNFR);
-                        if (file.renameTo(new File(completePath))) {
-                            send.send("250 RNTO command successful." + Dict.newLine);
+                            if (completePath.indexOf("../") != -1) {
+                                completePath = completePath.replaceAll("\\.\\./", "");
+                            }
+                            completePath = getAbsolutePath(completePath);
+                            File file = new File(RNFR);
+                            if (file.renameTo(new File(completePath))) {
+                                send.send("250 RNTO command successful." + Dict.newLine);
+                            } else {
+                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            }
+                            RNFR = null;
                         } else {
-                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            send.send(Dict.noPermission);
                         }
-                        RNFR = null;
                     }
                     /**
                      * TRANSMISSION COMMANDS
@@ -408,7 +428,7 @@ public class CommandAnalyze {
                         }
                         portMode = new PORT(send, privateVariable, pauseListen);
                         portMode.setTarget(ip, port);
-                        send.send("200 PORT Command successful.\r\n");
+                        send.send("200 PORT Command successful." + Dict.newLine + "");
                         mode = "port";
                     }
                     else if (cmd.equals("PASV")) {
@@ -428,25 +448,72 @@ public class CommandAnalyze {
                             finalPort = map.get("finalPort");
                         } while (!passiveMode.listen(finalPort));
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
-                        send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "\r\n");
+                        send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "" + Dict.newLine + "");
                         passiveMode.start();
                         mode = "passive";
                     }
                     else if (cmd.equals("RETR")) {
-                        String completePath = arg1;
-                        if (arg2 != null) {
-                            for (int i = 2; i < split.length; i++) {
-                                completePath += " " + split[i];
+                        if (userProps.getPermission().contains("r")) {
+                            String completePath = arg1;
+                            if (arg2 != null) {
+                                for (int i = 2; i < split.length; i++) {
+                                    completePath += " " + split[i];
+                                }
                             }
+                            if (completePath.indexOf("../") != -1) {
+                                completePath = completePath.replaceAll("\\.\\./", "");
+                            }
+                            completePath = getAbsolutePath(completePath);
+                            try {
+                                File file = new File(completePath);
+                                if (file.exists()) {
+                                    send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)" + Dict.newLine + "");
+                                    if (mode != null) {
+                                        Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
+                                        String mode = this.mode;
+                                        this.mode = null;
+                                        Logger.log(Types.TRANS, Levels.DEBUG, "Hello " + mode + " mode.");
+                                        switch (mode) {
+                                            case "port":
+                                                portMode.hello(file);
+                                                portMode.start();
+                                                break;
+                                            case "passive":
+                                                passiveMode.hello(file);
+                                                break;
+                                        }
+                                    }
+                                } else {
+                                    send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                                }
+                            } catch (NullPointerException NPE) {
+                                send.send(Dict.passiveDataFailed);
+                            }
+                        } else {
+                            send.send(Dict.noPermission);
                         }
-                        if (completePath.indexOf("../") != -1) {
-                            completePath = completePath.replaceAll("\\.\\./", "");
-                        }
-                        completePath = getAbsolutePath(completePath);
-                        try {
-                            File file = new File(completePath);
+                    }
+                    else if (cmd.equals("STOR")) {
+                        if (userProps.getPermission().contains("w")) {
+                            String completePath = arg1;
+                            if (arg2 != null) {
+                                for (int i = 2; i < split.length; i++) {
+                                    completePath += " " + split[i];
+                                }
+                            }
+                            if (completePath.indexOf("../") != -1) {
+                                completePath = completePath.replaceAll("\\.\\./", "");
+                            }
+                            completePath = getAbsolutePath(completePath);
+                            send.send("150 Opening BINARY mode data connection for " + getLockPath(completePath, lockPath) + "." + Dict.newLine);
+                            try {
+                            /*File file = new File(completePath);
                             if (file.exists()) {
-                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)\r\n");
+                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)" + Dict.newLine + "");
+                                passiveMode.hello(file);
+                            } else {
+                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            }*/
                                 if (mode != null) {
                                     Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
                                     String mode = this.mode;
@@ -454,73 +521,38 @@ public class CommandAnalyze {
                                     Logger.log(Types.TRANS, Levels.DEBUG, "Hello " + mode + " mode.");
                                     switch (mode) {
                                         case "port":
-                                            portMode.hello(file);
+                                            portMode.helloSTOR(completePath);
                                             portMode.start();
                                             break;
                                         case "passive":
-                                            passiveMode.hello(file);
+                                            passiveMode.helloSTOR(completePath);
                                             break;
                                     }
                                 }
-                            } else {
-                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                            } catch (NullPointerException NPE) {
+                                send.send(Dict.passiveDataFailed);
                             }
-                        } catch (NullPointerException NPE) {
-                            send.send(Dict.passiveDataFailed);
-                        }
-                    }
-                    else if (cmd.equals("STOR")) {
-                        String completePath = arg1;
-                        if (arg2 != null) {
-                            for (int i = 2; i < split.length; i++) {
-                                completePath += " " + split[i];
-                            }
-                        }
-                        if (completePath.indexOf("../") != -1) {
-                            completePath = completePath.replaceAll("\\.\\./", "");
-                        }
-                        completePath = getAbsolutePath(completePath);
-                        send.send("150 Opening BINARY mode data connection for " + getLockPath(completePath, lockPath) + "." + Dict.newLine);
-                        try {
-                            /*File file = new File(completePath);
-                            if (file.exists()) {
-                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)\r\n");
-                                passiveMode.hello(file);
-                            } else {
-                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
-                            }*/
-                            if (mode != null) {
-                                Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
-                                String mode = this.mode;
-                                this.mode = null;
-                                Logger.log(Types.TRANS, Levels.DEBUG, "Hello " + mode + " mode.");
-                                switch (mode) {
-                                    case "port":
-                                        portMode.helloSTOR(completePath);
-                                        portMode.start();
-                                        break;
-                                    case "passive":
-                                        passiveMode.helloSTOR(completePath);
-                                        break;
-                                }
-                            }
-                        } catch (NullPointerException NPE) {
-                            send.send(Dict.passiveDataFailed);
+                        } else {
+                            send.send(Dict.noPermission);
                         }
                     }
                     else if (cmd.equals("SIZE")) {
-                        String completePath = arg1;
-                        if (arg2 != null) {
-                            for (int i = 2; i < split.length; i++) {
-                                completePath += " " + split[i];
+                        if (userProps.getPermission().contains("r")) {
+                            String completePath = arg1;
+                            if (arg2 != null) {
+                                for (int i = 2; i < split.length; i++) {
+                                    completePath += " " + split[i];
+                                }
                             }
-                        }
-                        completePath = getAbsolutePath(completePath);
-                        File file = new File(completePath);
-                        if (file.exists() && file.isFile()) {
-                            send.send("213 " + file.length() + Dict.newLine);
+                            completePath = getAbsolutePath(completePath);
+                            File file = new File(completePath);
+                            if (file.exists() && file.isFile()) {
+                                send.send("213 " + file.length() + Dict.newLine);
+                            } else {
+                                send.send("550 " + completePath + ": No such file." + Dict.newLine);
+                            }
                         } else {
-                            send.send("550 " + completePath + ": No such file." + Dict.newLine);
+                            send.send(Dict.noPermission);
                         }
                     }
                     else if (cmd.equals("OPTS")) {
@@ -559,7 +591,7 @@ public class CommandAnalyze {
                     else if (cmd.equals("GB")) {
                         privateVariable.setEncode("GB2312");
                         privateVariable.setEncodeLock(true);
-                        send.send(Code.SERVICEREADY + "-LiteFTPD\r\n>>> 编码已适应Windows FTP客户端，您现在看到的这条信息应是正常的简体中文。\r\n>>> Your IP address: " + ipAddressBind.getIPADD() + "\r\n220" + Dict.connectionStarted);
+                        send.send(Code.SERVICEREADY + "-LiteFTPD" + Dict.newLine + ">>> 编码已适应Windows FTP客户端，您现在看到的这条信息应是正常的简体中文。" + Dict.newLine + ">>> Your IP address: " + ipAddressBind.getIPADD() + "" + Dict.newLine + "220" + Dict.connectionStarted);
                     }
                     else {
                         unknownCommand();
