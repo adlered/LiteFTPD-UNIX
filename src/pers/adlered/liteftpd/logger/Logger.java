@@ -10,11 +10,11 @@ package pers.adlered.liteftpd.logger;
 public class Logger {
     public static boolean log(Types type, Levels level, String log) {
         if (Filter.fil(level)) {
-            //Can be logged
+            // Can be logged
             System.out.println("[" + level + "]" + " " + "[" + type + "]" + " >> " + log);
             return true;
         } else {
-            //Cannot log
+            // Cannot log
             return false;
         }
     }

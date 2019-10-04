@@ -77,7 +77,7 @@ public class PASV extends Thread {
                 double kb = 0;
                 long bts = 0;
                 if (listening != null) {
-                    //To avoid bare line feeds.
+                    // To avoid bare line feeds.
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
                     listening = listening.replaceAll("\r\n", "\n");
                     listening = listening.replaceAll("\n", "\r\n");
@@ -95,7 +95,7 @@ public class PASV extends Thread {
                     byte[] bytes = new byte[8192];
                     int len = -1;
                     if (privateVariable.getRest() == 0l) {
-                        //Not rest mode
+                        // Not rest mode
                         while ((len = fileInputStream.read(bytes)) != -1) {
                             outputStream.write(bytes, 0, len);
                         }
@@ -104,7 +104,7 @@ public class PASV extends Thread {
                         outputStream.close();
                         bts = file.length();
                     } else {
-                        //Rest mode on
+                        // Rest mode on
                         fileInputStream.skip(privateVariable.getRest());
                         while ((len = fileInputStream.read(bytes)) != -1) {
                             outputStream.write(bytes, 0, len);
@@ -130,7 +130,7 @@ public class PASV extends Thread {
                         Logger.log(Types.RECV, Levels.DEBUG,"Continue file receive.");
                         fileOutputStream = new FileOutputStream(file, true);
                     }
-                    //FileOutputStream will be create a new file auto.
+                    // FileOutputStream will be create a new file auto.
                     try {
                         InputStream inputStream = socket.getInputStream();
                         byte[] bytes = new byte[8192];
@@ -170,7 +170,7 @@ public class PASV extends Thread {
         } catch (SocketException SE) {
             Logger.log(Types.SYS, Levels.ERROR,"Listening stopped.");
         } catch (IOException IOE) {
-            //TODO
+            // TODO
             IOE.printStackTrace();
         } catch (Exception E) {
             E.printStackTrace();

@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
  **/
 public class CharsetSelector {
     public static String getCharset(byte[] bytes) {
-        //return guessEncoding(bytes);
+        // return guessEncoding(bytes);
         int UTF8ERR = 0;
         int GB2312ERR = 0;
         String UTF8 = null;
@@ -26,7 +26,7 @@ public class CharsetSelector {
             UTF8 = new String(bytes, StandardCharsets.UTF_8);
             GB2312 = new String(bytes, "GB2312");
         } catch (UnsupportedEncodingException UEE) {
-            //TODO
+            // TODO
             UEE.printStackTrace();
         }
         if (UTF8 != null) {

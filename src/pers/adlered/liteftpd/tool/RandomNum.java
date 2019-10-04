@@ -79,7 +79,7 @@ public class RandomNum {
             System.out.println("(最高) 小数位: " + decTemp3);
             System.out.println("最高小数位长度: " + decTemp3.length());
         }
-        //String结果转int
+        // String结果转int
         int minDecimalResult;
         int maxDecimalResult;
         minDecimalResult = Integer.valueOf(temp3).intValue();
@@ -87,18 +87,18 @@ public class RandomNum {
         if (debugMode == true) {
             System.out.println("转换后小数范围: " + minDecimalResult + " " + maxDecimalResult);
         }
-        //先生成一个整数位范围内的数字
-        //再生成一个小数位范围内的数字
-        //最后判断是否符合范围要求, 如果符合 返回 如果不符合 重来
+        // 先生成一个整数位范围内的数字
+        // 再生成一个小数位范围内的数字
+        // 最后判断是否符合范围要求, 如果符合 返回 如果不符合 重来
         boolean isOk = false; //do while会检查isOk 如果不符合条件(isOk = true)会重来
         do {
-            //整数数字生成
+            // 整数数字生成
             int getInt = sumIntger(minInt, maxInt, false);
             if (debugMode == true) {
                 System.out.println("整数数字已生成: " + getInt);
             }
-            //小数数字生成 随机就好 注意小数位数
-            //其实不用看最低小数,取0-最高小数就可以了
+            // 小数数字生成 随机就好 注意小数位数
+            // 其实不用看最低小数,取0-最高小数就可以了
             int getDec = 0;
             if (minInt == maxInt) {
                 if (minDecimalResult < maxDecimalResult)
@@ -114,13 +114,13 @@ public class RandomNum {
             if (debugMode == true) {
                 System.out.println("小数数字已生成: " + getDec);
             }
-            //开始组合
+            // 开始组合
             String spell = getInt + "." + getDec;
             double getSpell = Double.valueOf(spell);
             if (debugMode == true) {
                 System.out.println("随机数已生成: " + getSpell);
             }
-            //if (getDec >= minDecimalResult && getDec <= maxDecimalResult) {
+            // if (getDec >= minDecimalResult && getDec <= maxDecimalResult) {
             if (minInt != maxInt) { //算法不同 不相为谋
                 if (getInt == minInt && getDec >= minDecimalResult) {
                     isOk = true;
@@ -134,7 +134,7 @@ public class RandomNum {
                     isOk = true;
                 }
             }
-            //如果整数不是最小也不是最大 那小数位就可以随便生成了
+            // 如果整数不是最小也不是最大 那小数位就可以随便生成了
             if (isOk == false) {
                 if (debugMode == true) {
                     System.out.println("随机生成的随机数不符合要求,自动重新生成...");
@@ -143,7 +143,7 @@ public class RandomNum {
                 result = getSpell;
             }
         } while (isOk == false);
-        //利用判断 看看组合后的小数是否在设定的范围之内(有点影响性能...不过可以实现)
+        // 利用判断 看看组合后的小数是否在设定的范围之内(有点影响性能...不过可以实现)
         if (needNegative == true) {
             Random random = new Random();
             int tempR = random.nextInt(10) + 1;

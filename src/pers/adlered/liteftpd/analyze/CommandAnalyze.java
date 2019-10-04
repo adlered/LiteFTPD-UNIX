@@ -18,6 +18,8 @@ import pers.adlered.liteftpd.mode.PORT;
 import pers.adlered.liteftpd.tool.GoodXX;
 import pers.adlered.liteftpd.tool.RandomNum;
 import pers.adlered.liteftpd.user.Permission;
+import pers.adlered.liteftpd.user.User;
+import pers.adlered.liteftpd.user.UserProps;
 import pers.adlered.liteftpd.variable.Variable;
 
 /**
@@ -46,8 +48,8 @@ public class CommandAnalyze {
     private PORT portMode = null;
     private String mode = null;
 
-    private String currentPath = "";
-    private String lockPath = "";
+    private String currentPath = null;
+    private String lockPath = null;
     private String RNFR = null;
     //Trans type default A
     //A: ASCII I: BINARY
@@ -57,11 +59,11 @@ public class CommandAnalyze {
     private IPAddressBind ipAddressBind = null;
 
     private PrivateVariable privateVariable = null;
+    private UserProps userProps = null;
 
     public CommandAnalyze(Send send, String SRVIPADD, PrivateVariable privateVariable, PauseListen pauseListen, IPAddressBind ipAddressBind) {
         this.send = send;
         this.SRVIPADD = SRVIPADD;
-        currentPath = Permission.defaultDir;
         this.privateVariable = privateVariable;
         this.pauseListen = pauseListen;
         this.ipAddressBind = ipAddressBind;
@@ -134,9 +136,17 @@ public class CommandAnalyze {
                     if (cmd.equals("PASS")) {
                         Logger.log(Types.SYS, Levels.DEBUG,"User " + loginUser + "'s password: " + arg1);
                         loginPass = arg1;
-                        send.send(Dict.loggedIn + "\r\n===------===\r\n>>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
-                        Logger.log(Types.SYS, Levels.INFO,"User " + loginUser + " logged in.");
-                        step = 3;
+                        if (User.checkPassword(loginUser, loginPass)) {
+                            send.send(Dict.loggedIn + "\r\n===------===\r\n>>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
+                            Logger.log(Types.SYS, Levels.INFO,"User " + loginUser + " logged in.");
+                            userProps = User.getUserProps(loginUser);
+                            lockPath = userProps.getPermitDir();
+                            currentPath = userProps.getDefaultDir();
+                            step = 3;
+                        } else {
+                            send.send("530 Sorry, the password is wrong." + Dict.newLine);
+                            privateVariable.setInterrupted(true);
+                        }
                     }
                     else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
@@ -166,7 +176,7 @@ public class CommandAnalyze {
                      */
                     else if (cmd.equals("PWD")) {
                         //if (file.isDirectory()) {
-                            send.send(Dict.currentDir + "\"" + getLockPath(currentPath, Permission.defaultDir) + "\" is current directory." + "\r\n");
+                            send.send(Dict.currentDir + "\"" + getLockPath(currentPath, lockPath) + "\" is current directory." + "\r\n");
                         //} else {
                         //    send.send(Dict.isFile + file.getName() + "\r\n");
                         //}
@@ -225,7 +235,7 @@ public class CommandAnalyze {
                     }
                     else if (cmd.equals("CDUP")) {
                         upperDirectory();
-                        send.send("250 Directory changed to " + getLockPath(currentPath, Permission.defaultDir) + "\r\n");
+                        send.send("250 Directory changed to " + getLockPath(currentPath, lockPath) + "\r\n");
                     }
                     else if (cmd.equals("CWD")) {
                         if (arg1 != null) {
@@ -242,7 +252,7 @@ public class CommandAnalyze {
                             }
                             if (completePath.equals("..")) {
                                 upperDirectory();
-                                send.send(Dict.changeDir + getLockPath(currentPath, Permission.defaultDir) + Dict.newLine);
+                                send.send(Dict.changeDir + getLockPath(currentPath, lockPath) + Dict.newLine);
                             } else {
                                 if (completePath.indexOf("../") != -1) {
                                     completePath = completePath.replaceAll("\\.\\./", "");
@@ -251,13 +261,13 @@ public class CommandAnalyze {
                                 File file = new File(completePath);
                                 if (file.exists()) {
                                     if (file.isFile()) {
-                                        send.send("550 " + getLockPath(completePath, Permission.defaultDir) + ": No such file or directory." + Dict.newLine);
+                                        send.send("550 " + getLockPath(completePath, lockPath) + ": No such file or directory." + Dict.newLine);
                                     } else {
                                         currentPath = completePath;
-                                        send.send(Dict.changeDir + getLockPath(currentPath, Permission.defaultDir) + Dict.newLine);
+                                        send.send(Dict.changeDir + getLockPath(currentPath, lockPath) + Dict.newLine);
                                     }
                                 } else {
-                                    send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                                    send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
                                 }
                             }
                         } else {
@@ -285,9 +295,9 @@ public class CommandAnalyze {
                         File file = new File(completePath);
                         if (!file.exists()) {
                             file.mkdirs();
-                            send.send("257 \"" + getLockPath(completePath, Permission.defaultDir) + "\" directory created." + Dict.newLine);
+                            send.send("257 \"" + getLockPath(completePath, lockPath) + "\" directory created." + Dict.newLine);
                         } else {
-                            send.send("550 " + getLockPath(completePath, Permission.defaultDir) + ": Failed to create." + Dict.newLine);
+                            send.send("550 " + getLockPath(completePath, lockPath) + ": Failed to create." + Dict.newLine);
                         }
                     } else if (cmd.equals("RMD")) {
                         String completePath = arg1;
@@ -305,7 +315,7 @@ public class CommandAnalyze {
                             delFolder(completePath);
                             send.send("250 RMD command successful." + Dict.newLine);
                         } else {
-                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
                         }
                     } else if (cmd.equals("DELE")) {
                         String completePath = arg1;
@@ -323,7 +333,7 @@ public class CommandAnalyze {
                             file.delete();
                             send.send("250 DELE command successful." + Dict.newLine);
                         } else {
-                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
                         }
                     }
                     else if (cmd.equals("RNFR")) {
@@ -342,7 +352,7 @@ public class CommandAnalyze {
                             RNFR = completePath;
                             send.send("350 File or directory exists, ready for destination name" + Dict.newLine);
                         } else {
-                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
                         }
                     }
                     else if (cmd.equals("RNTO")) {
@@ -360,7 +370,7 @@ public class CommandAnalyze {
                         if (file.renameTo(new File(completePath))) {
                             send.send("250 RNTO command successful." + Dict.newLine);
                         } else {
-                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                            send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
                         }
                         RNFR = null;
                     }
@@ -436,7 +446,7 @@ public class CommandAnalyze {
                         try {
                             File file = new File(completePath);
                             if (file.exists()) {
-                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, Permission.defaultDir) + " (" + file.length() + " Bytes)\r\n");
+                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)\r\n");
                                 if (mode != null) {
                                     Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
                                     String mode = this.mode;
@@ -453,7 +463,7 @@ public class CommandAnalyze {
                                     }
                                 }
                             } else {
-                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
                             }
                         } catch (NullPointerException NPE) {
                             send.send(Dict.passiveDataFailed);
@@ -470,14 +480,14 @@ public class CommandAnalyze {
                             completePath = completePath.replaceAll("\\.\\./", "");
                         }
                         completePath = getAbsolutePath(completePath);
-                        send.send("150 Opening BINARY mode data connection for " + getLockPath(completePath, Permission.defaultDir) + "." + Dict.newLine);
+                        send.send("150 Opening BINARY mode data connection for " + getLockPath(completePath, lockPath) + "." + Dict.newLine);
                         try {
                             /*File file = new File(completePath);
                             if (file.exists()) {
-                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, Permission.defaultDir) + " (" + file.length() + " Bytes)\r\n");
+                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)\r\n");
                                 passiveMode.hello(file);
                             } else {
-                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, Permission.defaultDir) + Dict.noSuchFIleOrDir2);
+                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
                             }*/
                             if (mode != null) {
                                 Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
@@ -576,7 +586,7 @@ public class CommandAnalyze {
 
     public void upperDirectory() {
         //Depart && Re-part path
-        if (!currentPath.equals("/")) {
+        if (!getLockPath(currentPath, lockPath).equals("/")) {
             String[] dir = currentPath.split("/");
             currentPath = "";
             for (int i = 0; i < dir.length - 1; i++) {
@@ -609,9 +619,9 @@ public class CommandAnalyze {
         } else if (path.matches("^(/).*")) {
             path = path.replaceAll("^(/)", "");
             if (path.isEmpty()) {
-                path = Permission.defaultDir;
+                path = lockPath;
             } else {
-                path = Permission.defaultDir + "/" + path;
+                path = lockPath + "/" + path;
             }
         } else {
             path = currentPath + "/" + path;

@@ -13,66 +13,66 @@ public class Code {
      * Preliminary affirmative reply
      */
 
-    //Service is ready, will be start in ? min.
+    // Service is ready, will be start in ? min.
     public static final int READY = 120;
-    //Data connection opened, transmission is starting.
+    // Data connection opened, transmission is starting.
     public static final int OPEN = 125;
-    //File status OK, ready to open data connect.
+    // File status OK, ready to open data connect.
     public static final int STATUSOK = 150;
 
     /**
      * A definite and complete answer
      */
 
-    //Command success.
+    // Command success.
     public static final int SUCCESS = 200;
-    //Cannot execute command, too much command at the same time.
+    // Cannot execute command, too much command at the same time.
     public static final int MUCHCOMMAND = 202;
-    //System status / System helping answer.
+    // System status / System helping answer.
     public static final int STATUS = 211;
-    //Directory status.
+    // Directory status.
     public static final int DIRSTATUS = 212;
-    //File status.
+    // File status.
     public static final int FILESTATUS = 213;
-    //Helping message.
+    // Helping message.
     public static final int HELPING = 214;
-    //NAME System type.
+    // NAME System type.
     public static final int NAME = 215;
-    //Service is ready, can execute new user's request.
+    // Service is ready, can execute new user's request.
     public static final int SERVICEREADY = 220;
-    //Service stopped control connection.
+    // Service stopped control connection.
     public static final int SERVICESTOP = 221;
-    //Data connection opened, no any transmission running.
+    // Data connection opened, no any transmission running.
     public static final int DATAOPEN = 225;
-    //Data connection closed with successful.
+    // Data connection closed with successful.
     public static final int CLOSED = 226;
-    //Enter passive mode.
+    // Enter passive mode.
     public static final int PASSIVE = 227;
-    //User logged in.
+    // User logged in.
     public static final int LOGGED = 230;
-    //File request correct, done.
+    // File request correct, done.
     public static final int CORRECT = 250;
-    //Created "PATHNAME".
+    // Created "PATHNAME".
     public static final int CPATH = 257;
 
     /**
      * Intermediate affirmative response
      */
 
-    //Password required.
+    // Password required.
     public static final int PASSREQ = 331;
-    //Need login.
+    // Need login.
     public static final int LOGIN = 332;
-    //Waiting for file execution response.
+    // Waiting for file execution response.
     public static final int WAIT = 350;
 
     /**
      * Complete Answer to Transient Negation
      */
 
-    //Cannot open data connection.
+    // Cannot open data connection.
     public static final int CANTOPEN = 425;
-    //Connection closed; Transfer aborted.
+    // Connection closed; Transfer aborted.
     public static final int ABORTED = 426;
     //File unavailable。
     public static final int UNAVAILABLE = 450;

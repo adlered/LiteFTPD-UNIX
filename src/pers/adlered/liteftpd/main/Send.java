@@ -38,12 +38,12 @@ public class Send {
         try {
             Logger.log(Types.SEND, Levels.INFO, ipAddressBind.getIPADD() + " <== [ " + privateVariable.encode + " ] " + ipAddressBind.getSRVIPADD() + ": " + message.replaceAll("\r|\n", ""));
             pauseListen.resetTimeout();
-            //WELCOME MESSAGE
+            // WELCOME MESSAGE
             outputStream.write(message.getBytes(privateVariable.encode));
             outputStream.flush();
             return true;
         } catch (IOException IOE) {
-            //TODOx
+            // TODOx
             IOE.printStackTrace();
             return false;
         }

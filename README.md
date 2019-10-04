@@ -8,7 +8,7 @@
 ✳️ 目标：强兼容，高性能，低占用  
 当前进度： **已支持Windows、Linux、MacOS系统FileZilla、FlashFXP、迅雷、Chrome、Windows资源管理器等FTP客户端（或支持FTP的程序）的文件上传、下载、删除、移动、重命名功能**
 
-- [ ] 用户身份识别  
+- [x] 极其简单的多用户身份识别&&权限控制&&默认目录&&允许目录设定  
 - [x] 用户目录锁定  
 - [x] 被动模式  
 - [x] 主动模式  
@@ -30,14 +30,44 @@
 
 ## 如何体验？
 
-由于目前项目进展原因，暂不支持用户账户，输入任意用户名密码即可登入，拥有全部权限，暂时仅供测试/本地使用，尽请期待！
-
 该服务端**支持绝大部分系统的绝大部分FTP客户端连接**，但服务端本身由于需要保证稳定，仅支持在Linux/MacOS系统上运行（由于文件系统和编码）。  
 你可以将项目clone或直接下载到本地，进入release文件夹，运行java -jar LiteFTPD-UNIX.jar即可。LiteFTPD默认会自动监听21端口。  
 如果在同目录下不存在配置文件`config.prop`，在你第一次运行时它会自动生成一个。  
-修改`config.prop`中的文件，就可以修改LiteFTPD的配置了，十分简单易用。
+修改`config.prop`中的文件，就可以修改LiteFTPD的配置了，十分简单易用。  
 
-简单来讲，这么启动就行了：
+控制用户权限也十分简单，编辑`config.prop`中`user`变量的值，我们以默认情况举例：  
+```
+格式：[用户名];[密码];[权限];[允许访问的目录];[登录后默认的目录]
+user=anonymous;;r;/;/;admin;123456;r;/;/root;
+```
+默认值中我们定义了两个用户的信息。我们分开讲：  
+
+```
+用户1登录名：anonymous
+用户1密码：空
+用户1权限：r 只读（r代表read-读，w代表write-写，d代表delete-删除, c代表create-创建）
+用户1允许访问的目录：/（根目录下的所有子目录和文件） 
+用户1登录后默认定位到目录：/
+
+用户2登录名：admin
+用户2密码：123456
+用户2权限：r 只读
+用户2允许访问的目录：/
+用户2登录后默认定位到目录：/root
+```
+
+同理，你也可以随意添加更多用户。  
+  
+如何使用LiteFTPD？简单来讲，这么启动就行了：  
+
+```
+git clone https://github.com/adlered/liteftpd-unix
+cd liteftpd-unix/release/
+java -jar LiteFTPD-UNIX.jar
+```
+
+第一次启动后，LiteFTPD会自动在同名目录下生成`config.prop`配置文件，你可以在配置文件中修改LiteFTPD的配置，重启LiteFTPD即可生效。  
+不需要其它文件，你可以只通过LiteFTPD-UNIX.jar运行FTP服务。你只需要在安装了Java的电脑中直接运行LiteFTPD-UNIX.jar就可以了，十分便捷。  
 
 ![屏幕快照 2019-09-30 下午8.44.56.png](https://pic.stackoverflow.wiki/uploadImages/6a6029f4-c17e-41b4-ae24-39cf839239ae.png) 
 

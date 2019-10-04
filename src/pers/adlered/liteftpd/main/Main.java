@@ -8,6 +8,8 @@ import pers.adlered.liteftpd.pool.Pool;
 import pers.adlered.liteftpd.tool.ConsoleTable;
 import pers.adlered.liteftpd.tool.LocalAddress;
 import pers.adlered.liteftpd.tool.Status;
+import pers.adlered.liteftpd.user.User;
+import pers.adlered.liteftpd.user.UserProps;
 import pers.adlered.liteftpd.variable.ChangeVar;
 import pers.adlered.liteftpd.variable.Variable;
 import pers.adlered.liteftpd.wizard.config.Prop;
@@ -26,8 +28,6 @@ import java.net.Socket;
  **/
 public class Main {
     public static void main(String[] args) {
-        //先读取配置文件
-        Prop.getInstance();
         Runtime runtime = Runtime.getRuntime();
         runtime.addShutdownHook(new Thread() {
             @Override
@@ -37,8 +37,12 @@ public class Main {
         });
         ServerSocket serverSocket = null;
         try {
+            // 先读取配置文件
+            Prop.getInstance();
+            // 再初始化用户信息
+            User.initUsers();
             Logger.log(Types.SYS, Levels.INFO, "LiteFTPD by AdlerED <- GitHub");
-            //Listen socket connections, handle with SocketHandler.
+            // Listen socket connections, handle with SocketHandler.
             serverSocket = new ServerSocket(Variable.port);
             Logger.log(Types.SYS, Levels.INFO, "Listening " + serverSocket.getLocalSocketAddress());
             Logger.log(Types.SYS, Levels.INFO, "You can connect to the FTP Server via following IP address:");
@@ -54,14 +58,14 @@ public class Main {
             }
             System.out.println(consoleTable.toString());
         } catch (IOException IOE) {
-            //TODO
+            // TODO
             IOE.printStackTrace();
         }
         while (true) {
             try {
                 Logger.log(Types.SYS, Levels.INFO, "Memory used: " + Status.memoryUsed());
                 Socket socket = serverSocket.accept();
-                //Online limit checking
+                // Online limit checking
                 if (Variable.online >= Variable.maxUserLimit && Variable.maxUserLimit != 0) {
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
                     bufferedOutputStream.write(Dict.outOfOnlineLimit.getBytes());
@@ -73,7 +77,7 @@ public class Main {
                     Pool.handlerPool.execute(new SocketHandler(socket));
                 }
             } catch (IOException IOE) {
-                //TODO
+                // TODO
                 IOE.printStackTrace();
             }
         }

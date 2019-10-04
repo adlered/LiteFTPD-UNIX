@@ -74,7 +74,7 @@ public class PauseListen extends Thread {
                     break;
                 }
             }
-            //Display log every 10 seconds.
+            // Display log every 10 seconds.
             if (timeout % 10 == 0 && timeout != 0) {
                 Logger.log(Types.SYS, Levels.DEBUG, ipAddressBind.getIPADD() + " timeout: " + timeout + "=>" + Variable.timeout);
             }
@@ -91,23 +91,23 @@ public class PauseListen extends Thread {
         }
         send.send("LiteFTPD > :( Sorry, the connection is closed from server! Reason: " + reason + ".\r\n");
         Logger.log(Types.SYS, Levels.INFO, "Shutting down " + ipAddressBind.getIPADD() + ", reason: " + reason);
-        //Shutdown this hole connection.
+        // Shutdown this hole connection.
         running = false;
         ChangeVar.reduceOnlineCount();
         try {
-            //BufferedStream
+            // BufferedStream
             bufferedInputStream.close();
             bufferedOutputStream.close();
-            //Stream
+            // Stream
             inputStream.close();
             outputStream.close();
-            //Socket
+            // Socket
             socket.close();
         } catch (Exception E) {
             E.getCause();
             Logger.log(Types.SYS, Levels.WARN, "Shutting " + ipAddressBind.getIPADD() + " with errors.");
         } finally {
-            //Variables
+            // Variables
             bufferedInputStream = null;
             bufferedOutputStream = null;
             inputStream = null;

@@ -35,7 +35,7 @@ public class Receive extends Thread {
     @Override
     public void run() {
         try {
-            //READ
+            // READ
             AutoInputStream autoInputStream = new AutoInputStream(inputStream, 1024, privateVariable);
             while (true) {
                 String autoLine = autoInputStream.readLineAuto();
@@ -47,7 +47,7 @@ public class Receive extends Thread {
                 commandAnalyze.analyze(autoLine);
             }
         } catch (IOException IOE) {
-            //TODO
+            // TODO
             IOE.printStackTrace();
         }
     }

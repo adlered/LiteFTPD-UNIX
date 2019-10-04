@@ -38,16 +38,16 @@ public class SocketHandler extends Thread {
         try {
             IPADD = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
             SRVIPADD = socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort();
-            //Import data streams.
+            // Import data streams.
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
-            //Input stream use buffer, but output is not because of trans situations.
+            // Input stream use buffer, but output is not because of trans situations.
             bufferedInputStream = new BufferedInputStream(inputStream);
             bufferedOutputStream = new BufferedOutputStream(outputStream);
             this.socket = socket;
             privateVariable = new PrivateVariable();
         } catch (IOException IOE) {
-            //TODO
+            // TODO
             IOE.printStackTrace();
         }
     }
@@ -56,13 +56,13 @@ public class SocketHandler extends Thread {
     public void run() {
         Logger.log(Types.SYS, Levels.INFO, IPADD + " has been mounted into " + Thread.currentThread());
         ipAddressBind = new IPAddressBind(IPADD, SRVIPADD);
-        //Process while user quit forced or manually.
+        // Process while user quit forced or manually.
         PauseListen pauseListen = new PauseListen(privateVariable, socket,
                 bufferedOutputStream, outputStream, bufferedInputStream,
                 inputStream, ipAddressBind,
                 commandAnalyze, receive
         );
-        //Start model
+        // Start model
         send = new Send(outputStream, pauseListen, privateVariable, ipAddressBind);
         pauseListen.setSend(send);
         commandAnalyze = new CommandAnalyze(send, SRVIPADD, privateVariable, pauseListen, ipAddressBind);

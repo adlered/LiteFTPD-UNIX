@@ -71,7 +71,7 @@ public class PORT extends Thread {
                     double kb = 0;
                     long bts = 0;
                     if (listening != null) {
-                        //To avoid bare line feeds.
+                        // To avoid bare line feeds.
                         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
                         listening = listening.replaceAll("\r\n", "\n");
                         listening = listening.replaceAll("\n", "\r\n");

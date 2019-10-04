@@ -50,7 +50,7 @@ public class AutoInputStream {
                     ++cursor;
                     ++c2Cursor;
                 }
-                //Check if space exists, break it.
+                // Check if space exists, break it.
                 if (new String(storage, "UTF-8").indexOf("\n") != -1) {
                     break;
                 }
@@ -58,7 +58,7 @@ public class AutoInputStream {
                 break;
             }
         }
-        //Clean wasted space
+        // Clean wasted space
         int storageCursor = 0;
         int firstEmptyMark = -1;
         boolean marked = false;
@@ -72,7 +72,7 @@ public class AutoInputStream {
             ++storageCursor;
         }
         if (firstEmptyMark == -1) firstEmptyMark = storage.length;
-        //Init a fit size bytes.
+        // Init a fit size bytes.
         byte[] cleaned = new byte[firstEmptyMark];
         for (int i = 0; i < firstEmptyMark; i++) {
             cleaned[i] = storage[i];
