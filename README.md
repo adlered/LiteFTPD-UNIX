@@ -30,7 +30,16 @@
 
 ## 如何体验？
 
+### GIF演示
+
+如果你面临长城防火墙的阻挡，建议你将下面的GIF（位于项目根目录）直接下载下来预览，否则可能变成静态图片。
+
+![How-to-LiteFTPD-UNIX.gif](/How-to-LiteFTPD-UNIX.gif)
+
+### 文本说明
+
 该服务端**支持绝大部分系统的绝大部分FTP客户端连接**，但服务端本身由于需要保证稳定，仅支持在Linux/MacOS系统上运行（由于文件系统和编码）。  
+
 你可以将项目clone或直接下载到本地，进入release文件夹，运行java -jar LiteFTPD-UNIX.jar即可。LiteFTPD默认会自动监听21端口。  
 如果在同目录下不存在配置文件`config.prop`，在你第一次运行时它会自动生成一个。  
 修改`config.prop`中的文件，就可以修改LiteFTPD的配置了，十分简单易用。  
