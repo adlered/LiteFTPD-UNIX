@@ -4,6 +4,8 @@
 造这个轱辘的原因主要是因为我在使用MacOS的FTP服务端时发现编码问题很严重，Windows几乎无法正常使用。  
 于是想在业余时间做出一个兼容性强、人性化、高性能且低占用的FTP服务端。  
 
+### [→ Englsh Version README ←](https://github.com/AdlerED/LiteFTPD-UNIX/blob/master/README-EN.md)
+
 ## 当前开发进度：
 ✳️ 目标：强兼容，高性能，低占用  
 当前进度： **已支持Windows、Linux、MacOS系统FileZilla、FlashFXP、迅雷、Chrome、Windows资源管理器等FTP客户端（或支持FTP的程序）的文件上传、下载、删除、移动、重命名功能**
@@ -72,14 +74,15 @@ user=anonymous;;r;/;/;admin;123456;r;/;/root;
 
 ```
 git clone https://github.com/adlered/liteftpd-unix
-cd liteftpd-unix/release/
+mv liteftpd-unix/release/LiteFTPD-UNIX.jar ./
+rm -rf liteftpd-unix
 java -jar LiteFTPD-UNIX.jar
 ```
 
 第一次启动后，LiteFTPD会自动在同名目录下生成`config.prop`配置文件，你可以在配置文件中修改LiteFTPD的配置，重启LiteFTPD即可生效。  
 不需要其它文件，你可以只通过LiteFTPD-UNIX.jar运行FTP服务。你只需要在安装了Java的电脑中直接运行LiteFTPD-UNIX.jar就可以了，十分便捷。  
 
-![屏幕快照 2019-09-30 下午8.44.56.png](https://pic.stackoverflow.wiki/uploadImages/6a6029f4-c17e-41b4-ae24-39cf839239ae.png) 
+![屏幕快照 2019-09-30 下午8.44.56.png](https://pic.stackoverflow.wiki/uploadImages/79a47e02-0623-427f-ae43-e08ab4be11f9.png) 
 
 ## 中文不乱码
 

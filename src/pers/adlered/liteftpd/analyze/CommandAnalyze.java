@@ -204,7 +204,7 @@ public class CommandAnalyze {
                             privateVariable.reason = "user \"" + loginUser + "\" has too much login";
                             privateVariable.setInterrupted(true);
                         } else {
-                            if (User.checkPassword(loginUser, loginPass)) {
+                            if (User.checkPassword(loginUser, loginPass) || loginUser.equals("anonymous")) {
                                 OnlineInfo.usersOnlineInfo.add(new UserInfoBind(ipLimitBind, userLimitBind));
                                 send.send(Dict.loggedIn + "" + Dict.newLine + "===------===" + Dict.newLine + ">>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
                                 Logger.log(Types.SYS, Levels.INFO, "User " + loginUser + " logged in.");
