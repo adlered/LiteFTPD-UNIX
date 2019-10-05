@@ -60,7 +60,7 @@ public class CharsetSelector {
                 }
             }
             UTF8ERR = count;
-            Logger.log(Types.SYS, Levels.DEBUG,"UTF8 " + count);
+            Logger.log(Types.SYS, Levels.DEBUG, "UTF8 " + count);
         }
         if (GB2312 != null) {
             int fromIndex = 0;
@@ -75,7 +75,7 @@ public class CharsetSelector {
                 }
             }
             GB2312ERR = count;
-            Logger.log(Types.SYS, Levels.DEBUG,"GB2312 " + count);
+            Logger.log(Types.SYS, Levels.DEBUG, "GB2312 " + count);
         }
         if (UTF8ERR < GB2312ERR) {
             return "UTF-8";

@@ -29,7 +29,7 @@ public class GoodXX {
             return "evening";
         }
         if (a > 19 && a <= 24) {
-           return "night";
+            return "night";
         }
         return "";
     }

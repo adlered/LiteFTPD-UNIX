@@ -8,7 +8,8 @@ import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.tool.AutoInputStream;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <h3>LiteFTPD-UNIX</h3>

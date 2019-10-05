@@ -10,7 +10,9 @@ import pers.adlered.liteftpd.main.Send;
 import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.*;
-import java.net.*;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 /**
  * <h3>LiteFTPD-UNIX</h3>
@@ -46,7 +48,7 @@ public class PORT extends Thread {
     private boolean connect() {
         boolean result = true;
         try {
-            Logger.log(Types.SYS, Levels.DEBUG,"Connecting to " + ip + ":" + port + "...");
+            Logger.log(Types.SYS, Levels.DEBUG, "Connecting to " + ip + ":" + port + "...");
             Socket socket = new Socket(ip, port);
             this.socket = socket;
         } catch (UnknownHostException UHE) {
@@ -63,10 +65,10 @@ public class PORT extends Thread {
     public void run() {
         if (connect()) {
             try {
-                Logger.log(Types.SYS, Levels.DEBUG,"Connected. Translating with " + socket.getLocalSocketAddress() + " to " + socket.getRemoteSocketAddress() + "...");
+                Logger.log(Types.SYS, Levels.DEBUG, "Connected. Translating with " + socket.getLocalSocketAddress() + " to " + socket.getRemoteSocketAddress() + "...");
                 privateVariable.setTimeoutLock(true);
                 if (pauseListen.isRunning()) {
-                    Logger.log(Types.SYS, Levels.DEBUG,"Port mode is in transmission.");
+                    Logger.log(Types.SYS, Levels.DEBUG, "Port mode is in transmission.");
                     long startTime = System.nanoTime();
                     double kb = 0;
                     long bts = 0;
@@ -110,7 +112,7 @@ public class PORT extends Thread {
                             privateVariable.resetRest();
                         }
                     } else if (path != null) {
-                        Logger.log(Types.RECV, Levels.DEBUG,"Port mode store. Path: " + path);
+                        Logger.log(Types.RECV, Levels.DEBUG, "Port mode store. Path: " + path);
                         File file = new File(path);
                         if (!file.getParentFile().exists()) {
                             file.getParentFile().mkdirs();
@@ -118,10 +120,10 @@ public class PORT extends Thread {
                         FileOutputStream fileOutputStream = null;
                         if (privateVariable.getRest() == 0l) {
                             boolean deleted = file.delete();
-                            Logger.log(Types.RECV, Levels.DEBUG,"The file is already exists but deleted: " + deleted);
+                            Logger.log(Types.RECV, Levels.DEBUG, "The file is already exists but deleted: " + deleted);
                             fileOutputStream = new FileOutputStream(file, false);
                         } else {
-                            Logger.log(Types.RECV, Levels.DEBUG,"Continue file receive.");
+                            Logger.log(Types.RECV, Levels.DEBUG, "Continue file receive.");
                             fileOutputStream = new FileOutputStream(file, true);
                         }
                         //FileOutputStream will be create a new file auto.
@@ -160,7 +162,7 @@ public class PORT extends Thread {
                     }
                 }
             } catch (SocketException SE) {
-                Logger.log(Types.SYS, Levels.ERROR,"Listening stopped.");
+                Logger.log(Types.SYS, Levels.ERROR, "Listening stopped.");
             } catch (IOException IOE) {
                 //TODO
                 IOE.printStackTrace();
@@ -176,7 +178,7 @@ public class PORT extends Thread {
                 socket = null;
                 listening = null;
                 file = null;
-                Logger.log(Types.SYS, Levels.DEBUG,"PORT Closed.");
+                Logger.log(Types.SYS, Levels.DEBUG, "PORT Closed.");
             }
         } else {
             privateVariable.setInterrupted(true);
@@ -200,7 +202,7 @@ public class PORT extends Thread {
             socket.shutdownInput();
             socket.shutdownOutput();
             socket.close();
-            Logger.log(Types.SYS, Levels.DEBUG,"Socket on " + socket.getLocalSocketAddress() + "stopped.");
+            Logger.log(Types.SYS, Levels.DEBUG, "Socket on " + socket.getLocalSocketAddress() + "stopped.");
         } catch (IOException IOE) {
             IOE.printStackTrace();
         } catch (NullPointerException NPE) {

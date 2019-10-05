@@ -7,7 +7,6 @@ import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
-import pers.adlered.liteftpd.variable.ChangeVar;
 
 import java.io.IOException;
 import java.io.OutputStream;

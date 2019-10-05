@@ -7,6 +7,7 @@ package pers.adlered.liteftpd.tool;
  * @author : https://github.com/AdlerED
  * @date : 2019-09-19 09:21
  **/
+
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
@@ -14,6 +15,7 @@ import pers.adlered.liteftpd.logger.Types;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class AutoInputStream {
     private InputStream inputStream = null;
@@ -37,9 +39,10 @@ public class AutoInputStream {
                     Thread.sleep(5);
                 }
             } catch (IOException IOE) {
-                Logger.log(Types.SEND, Levels.WARN,"Auto Input Stream stopped.");
+                Logger.log(Types.SEND, Levels.WARN, "Auto Input Stream stopped.");
                 break;
-            } catch (InterruptedException IE) {}
+            } catch (InterruptedException IE) {
+            }
             byte[] cache = new byte[available];
             inputStream.read(cache);
             int cursor = 0;
@@ -51,7 +54,7 @@ public class AutoInputStream {
                     ++c2Cursor;
                 }
                 // Check if space exists, break it.
-                if (new String(storage, "UTF-8").indexOf("\n") != -1) {
+                if (new String(storage, StandardCharsets.UTF_8).indexOf("\n") != -1) {
                     break;
                 }
             } else {
@@ -77,7 +80,7 @@ public class AutoInputStream {
         for (int i = 0; i < firstEmptyMark; i++) {
             cleaned[i] = storage[i];
         }
-        String UTF8 = new String(cleaned, "UTF-8");
+        String UTF8 = new String(cleaned, StandardCharsets.UTF_8);
         String GB2312 = new String(cleaned, "GB2312");
         String charset = CharsetSelector.getCharset(cleaned);
         if (!privateVariable.isEncodeLock()) {

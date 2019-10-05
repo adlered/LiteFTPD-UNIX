@@ -18,21 +18,18 @@ import java.net.Socket;
  * @date : 2019-09-19 09:21
  **/
 public class SocketHandler extends Thread {
+    Send send = null;
+    CommandAnalyze commandAnalyze = null;
+    Receive receive = null;
+    PrivateVariable privateVariable = null;
     private InputStream inputStream = null;
     private OutputStream outputStream = null;
     private BufferedInputStream bufferedInputStream = null;
     private BufferedOutputStream bufferedOutputStream = null;
     private Socket socket = null;
     private IPAddressBind ipAddressBind = null;
-
     private String IPADD = null;
     private String SRVIPADD = null;
-
-    Send send = null;
-    CommandAnalyze commandAnalyze = null;
-    Receive receive = null;
-
-    PrivateVariable privateVariable = null;
 
     public SocketHandler(Socket socket) {
         try {

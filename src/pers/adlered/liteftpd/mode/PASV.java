@@ -43,7 +43,7 @@ public class PASV extends Thread {
         boolean result = true;
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            Logger.log(Types.SYS, Levels.DEBUG,"Listening " + port + "...");
+            Logger.log(Types.SYS, Levels.DEBUG, "Listening " + port + "...");
             this.serverSocket = serverSocket;
         } catch (BindException BE) {
             result = false;
@@ -56,14 +56,14 @@ public class PASV extends Thread {
     @Override
     public void run() {
         try {
-            Logger.log(Types.SYS, Levels.DEBUG,"Transmitter is waiting the port " + serverSocket.getLocalPort() + " for the client.");
+            Logger.log(Types.SYS, Levels.DEBUG, "Transmitter is waiting the port " + serverSocket.getLocalPort() + " for the client.");
             Socket socket = serverSocket.accept();
             this.socket = socket;
-            Logger.log(Types.SYS, Levels.DEBUG,"Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");
+            Logger.log(Types.SYS, Levels.DEBUG, "Connected. Waiting for " + socket.getRemoteSocketAddress() + "...");
             try {
                 while (listening == null && file == null && path == null) {
                     if (!pauseListen.isRunning()) {
-                        Logger.log(Types.SYS, Levels.WARN,"Passive mode listener paused.");
+                        Logger.log(Types.SYS, Levels.WARN, "Passive mode listener paused.");
                         break;
                     }
                     Thread.sleep(5);
@@ -72,7 +72,7 @@ public class PASV extends Thread {
             }
             privateVariable.setTimeoutLock(true);
             if (pauseListen.isRunning()) {
-                Logger.log(Types.SYS, Levels.DEBUG,"Service has response.");
+                Logger.log(Types.SYS, Levels.DEBUG, "Service has response.");
                 long startTime = System.nanoTime();
                 double kb = 0;
                 long bts = 0;
@@ -116,7 +116,7 @@ public class PASV extends Thread {
                         privateVariable.resetRest();
                     }
                 } else if (path != null) {
-                    Logger.log(Types.RECV, Levels.DEBUG,"Passive mode store. Path: " + path);
+                    Logger.log(Types.RECV, Levels.DEBUG, "Passive mode store. Path: " + path);
                     File file = new File(path);
                     if (!file.getParentFile().exists()) {
                         file.getParentFile().mkdirs();
@@ -124,10 +124,10 @@ public class PASV extends Thread {
                     FileOutputStream fileOutputStream = null;
                     if (privateVariable.getRest() == 0l) {
                         boolean deleted = file.delete();
-                        Logger.log(Types.RECV, Levels.DEBUG,"The file is already exists but deleted: " + deleted);
+                        Logger.log(Types.RECV, Levels.DEBUG, "The file is already exists but deleted: " + deleted);
                         fileOutputStream = new FileOutputStream(file, false);
                     } else {
-                        Logger.log(Types.RECV, Levels.DEBUG,"Continue file receive.");
+                        Logger.log(Types.RECV, Levels.DEBUG, "Continue file receive.");
                         fileOutputStream = new FileOutputStream(file, true);
                     }
                     // FileOutputStream will be create a new file auto.
@@ -168,7 +168,7 @@ public class PASV extends Thread {
                 }
             }
         } catch (SocketException SE) {
-            Logger.log(Types.SYS, Levels.ERROR,"Listening stopped.");
+            Logger.log(Types.SYS, Levels.ERROR, "Listening stopped.");
         } catch (IOException IOE) {
             // TODO
             IOE.printStackTrace();
@@ -185,7 +185,7 @@ public class PASV extends Thread {
             socket = null;
             listening = null;
             file = null;
-            Logger.log(Types.SYS, Levels.DEBUG,"PASV Closed.");
+            Logger.log(Types.SYS, Levels.DEBUG, "PASV Closed.");
         }
     }
 
@@ -207,7 +207,7 @@ public class PASV extends Thread {
             socket.shutdownInput();
             socket.shutdownOutput();
             socket.close();
-            Logger.log(Types.SYS, Levels.DEBUG,"Server socket on " + serverSocket.getLocalSocketAddress() + "stopped.");
+            Logger.log(Types.SYS, Levels.DEBUG, "Server socket on " + serverSocket.getLocalSocketAddress() + "stopped.");
         } catch (IOException IOE) {
             IOE.printStackTrace();
         } catch (NullPointerException NPE) {

@@ -11,7 +11,10 @@ import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.variable.ChangeVar;
 import pers.adlered.liteftpd.variable.Variable;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 /**
@@ -125,7 +128,7 @@ public class PauseListen extends Thread {
             receive = null;
             Logger.log(Types.SYS, Levels.DEBUG, "Called Garbage Collection.");
             System.gc();
-            Logger.log(Types.SYS, Levels.INFO,"Memory used: " + Status.memoryUsed());
+            Logger.log(Types.SYS, Levels.INFO, "Memory used: " + Status.memoryUsed());
         }
     }
 

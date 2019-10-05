@@ -9,7 +9,6 @@ import pers.adlered.liteftpd.tool.ConsoleTable;
 import pers.adlered.liteftpd.tool.LocalAddress;
 import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.user.User;
-import pers.adlered.liteftpd.user.UserProps;
 import pers.adlered.liteftpd.variable.ChangeVar;
 import pers.adlered.liteftpd.variable.Variable;
 import pers.adlered.liteftpd.wizard.config.Prop;

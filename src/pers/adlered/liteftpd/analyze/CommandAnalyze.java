@@ -1,10 +1,5 @@
 package pers.adlered.liteftpd.analyze;
 
-import java.io.*;
-import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-
 import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.dict.Code;
 import pers.adlered.liteftpd.dict.Dict;
@@ -17,10 +12,17 @@ import pers.adlered.liteftpd.mode.PASV;
 import pers.adlered.liteftpd.mode.PORT;
 import pers.adlered.liteftpd.tool.GoodXX;
 import pers.adlered.liteftpd.tool.RandomNum;
-import pers.adlered.liteftpd.user.Permission;
 import pers.adlered.liteftpd.user.User;
 import pers.adlered.liteftpd.user.UserProps;
 import pers.adlered.liteftpd.variable.Variable;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <h3>LiteFTPD-UNIX</h3>
@@ -69,6 +71,59 @@ public class CommandAnalyze {
         this.ipAddressBind = ipAddressBind;
     }
 
+    public static boolean isPortUsing(String host, int port) {
+        boolean flag = false;
+        try {
+            Socket socket = new Socket(host, port);
+            flag = true;
+            socket.close();
+        } catch (IOException IOE) {
+            Logger.log(Types.SYS, Levels.DEBUG, "Port " + port + " already in use, re-generating...");
+        }
+        return flag;
+    }
+
+    public static void delFolder(String folderPath) {
+        try {
+            delAllFile(folderPath); //删除完里面所有内容
+            String filePath = folderPath;
+            filePath = filePath;
+            java.io.File myFilePath = new java.io.File(filePath);
+            myFilePath.delete(); //删除空文件夹
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean delAllFile(String path) {
+        boolean flag = false;
+        File file = new File(path);
+        if (!file.exists()) {
+            return flag;
+        }
+        if (!file.isDirectory()) {
+            return flag;
+        }
+        String[] tempList = file.list();
+        File temp = null;
+        for (int i = 0; i < tempList.length; i++) {
+            if (path.endsWith(File.separator)) {
+                temp = new File(path + tempList[i]);
+            } else {
+                temp = new File(path + File.separator + tempList[i]);
+            }
+            if (temp.isFile()) {
+                temp.delete();
+            }
+            if (temp.isDirectory()) {
+                delAllFile(path + "/" + tempList[i]);//先删除文件夹里面的文件
+                delFolder(path + "/" + tempList[i]);//再删除空文件夹
+                flag = true;
+            }
+        }
+        return flag;
+    }
+
     public void analyze(String command) {
         pauseListen.resetTimeout();
         String cmd = null;
@@ -83,8 +138,7 @@ public class CommandAnalyze {
             cmd = split[0];
             if (split.length == 2) {
                 arg1 = split[1];
-            }
-            else if (split.length > 2) {
+            } else if (split.length > 2) {
                 arg1 = split[1];
                 arg2 = split[2];
             }
@@ -100,16 +154,14 @@ public class CommandAnalyze {
                         if (arg1 == null) {
                             arg1 = "anonymous";
                         }
-                        Logger.log(Types.SYS, Levels.DEBUG,Thread.currentThread() + " User login: " + arg1);
+                        Logger.log(Types.SYS, Levels.DEBUG, Thread.currentThread() + " User login: " + arg1);
                         loginUser = arg1;
                         send.send(Dict.passwordRequired + loginUser + "." + "" + Dict.newLine + "");
                         step = 2;
-                    }
-                    else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
+                    } else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
                         privateVariable.setInterrupted(true);
-                    }
-                    else if (cmd.equals("OPTS")) {
+                    } else if (cmd.equals("OPTS")) {
                         if (arg1 != null) {
                             arg1 = arg1.toUpperCase();
                             if (arg1.equals("UTF8")) {
@@ -127,18 +179,17 @@ public class CommandAnalyze {
                                 }
                             }
                         }
-                    }
-                    else {
+                    } else {
                         unknownCommand();
                     }
                     break;
                 case 2:
                     if (cmd.equals("PASS")) {
-                        Logger.log(Types.SYS, Levels.DEBUG,"User " + loginUser + "'s password: " + arg1);
+                        Logger.log(Types.SYS, Levels.DEBUG, "User " + loginUser + "'s password: " + arg1);
                         loginPass = arg1;
                         if (User.checkPassword(loginUser, loginPass)) {
                             send.send(Dict.loggedIn + "" + Dict.newLine + "===------===" + Dict.newLine + ">>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
-                            Logger.log(Types.SYS, Levels.INFO,"User " + loginUser + " logged in.");
+                            Logger.log(Types.SYS, Levels.INFO, "User " + loginUser + " logged in.");
                             userProps = User.getUserProps(loginUser);
                             lockPath = userProps.getPermitDir();
                             currentPath = userProps.getDefaultDir();
@@ -147,12 +198,10 @@ public class CommandAnalyze {
                             send.send("530 Sorry, the password is wrong." + Dict.newLine);
                             privateVariable.setInterrupted(true);
                         }
-                    }
-                    else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
+                    } else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
                         privateVariable.setInterrupted(true);
-                    }
-                    else {
+                    } else {
                         unknownCommand();
                     }
                     break;
@@ -167,8 +216,7 @@ public class CommandAnalyze {
                         send.send("211-Features:" + Dict.newLine + "" +
                                 "UTF8" + Dict.newLine + "" +
                                 "211 End" + Dict.newLine + "");
-                    }
-                    else if (cmd.equals("SITE")) {
+                    } else if (cmd.equals("SITE")) {
                         send.send("501 SITE option not supported." + Dict.newLine);
                     }
                     /**
@@ -176,12 +224,11 @@ public class CommandAnalyze {
                      */
                     else if (cmd.equals("PWD")) {
                         //if (file.isDirectory()) {
-                            send.send(Dict.currentDir + "\"" + getLockPath(currentPath, lockPath) + "\" is current directory." + "" + Dict.newLine + "");
+                        send.send(Dict.currentDir + "\"" + getLockPath(currentPath, lockPath) + "\" is current directory." + "" + Dict.newLine + "");
                         //} else {
                         //    send.send(Dict.isFile + file.getName() + "" + Dict.newLine + "");
                         //}
-                    }
-                    else if (cmd.equals("TYPE")) {
+                    } else if (cmd.equals("TYPE")) {
                         arg1 = arg1.toUpperCase();
                         switch (arg1) {
                             case "I":
@@ -193,12 +240,10 @@ public class CommandAnalyze {
                                 send.send(Dict.setType + "A." + "" + Dict.newLine + "");
                                 break;
                         }
-                    }
-                    else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
+                    } else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);
                         privateVariable.setInterrupted(true);
-                    }
-                    else if (cmd.equals("LIST")) {
+                    } else if (cmd.equals("LIST")) {
                         send.send(Dict.openPassiveASCII);
                         privateVariable.setTimeoutLock(true);
                         try {
@@ -232,12 +277,10 @@ public class CommandAnalyze {
                             //TODO
                             IE.printStackTrace();
                         }
-                    }
-                    else if (cmd.equals("CDUP")) {
+                    } else if (cmd.equals("CDUP")) {
                         upperDirectory();
                         send.send("250 Directory changed to " + getLockPath(currentPath, lockPath) + "" + Dict.newLine + "");
-                    }
-                    else if (cmd.equals("CWD")) {
+                    } else if (cmd.equals("CWD")) {
                         if (arg1 != null) {
                             String completePath = arg1;
                             if (arg2 != null) {
@@ -273,15 +316,12 @@ public class CommandAnalyze {
                         } else {
                             send.send(Dict.unknownCommand);
                         }
-                    }
-                    else if (cmd.equals("SYST")) {
+                    } else if (cmd.equals("SYST")) {
                         send.send(Dict.type);
-                    }
-                    else if (cmd.equals("NOOP")) {
+                    } else if (cmd.equals("NOOP")) {
                         privateVariable.setTimeoutLock(true);
                         send.send("200 Command okay." + Dict.newLine);
-                    }
-                    else if (cmd.equals("MKD")) {
+                    } else if (cmd.equals("MKD")) {
                         if (userProps.getPermission().contains("c")) {
                             String completePath = arg1;
                             if (arg2 != null) {
@@ -347,8 +387,7 @@ public class CommandAnalyze {
                         } else {
                             send.send(Dict.noPermission);
                         }
-                    }
-                    else if (cmd.equals("RNFR")) {
+                    } else if (cmd.equals("RNFR")) {
                         if (userProps.getPermission().contains("m")) {
                             String completePath = arg1;
                             if (arg2 != null) {
@@ -370,8 +409,7 @@ public class CommandAnalyze {
                         } else {
                             send.send(Dict.noPermission);
                         }
-                    }
-                    else if (cmd.equals("RNTO")) {
+                    } else if (cmd.equals("RNTO")) {
                         if (userProps.getPermission().contains("m")) {
                             String completePath = arg1;
                             if (arg2 != null) {
@@ -430,8 +468,7 @@ public class CommandAnalyze {
                         portMode.setTarget(ip, port);
                         send.send("200 PORT Command successful." + Dict.newLine + "");
                         mode = "port";
-                    }
-                    else if (cmd.equals("PASV")) {
+                    } else if (cmd.equals("PASV")) {
                         if (passiveMode != null) {
                             passiveMode.stopSocket();
                         }
@@ -451,8 +488,7 @@ public class CommandAnalyze {
                         send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "" + Dict.newLine + "");
                         passiveMode.start();
                         mode = "passive";
-                    }
-                    else if (cmd.equals("RETR")) {
+                    } else if (cmd.equals("RETR")) {
                         if (userProps.getPermission().contains("r")) {
                             String completePath = arg1;
                             if (arg2 != null) {
@@ -492,8 +528,7 @@ public class CommandAnalyze {
                         } else {
                             send.send(Dict.noPermission);
                         }
-                    }
-                    else if (cmd.equals("STOR")) {
+                    } else if (cmd.equals("STOR")) {
                         if (userProps.getPermission().contains("w")) {
                             String completePath = arg1;
                             if (arg2 != null) {
@@ -535,8 +570,7 @@ public class CommandAnalyze {
                         } else {
                             send.send(Dict.noPermission);
                         }
-                    }
-                    else if (cmd.equals("SIZE")) {
+                    } else if (cmd.equals("SIZE")) {
                         if (userProps.getPermission().contains("r")) {
                             String completePath = arg1;
                             if (arg2 != null) {
@@ -554,8 +588,7 @@ public class CommandAnalyze {
                         } else {
                             send.send(Dict.noPermission);
                         }
-                    }
-                    else if (cmd.equals("OPTS")) {
+                    } else if (cmd.equals("OPTS")) {
                         if (arg1 != null) {
                             arg1 = arg1.toUpperCase();
                             if (arg1.equals("UTF8")) {
@@ -573,8 +606,7 @@ public class CommandAnalyze {
                                 }
                             }
                         }
-                    }
-                    else if (cmd.equals("REST")) {
+                    } else if (cmd.equals("REST")) {
                         if (arg1 != null) {
                             send.send("350 Restarting at " + arg1 + ". Send STORE or RETRIEVE." + Dict.newLine);
                             try {
@@ -583,17 +615,14 @@ public class CommandAnalyze {
                                 E.printStackTrace();
                             }
                         }
-                    }
-                    else if (cmd.equals("ABOR")) {
+                    } else if (cmd.equals("ABOR")) {
                         send.send(Dict.bye);
                         privateVariable.setInterrupted(true);
-                    }
-                    else if (cmd.equals("GB")) {
+                    } else if (cmd.equals("GB")) {
                         privateVariable.setEncode("GB2312");
                         privateVariable.setEncodeLock(true);
                         send.send(Code.SERVICEREADY + "-LiteFTPD" + Dict.newLine + ">>> 编码已适应Windows FTP客户端，您现在看到的这条信息应是正常的简体中文。" + Dict.newLine + ">>> Your IP address: " + ipAddressBind.getIPADD() + "" + Dict.newLine + "220" + Dict.connectionStarted);
-                    }
-                    else {
+                    } else {
                         unknownCommand();
                     }
                     break;
@@ -622,7 +651,7 @@ public class CommandAnalyze {
             String[] dir = currentPath.split("/");
             currentPath = "";
             for (int i = 0; i < dir.length - 1; i++) {
-                Logger.log(Types.SYS, Levels.DEBUG,"len: " + dir.length + " cur: " + i);
+                Logger.log(Types.SYS, Levels.DEBUG, "len: " + dir.length + " cur: " + i);
                 if (i == dir.length - 2) {
                     currentPath += dir[i];
                 } else {
@@ -659,20 +688,8 @@ public class CommandAnalyze {
             path = currentPath + "/" + path;
         }
         path = path.replaceAll("//", "/");
-        Logger.log(Types.SYS, Levels.DEBUG,"Absolute path: " + path);
+        Logger.log(Types.SYS, Levels.DEBUG, "Absolute path: " + path);
         return path;
-    }
-
-    public static boolean isPortUsing(String host,int port) {
-        boolean flag = false;
-        try {
-            Socket socket = new Socket(host, port);
-            flag = true;
-            socket.close();
-        } catch (IOException IOE) {
-            Logger.log(Types.SYS, Levels.DEBUG,"Port " + port + " already in use, re-generating...");
-        }
-        return flag;
     }
 
     public Map<String, Integer> generatePort() {
@@ -689,52 +706,11 @@ public class CommandAnalyze {
             finalPort = calcPort * 256 + randomSub;
             ++count;
         } while (finalPort < Variable.minPort || finalPort > Variable.maxPort || randomSub < 0 || randomSub > 64);
-        Logger.log(Types.SYS, Levels.DEBUG,count + " times while generating port: " + finalPort);
+        Logger.log(Types.SYS, Levels.DEBUG, count + " times while generating port: " + finalPort);
         map.put("randomPort", randomPort);
         map.put("randomSub", randomSub);
         map.put("calcPort", calcPort);
         map.put("finalPort", finalPort);
         return map;
-    }
-
-    public static void delFolder(String folderPath) {
-        try {
-            delAllFile(folderPath); //删除完里面所有内容
-            String filePath = folderPath;
-            filePath = filePath.toString();
-            java.io.File myFilePath = new java.io.File(filePath);
-            myFilePath.delete(); //删除空文件夹
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static boolean delAllFile(String path) {
-        boolean flag = false;
-        File file = new File(path);
-        if (!file.exists()) {
-            return flag;
-        }
-        if (!file.isDirectory()) {
-            return flag;
-        }
-        String[] tempList = file.list();
-        File temp = null;
-        for (int i = 0; i < tempList.length; i++) {
-            if (path.endsWith(File.separator)) {
-                temp = new File(path + tempList[i]);
-            } else {
-                temp = new File(path + File.separator + tempList[i]);
-            }
-            if (temp.isFile()) {
-                temp.delete();
-            }
-            if (temp.isDirectory()) {
-                delAllFile(path + "/" + tempList[i]);//先删除文件夹里面的文件
-                delFolder(path + "/" + tempList[i]);//再删除空文件夹
-                flag = true;
-            }
-        }
-        return flag;
     }
 }

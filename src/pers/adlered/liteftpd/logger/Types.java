@@ -7,5 +7,5 @@ public enum Types {
     SEND: Send task status;
     TRANS: Transition task status;
      */
-    SYS, RECV, SEND, TRANS;
+    SYS, RECV, SEND, TRANS
 }

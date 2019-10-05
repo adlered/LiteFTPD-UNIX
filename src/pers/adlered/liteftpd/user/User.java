@@ -19,12 +19,12 @@ public class User {
     public static void initUsers() {
         users = new HashMap<>();
         String[] userList = Variable.user.split(";");
-        for (int i = 0; i < userList.length; i+=5) {
+        for (int i = 0; i < userList.length; i += 5) {
             UserProps userProps = new UserProps();
-            userProps.setPassword(userList[i+1]);
-            userProps.setPermission(userList[i+2]);
-            userProps.setPermitDir(userList[i+3]);
-            userProps.setDefaultDir(userList[i+4]);
+            userProps.setPassword(userList[i + 1]);
+            userProps.setPermission(userList[i + 2]);
+            userProps.setPermitDir(userList[i + 3]);
+            userProps.setDefaultDir(userList[i + 4]);
             users.put(userList[i], userProps);
         }
     }
