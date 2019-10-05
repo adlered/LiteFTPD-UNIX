@@ -9,6 +9,8 @@ package pers.adlered.liteftpd.variable;
  **/
 public class Variable {
     public static String user = "1;anonymous;;r;2;admin;123456;r";
+    public static String ipOnlineLimit = "";
+    public static String userOnlineLimit = "";
     public static int debugLevel = 4;
     public static int online = 0;
     public static long maxUserLimit = 100;
@@ -17,7 +19,7 @@ public class Variable {
     public static boolean smartEncode = true;
     public static String defaultEncode = "UTF-8";
     public static int port = 21;
-    public static String welcomeMessage = "This is a demo version.";
+    public static String welcomeMessage = "";
     public static int minPort = 10240;
     public static int maxPort = 20480;
 }

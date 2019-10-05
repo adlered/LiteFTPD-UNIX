@@ -4,11 +4,11 @@
 # 
 # >> debugLevel
 #     Too high level can affect performance!
-#     0: NONE;
-#     1: INFO;
-#     2: WARN && INFO;
-#     3: ERROR && WARN && INFO;
-#     4: DEBUG && ERROR && WARN && INFO;
+#       0: NONE;
+#       1: INFO;
+#       2: WARN && INFO;
+#       3: ERROR && WARN && INFO;
+#       4: DEBUG && ERROR && WARN && INFO;
 # >> maxUserLimit
 #     Set to 0, will be ignore the limit. Too small value may make multi-thread ftp client not working
 # >> timeout
@@ -25,29 +25,41 @@
 #     Customize welcome message when user visited.
 # >> minPort && maxPort
 #     Appoint passive mode port range.
-#     Recommend 100+ ports in the range to make sure generation have high-performance!
+#       Recommend 100+ ports in the range to make sure generation have high-performance!
 # >> user
 #     Multi users. Format:
-#     user=[username];[password];[permission];[permitDir];[defaultDir]
-#     username: User's login name.
-#     password: User's password.
-#     permission:
-#     r = read
-#     w = write
-#     d = delete
-#     c = create
-#     m = move
-#     Example: rw means read and write permission.
-#     permitDir: Set dir that user can access.
-#     Example: "/" means user can access the hole disk; "/home" means user can access folder/subFolder/files under "/home" directory.
-#     defaultDir: The default dir will be re-directed when user logged.
+#       user=[username];[password];[permission];[permitDir];[defaultDir]
+#       username: User's login name.
+#       password: User's password.
+#       permission:
+#       r = read
+#       w = write
+#       d = delete
+#       c = create
+#       m = move
+#       Example: rw means read and write permission.
+#       permitDir: Set dir that user can access.
+#       Example: "/" means user can access the hole disk; "/home" means user can access folder/subFolder/files under "/home" directory.
+#       defaultDir: The default dir will be re-directed when user logged.
+# >> ipOnlineLimit
+#     Max connections limit for specify IP Address.
+#       ipOnlineLimit=[IP];[Limit];[IP];[Limit]; ...
+#       If you defined IP Address as "0.0.0.0", priority will be given to limiting the number of connections per IP address to a specified number.
+#       "x" means "All". If you defined "192.168.x.x",  that connections from "192.168.1-255.1-255" all will be refused.
+#       BlackList for Ip Address? Set limit to "0"!
+# >> userOnlineLimit
+#     Max connections limit for specify User.
+#       userOnlineLimit=[username];[Limit];[username];[Limit]; ...
+#       If you defined User as "%", priority will be given to limiting the number of connections per User to a specified number.
 # 
 # ================================================================================================
 # =                                          ↓ CONFIG ↓                                          =
 # ================================================================================================
 # 
 user=anonymous;;r;/;/;admin;123456;r;/;/root;
-debugLevel=4
+ipOnlineLimit=0.0.0.0;100;127.x.x.x;10;
+userOnlineLimit=anonymous;2;%;100;
+debugLevel=3
 maxUserLimit=100
 timeout=100
 maxTimeout=21600

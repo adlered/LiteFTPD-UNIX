@@ -9,6 +9,7 @@ import pers.adlered.liteftpd.tool.ConsoleTable;
 import pers.adlered.liteftpd.tool.LocalAddress;
 import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.user.User;
+import pers.adlered.liteftpd.user.verify.OnlineRules;
 import pers.adlered.liteftpd.variable.ChangeVar;
 import pers.adlered.liteftpd.variable.Variable;
 import pers.adlered.liteftpd.wizard.config.Prop;
@@ -65,14 +66,14 @@ public class Main {
                 Logger.log(Types.SYS, Levels.INFO, "Memory used: " + Status.memoryUsed());
                 Socket socket = serverSocket.accept();
                 // Online limit checking
-                if (Variable.online >= Variable.maxUserLimit && Variable.maxUserLimit != 0) {
+                if ((!OnlineRules.checkIpAddress(socket.getInetAddress().getHostAddress()) || Variable.online >= Variable.maxUserLimit) && Variable.maxUserLimit != 0) {
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
                     bufferedOutputStream.write(Dict.outOfOnlineLimit.getBytes());
                     bufferedOutputStream.flush();
                     bufferedOutputStream.close();
                     socket.close();
                 } else {
-                    ChangeVar.plusOnlineCount();
+                    ChangeVar.printOnline();
                     Pool.handlerPool.execute(new SocketHandler(socket));
                 }
             } catch (IOException IOE) {

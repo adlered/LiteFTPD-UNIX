@@ -101,7 +101,8 @@ public class PauseListen extends Thread {
         Logger.log(Types.SYS, Levels.INFO, "Shutting down " + ipAddressBind.getIPADD() + ", reason: " + reason);
         // Shutdown this hole connection.
         running = false;
-        ChangeVar.reduceOnlineCount();
+        ChangeVar.reduceOnlineIP(socket.getInetAddress().getHostAddress());
+        ChangeVar.printOnline();
         try {
             // BufferedStream
             bufferedInputStream.close();
