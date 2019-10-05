@@ -40,7 +40,7 @@
 
 该服务端**支持绝大部分系统的绝大部分FTP客户端连接**，但服务端本身由于需要保证稳定，仅支持在Linux/MacOS系统上运行（由于文件系统和编码）。  
 
-你可以将项目clone或直接下载到本地，进入release文件夹，运行java -jar LiteFTPD-UNIX.jar即可。LiteFTPD默认会自动监听21端口。  
+你可以将项目clone或直接下载到本地（或[在这里](https://github.com/AdlerED/LiteFTPD-UNIX/releases)直接下载单独Jar包），进入release文件夹，运行java -jar LiteFTPD-UNIX.jar即可。LiteFTPD默认会自动监听21端口。  
 如果在同目录下不存在配置文件`config.prop`，在你第一次运行时它会自动生成一个。  
 修改`config.prop`中的文件，就可以修改LiteFTPD的配置了，十分简单易用。  
 
