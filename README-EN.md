@@ -6,7 +6,7 @@ So I want to make a compatible, humanized, high-performance and low-occupancy FT
 
 ## Current development progress:
 ✳️ Goal: Strong compatibility, high performance, low occupancy
-Current progress: **File upload, download, delete, move, rename function for FTP clients (or FTP-enabled programs) such as Windows, Linux, MacOS, FileZilla, FlashFXP, Thunder, Chrome, Windows Explorer, etc. *
+Current progress: **File upload, download, delete, move, rename function for FTP clients (or FTP-enabled programs) such as Windows, Linux, MacOS, FileZilla, FlashFXP, Thunder, Chrome, Windows Explorer, etc.**
 
 - [x] Extremely simple multi-user identification && permission control && default directory && allows directory setting
 - [x] User directory lock
