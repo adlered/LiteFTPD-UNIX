@@ -10,6 +10,7 @@ package pers.adlered.liteftpd.analyze;
 public class PrivateVariable {
     public boolean interrupted = false;
     public String encode = "UTF-8";
+    public String reason = null;
     //When translating, turn the timeout on to avoid timeout & disconnect.
     private boolean timeoutLock = false;
     //If Encode Lock is on, smart encode will not working.

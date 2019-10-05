@@ -90,6 +90,10 @@ public class PauseListen extends Thread {
                 break;
             }
         }
+        if (privateVariable.reason != null) {
+            reason = privateVariable.reason;
+            privateVariable.reason = null;
+        }
         send.send("LiteFTPD > :( Sorry, the connection is closed from server! Reason: " + reason + "." + Dict.newLine + "");
         Logger.log(Types.SYS, Levels.INFO, "Shutting down " + ipAddressBind.getIPADD() + ", reason: " + reason);
         // Shutdown this hole connection.

@@ -7,9 +7,11 @@ import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
+import pers.adlered.liteftpd.variable.ChangeVar;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.SocketException;
 
 /**
  * <h3>LiteFTPD-UNIX</h3>
@@ -34,17 +36,27 @@ public class Send {
     }
 
     public boolean send(String message) {
-        Logger.log(Types.SEND, Levels.DEBUG, "Encode is: " + privateVariable.getEncode());
-        try {
-            Logger.log(Types.SEND, Levels.INFO, ipAddressBind.getIPADD() + " <== [ " + privateVariable.encode + " ] " + ipAddressBind.getSRVIPADD() + ": " + message.replaceAll("\r|\n", ""));
-            pauseListen.resetTimeout();
-            // WELCOME MESSAGE
-            outputStream.write(message.getBytes(privateVariable.encode));
-            outputStream.flush();
-            return true;
-        } catch (IOException IOE) {
-            // TODOx
-            IOE.printStackTrace();
+        if (!privateVariable.isInterrupted()) {
+            Logger.log(Types.SEND, Levels.DEBUG, "Encode is: " + privateVariable.getEncode());
+            try {
+                Logger.log(Types.SEND, Levels.INFO, ipAddressBind.getIPADD() + " <== [ " + privateVariable.encode + " ] " + ipAddressBind.getSRVIPADD() + ": " + message.replaceAll("\r|\n", ""));
+                pauseListen.resetTimeout();
+                // WELCOME MESSAGE
+                try {
+                    outputStream.write(message.getBytes(privateVariable.encode));
+                } catch (SocketException SE) {
+                    Logger.log(Types.SYS, Levels.ERROR, "Client " + ipAddressBind.getIPADD() + " socket write failed. This fake client may running port scan (such as \"nmap\"), please attention.");
+                    privateVariable.reason = "Anti-scanner?";
+                    privateVariable.setInterrupted(true);
+                }
+                outputStream.flush();
+                return true;
+            } catch (IOException IOE) {
+                // TODOx
+                IOE.printStackTrace();
+                return false;
+            }
+        } else {
             return false;
         }
     }
