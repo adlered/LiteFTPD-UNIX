@@ -9,8 +9,10 @@ import pers.adlered.liteftpd.tool.ConsoleTable;
 import pers.adlered.liteftpd.tool.LocalAddress;
 import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.user.User;
+import pers.adlered.liteftpd.user.status.Online;
+import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
 import pers.adlered.liteftpd.user.verify.OnlineRules;
-import pers.adlered.liteftpd.variable.ChangeVar;
+import pers.adlered.liteftpd.variable.OnlineUserController;
 import pers.adlered.liteftpd.variable.Variable;
 import pers.adlered.liteftpd.wizard.config.Prop;
 
@@ -66,15 +68,22 @@ public class Main {
                 Logger.log(Types.SYS, Levels.INFO, "Memory used: " + Status.memoryUsed());
                 Socket socket = serverSocket.accept();
                 // Online limit checking
-                if ((!OnlineRules.checkIpAddress(socket.getInetAddress().getHostAddress()) || Variable.online >= Variable.maxUserLimit) && Variable.maxUserLimit != 0) {
+                String hostAdd = socket.getInetAddress().getHostAddress();
+                IpLimitBind ipLimitBind = OnlineRules.checkIpAddress(hostAdd);
+                if (((ipLimitBind.getIp() == null) || Variable.online >= Variable.maxUserLimit) && Variable.maxUserLimit != 0) {
+                    for (int i = 0; i < Online.ipRuleOnline.size(); i++) {
+                        if (Online.ipRuleOnline.get(i).getIp().equals(hostAdd)) {
+                            Online.ipRuleOnline.remove(i);
+                            break;
+                        }
+                    }
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
                     bufferedOutputStream.write(Dict.outOfOnlineLimit.getBytes());
                     bufferedOutputStream.flush();
                     bufferedOutputStream.close();
                     socket.close();
                 } else {
-                    ChangeVar.printOnline();
-                    Pool.handlerPool.execute(new SocketHandler(socket));
+                    Pool.handlerPool.execute(new SocketHandler(socket, ipLimitBind));
                 }
             } catch (IOException IOE) {
                 // TODO

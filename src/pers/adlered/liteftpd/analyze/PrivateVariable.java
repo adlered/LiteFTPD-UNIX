@@ -11,12 +11,21 @@ public class PrivateVariable {
     public boolean interrupted = false;
     public String encode = "UTF-8";
     public String reason = null;
+    private String username = null;
     //When translating, turn the timeout on to avoid timeout & disconnect.
     private boolean timeoutLock = false;
     //If Encode Lock is on, smart encode will not working.
     private boolean encodeLock = false;
     //Rest
     private long rest = 0l;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public boolean isEncodeLock() {
         return encodeLock;

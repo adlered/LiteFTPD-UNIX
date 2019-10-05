@@ -6,6 +6,7 @@ import pers.adlered.liteftpd.bind.IPAddressBind;
 import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
+import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
 
 import java.io.*;
 import java.net.Socket;
@@ -30,8 +31,9 @@ public class SocketHandler extends Thread {
     private IPAddressBind ipAddressBind = null;
     private String IPADD = null;
     private String SRVIPADD = null;
+    private IpLimitBind ipLimitBind = null;
 
-    public SocketHandler(Socket socket) {
+    public SocketHandler(Socket socket, IpLimitBind ipLimitBind) {
         try {
             IPADD = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
             SRVIPADD = socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort();
@@ -43,6 +45,7 @@ public class SocketHandler extends Thread {
             bufferedOutputStream = new BufferedOutputStream(outputStream);
             this.socket = socket;
             privateVariable = new PrivateVariable();
+            this.ipLimitBind = ipLimitBind;
         } catch (IOException IOE) {
             // TODO
             IOE.printStackTrace();
@@ -54,15 +57,17 @@ public class SocketHandler extends Thread {
         Logger.log(Types.SYS, Levels.INFO, IPADD + " has been mounted into " + Thread.currentThread());
         ipAddressBind = new IPAddressBind(IPADD, SRVIPADD);
         // Process while user quit forced or manually.
-        PauseListen pauseListen = new PauseListen(privateVariable, socket,
-                bufferedOutputStream, outputStream, bufferedInputStream,
-                inputStream, ipAddressBind,
-                commandAnalyze, receive
+        PauseListen pauseListen = new PauseListen(
+                privateVariable, socket,
+                bufferedOutputStream, outputStream,
+                bufferedInputStream, inputStream,
+                ipAddressBind, commandAnalyze,
+                receive, ipLimitBind
         );
         // Start model
         send = new Send(outputStream, pauseListen, privateVariable, ipAddressBind);
         pauseListen.setSend(send);
-        commandAnalyze = new CommandAnalyze(send, SRVIPADD, privateVariable, pauseListen, ipAddressBind);
+        commandAnalyze = new CommandAnalyze(send, SRVIPADD, privateVariable, pauseListen, ipAddressBind, ipLimitBind);
         receive = new Receive(inputStream, commandAnalyze, pauseListen, privateVariable, ipAddressBind);
         receive.start();
         pauseListen.start();

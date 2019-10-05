@@ -14,6 +14,12 @@ import pers.adlered.liteftpd.tool.GoodXX;
 import pers.adlered.liteftpd.tool.RandomNum;
 import pers.adlered.liteftpd.user.User;
 import pers.adlered.liteftpd.user.UserProps;
+import pers.adlered.liteftpd.user.info.OnlineInfo;
+import pers.adlered.liteftpd.user.info.bind.UserInfoBind;
+import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
+import pers.adlered.liteftpd.user.status.bind.UserLimitBind;
+import pers.adlered.liteftpd.user.verify.OnlineRules;
+import pers.adlered.liteftpd.variable.OnlineUserController;
 import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.BufferedReader;
@@ -63,12 +69,16 @@ public class CommandAnalyze {
     private PrivateVariable privateVariable = null;
     private UserProps userProps = null;
 
-    public CommandAnalyze(Send send, String SRVIPADD, PrivateVariable privateVariable, PauseListen pauseListen, IPAddressBind ipAddressBind) {
+    private IpLimitBind ipLimitBind = null;
+    private UserLimitBind userLimitBind = null;
+
+    public CommandAnalyze(Send send, String SRVIPADD, PrivateVariable privateVariable, PauseListen pauseListen, IPAddressBind ipAddressBind, IpLimitBind ipLimitBind) {
         this.send = send;
         this.SRVIPADD = SRVIPADD;
         this.privateVariable = privateVariable;
         this.pauseListen = pauseListen;
         this.ipAddressBind = ipAddressBind;
+        this.ipLimitBind = ipLimitBind;
     }
 
     public static boolean isPortUsing(String host, int port) {
@@ -154,6 +164,7 @@ public class CommandAnalyze {
                         if (arg1 == null) {
                             arg1 = "anonymous";
                         }
+                        privateVariable.setUsername(arg1);
                         Logger.log(Types.SYS, Levels.DEBUG, Thread.currentThread() + " User login: " + arg1);
                         loginUser = arg1;
                         send.send(Dict.passwordRequired + loginUser + "." + "" + Dict.newLine + "");
@@ -187,16 +198,25 @@ public class CommandAnalyze {
                     if (cmd.equals("PASS")) {
                         Logger.log(Types.SYS, Levels.DEBUG, "User " + loginUser + "'s password: " + arg1);
                         loginPass = arg1;
-                        if (User.checkPassword(loginUser, loginPass)) {
-                            send.send(Dict.loggedIn + "" + Dict.newLine + "===------===" + Dict.newLine + ">>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
-                            Logger.log(Types.SYS, Levels.INFO, "User " + loginUser + " logged in.");
-                            userProps = User.getUserProps(loginUser);
-                            lockPath = userProps.getPermitDir();
-                            currentPath = userProps.getDefaultDir();
-                            step = 3;
-                        } else {
-                            send.send("530 Sorry, the password is wrong." + Dict.newLine);
+                        userLimitBind = OnlineRules.checkUsername(loginUser);
+                        if (userLimitBind.getUsername() == null) {
+                            send.send("530 Sorry, user \"" + loginUser + "\" has too much login, please try again at later." + Dict.newLine);
+                            privateVariable.reason = "user \"" + loginUser + "\" has too much login";
                             privateVariable.setInterrupted(true);
+                        } else {
+                            if (User.checkPassword(loginUser, loginPass)) {
+                                OnlineInfo.usersOnlineInfo.add(new UserInfoBind(ipLimitBind, userLimitBind));
+                                send.send(Dict.loggedIn + "" + Dict.newLine + "===------===" + Dict.newLine + ">>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
+                                Logger.log(Types.SYS, Levels.INFO, "User " + loginUser + " logged in.");
+                                userProps = User.getUserProps(loginUser);
+                                lockPath = userProps.getPermitDir();
+                                currentPath = userProps.getDefaultDir();
+                                OnlineUserController.printOnline();
+                                step = 3;
+                            } else {
+                                send.send("530 Sorry, the password is wrong." + Dict.newLine);
+                                privateVariable.setInterrupted(true);
+                            }
                         }
                     } else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye);

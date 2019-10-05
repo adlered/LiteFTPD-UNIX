@@ -8,7 +8,8 @@ import pers.adlered.liteftpd.logger.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.Types;
 import pers.adlered.liteftpd.tool.Status;
-import pers.adlered.liteftpd.variable.ChangeVar;
+import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
+import pers.adlered.liteftpd.variable.OnlineUserController;
 import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.BufferedInputStream;
@@ -36,6 +37,7 @@ public class PauseListen extends Thread {
     private Send send = null;
     private CommandAnalyze commandAnalyze = null;
     private Receive receive = null;
+    private IpLimitBind ipLimitBind = null;
 
     private int timeout = 0;
 
@@ -45,7 +47,7 @@ public class PauseListen extends Thread {
                        BufferedOutputStream bufferedOutputStream,
                        OutputStream outputStream, BufferedInputStream bufferedInputStream,
                        InputStream inputStream, IPAddressBind ipAddressBind,
-                       CommandAnalyze commandAnalyze, Receive receive) {
+                       CommandAnalyze commandAnalyze, Receive receive, IpLimitBind ipLimitBind) {
         this.privateVariable = privateVariable;
         this.socket = socket;
         this.bufferedOutputStream = bufferedOutputStream;
@@ -56,6 +58,7 @@ public class PauseListen extends Thread {
         this.send = send;
         this.commandAnalyze = commandAnalyze;
         this.receive = receive;
+        this.ipLimitBind = ipLimitBind;
     }
 
     public void setSend(Send send) {
@@ -101,8 +104,8 @@ public class PauseListen extends Thread {
         Logger.log(Types.SYS, Levels.INFO, "Shutting down " + ipAddressBind.getIPADD() + ", reason: " + reason);
         // Shutdown this hole connection.
         running = false;
-        ChangeVar.reduceOnlineIP(socket.getInetAddress().getHostAddress());
-        ChangeVar.printOnline();
+        OnlineUserController.reduceOnline(socket.getInetAddress().getHostAddress(), privateVariable.getUsername());
+        OnlineUserController.printOnline();
         try {
             // BufferedStream
             bufferedInputStream.close();
@@ -127,6 +130,7 @@ public class PauseListen extends Thread {
             send = null;
             commandAnalyze = null;
             receive = null;
+            ipLimitBind = null;
             Logger.log(Types.SYS, Levels.DEBUG, "Called Garbage Collection.");
             System.gc();
             Logger.log(Types.SYS, Levels.INFO, "Memory used: " + Status.memoryUsed());

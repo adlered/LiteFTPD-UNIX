@@ -44,21 +44,22 @@
 # >> ipOnlineLimit
 #     Max connections limit for specify IP Address.
 #       ipOnlineLimit=[IP];[Limit];[IP];[Limit]; ...
-#       If you defined IP Address as "0.0.0.0", priority will be given to limiting the number of connections per IP address to a specified number.
+#       If you defined IP Address as "0.0.0.0", priority will be given to limiting the number of connections per IP address to a specified number (Except for IP Address that have been set up separately).
 #       "x" means "All". If you defined "192.168.x.x",  that connections from "192.168.1-255.1-255" all will be refused.
 #       BlackList for Ip Address? Set limit to "0"!
 # >> userOnlineLimit
 #     Max connections limit for specify User.
 #       userOnlineLimit=[username];[Limit];[username];[Limit]; ...
-#       If you defined User as "%", priority will be given to limiting the number of connections per User to a specified number.
+#       If you defined User as "%", priority will be given to limiting the number of connections per User to a specified number (Except for users that have been set up separately).
+#       BlackList for User? Set limit to "0"!
 # 
 # ================================================================================================
 # =                                          ↓ CONFIG ↓                                          =
 # ================================================================================================
 # 
 user=anonymous;;r;/;/;admin;123456;r;/;/root;
-ipOnlineLimit=0.0.0.0;100;127.x.x.x;10;
-userOnlineLimit=anonymous;2;%;100;
+ipOnlineLimit=127.x.x.x;100;192.168.1.x;100;0.0.0.0;100;
+userOnlineLimit=anonymous;2;admin;100;%;100;
 debugLevel=3
 maxUserLimit=100
 timeout=100

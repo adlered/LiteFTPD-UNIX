@@ -1,5 +1,8 @@
 package pers.adlered.liteftpd.user.status;
 
+import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
+import pers.adlered.liteftpd.user.status.bind.UserLimitBind;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,5 +15,7 @@ import java.util.List;
  **/
 public class Online {
     // 存储指定规则的在线IP数量
-    public static List<IpLimitBind> ipRuleOnline = new ArrayList<>();
+    public static final List<IpLimitBind> ipRuleOnline = new ArrayList<>();
+    // 存储制定规则的在线用户数量
+    public static final List<UserLimitBind> userRuleOnline = new ArrayList<>();
 }
