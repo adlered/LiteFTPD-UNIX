@@ -1,12 +1,12 @@
-package pers.adlered.liteftpd.main;
+package pers.adlered.liteftpd.wizard.init;
 
 import pers.adlered.liteftpd.analyze.PrivateVariable;
-import pers.adlered.liteftpd.bind.IPAddressBind;
-import pers.adlered.liteftpd.dict.Code;
+import pers.adlered.liteftpd.user.status.bind.IPAddressBind;
+import pers.adlered.liteftpd.dict.StatusCode;
 import pers.adlered.liteftpd.dict.Dict;
-import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.Logger;
-import pers.adlered.liteftpd.logger.Types;
+import pers.adlered.liteftpd.logger.enums.Types;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +31,7 @@ public class Send {
         this.pauseListen = pauseListen;
         this.privateVariable = privateVariable;
         this.ipAddressBind = ipAddressBind;
-        send(Code.SERVICEREADY + "-LiteFTPD" + Dict.newLine + ">>> Please log in, my honored guest." + Dict.newLine + ">>> Your IP address: " + ipAddressBind.getIPADD() + "" + Dict.newLine + "220" + Dict.connectionStarted);
+        send(StatusCode.SERVICEREADY + "-LiteFTPD" + Dict.newLine + ">>> Please log in, my honored guest." + Dict.newLine + ">>> Your IP address: " + ipAddressBind.getIPADD() + "" + Dict.newLine + "220" + Dict.connectionStarted);
     }
 
     public boolean send(String message) {

@@ -1,8 +1,8 @@
 package pers.adlered.liteftpd.wizard.config;
 
-import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.Logger;
-import pers.adlered.liteftpd.logger.Types;
+import pers.adlered.liteftpd.logger.enums.Types;
 import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.*;

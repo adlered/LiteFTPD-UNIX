@@ -1,12 +1,12 @@
-package pers.adlered.liteftpd.main;
+package pers.adlered.liteftpd.wizard.init;
 
 import pers.adlered.liteftpd.analyze.CommandAnalyze;
 import pers.adlered.liteftpd.analyze.PrivateVariable;
-import pers.adlered.liteftpd.bind.IPAddressBind;
+import pers.adlered.liteftpd.user.status.bind.IPAddressBind;
 import pers.adlered.liteftpd.dict.Dict;
-import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.Logger;
-import pers.adlered.liteftpd.logger.Types;
+import pers.adlered.liteftpd.logger.enums.Types;
 import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
 import pers.adlered.liteftpd.variable.OnlineUserController;

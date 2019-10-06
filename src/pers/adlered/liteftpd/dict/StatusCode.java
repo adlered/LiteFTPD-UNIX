@@ -7,7 +7,7 @@ package pers.adlered.liteftpd.dict;
  * @author : https://github.com/AdlerED
  * @date : 2019-09-19 09:21
  **/
-public class Code {
+public class StatusCode {
 
     /**
      * Preliminary affirmative reply

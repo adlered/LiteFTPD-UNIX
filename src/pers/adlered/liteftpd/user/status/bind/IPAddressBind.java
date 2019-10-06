@@ -1,4 +1,4 @@
-package pers.adlered.liteftpd.bind;
+package pers.adlered.liteftpd.user.status.bind;
 
 /**
  * <h3>LiteFTPD-UNIX</h3>

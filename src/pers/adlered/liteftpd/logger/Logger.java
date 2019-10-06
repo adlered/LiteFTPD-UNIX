@@ -1,5 +1,8 @@
 package pers.adlered.liteftpd.logger;
 
+import pers.adlered.liteftpd.logger.enums.Levels;
+import pers.adlered.liteftpd.logger.enums.Types;
+
 /**
  * <h3>LiteFTPD-UNIX</h3>
  * <p>All logs will through here.</p>

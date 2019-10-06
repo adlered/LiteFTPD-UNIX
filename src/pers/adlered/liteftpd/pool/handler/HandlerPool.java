@@ -1,4 +1,4 @@
-package pers.adlered.liteftpd.pool;
+package pers.adlered.liteftpd.pool.handler;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,6 +10,6 @@ import java.util.concurrent.Executors;
  * @author : https://github.com/AdlerED
  * @date : 2019-09-19 09:21
  **/
-public class Pool {
+public class HandlerPool {
     public static ExecutorService handlerPool = Executors.newCachedThreadPool();
 }

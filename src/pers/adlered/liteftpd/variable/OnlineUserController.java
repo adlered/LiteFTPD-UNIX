@@ -1,11 +1,9 @@
 package pers.adlered.liteftpd.variable;
 
-import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.Logger;
-import pers.adlered.liteftpd.logger.Types;
-import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
+import pers.adlered.liteftpd.logger.enums.Types;
 import pers.adlered.liteftpd.user.status.Online;
-import pers.adlered.liteftpd.user.status.bind.UserLimitBind;
 
 /**
  * <h3>LiteFTPD-UNIX</h3>

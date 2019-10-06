@@ -1,4 +1,4 @@
-package pers.adlered.liteftpd.logger;
+package pers.adlered.liteftpd.logger.enums;
 
 public enum Types {
     /*

@@ -2,11 +2,11 @@ package pers.adlered.liteftpd.mode;
 
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.dict.Dict;
-import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.Logger;
-import pers.adlered.liteftpd.logger.Types;
-import pers.adlered.liteftpd.main.PauseListen;
-import pers.adlered.liteftpd.main.Send;
+import pers.adlered.liteftpd.logger.enums.Types;
+import pers.adlered.liteftpd.wizard.init.PauseListen;
+import pers.adlered.liteftpd.wizard.init.Send;
 import pers.adlered.liteftpd.variable.Variable;
 
 import java.io.*;

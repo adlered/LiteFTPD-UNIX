@@ -1,13 +1,13 @@
 package pers.adlered.liteftpd.analyze;
 
-import pers.adlered.liteftpd.bind.IPAddressBind;
-import pers.adlered.liteftpd.dict.Code;
+import pers.adlered.liteftpd.user.status.bind.IPAddressBind;
+import pers.adlered.liteftpd.dict.StatusCode;
 import pers.adlered.liteftpd.dict.Dict;
-import pers.adlered.liteftpd.logger.Levels;
+import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.Logger;
-import pers.adlered.liteftpd.logger.Types;
-import pers.adlered.liteftpd.main.PauseListen;
-import pers.adlered.liteftpd.main.Send;
+import pers.adlered.liteftpd.logger.enums.Types;
+import pers.adlered.liteftpd.wizard.init.PauseListen;
+import pers.adlered.liteftpd.wizard.init.Send;
 import pers.adlered.liteftpd.mode.PASV;
 import pers.adlered.liteftpd.mode.PORT;
 import pers.adlered.liteftpd.tool.GoodXX;
@@ -649,7 +649,7 @@ public class CommandAnalyze {
                     } else if (cmd.equals("GB")) {
                         privateVariable.setEncode("GB2312");
                         privateVariable.setEncodeLock(true);
-                        send.send(Code.SERVICEREADY + "-LiteFTPD" + Dict.newLine + ">>> 编码已适应Windows FTP客户端，您现在看到的这条信息应是正常的简体中文。" + Dict.newLine + ">>> Your IP address: " + ipAddressBind.getIPADD() + "" + Dict.newLine + "220" + Dict.connectionStarted);
+                        send.send(StatusCode.SERVICEREADY + "-LiteFTPD" + Dict.newLine + ">>> 编码已适应Windows FTP客户端，您现在看到的这条信息应是正常的简体中文。" + Dict.newLine + ">>> Your IP address: " + ipAddressBind.getIPADD() + "" + Dict.newLine + "220" + Dict.connectionStarted);
                     } else {
                         unknownCommand();
                     }

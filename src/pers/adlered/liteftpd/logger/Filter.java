@@ -1,5 +1,6 @@
 package pers.adlered.liteftpd.logger;
 
+import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.variable.Variable;
 
 /**
