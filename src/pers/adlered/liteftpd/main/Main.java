@@ -1,6 +1,7 @@
 package pers.adlered.liteftpd.main;
 
 import pers.adlered.liteftpd.dict.Dict;
+import pers.adlered.liteftpd.graphic.main.GraphicMain;
 import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.enums.Types;
@@ -12,6 +13,7 @@ import pers.adlered.liteftpd.user.User;
 import pers.adlered.liteftpd.user.status.Online;
 import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
 import pers.adlered.liteftpd.user.verify.OnlineRules;
+import pers.adlered.liteftpd.variable.OnlineUserController;
 import pers.adlered.liteftpd.variable.Variable;
 import pers.adlered.liteftpd.wizard.config.Prop;
 import pers.adlered.liteftpd.wizard.init.SocketHandler;
@@ -59,7 +61,7 @@ public class Main {
                     consoleTable.appendColum(i + ":" + serverSocket.getLocalPort());
                 }
             }
-            System.out.println(consoleTable.toString());
+            Logger.log(Types.SYS, Levels.INFO, "\n" + consoleTable.toString());
         } catch (IOException IOE) {
             // TODO
             IOE.printStackTrace();
@@ -85,6 +87,7 @@ public class Main {
                     socket.close();
                 } else {
                     HandlerPool.handlerPool.execute(new SocketHandler(socket, ipLimitBind));
+                    OnlineUserController.printOnline();
                 }
             } catch (IOException IOE) {
                 // TODO
@@ -95,10 +98,10 @@ public class Main {
 
     public static void init(String[] args) {
         Dict.init("en_us");
-        for (int i = 0; i < args.length; i += 2) {
+        for (int i = 0; i < args.length; i++) {
             String variable = args[i];
-            String value = args[i + 1];
             if (variable.equals("-l")) {
+                String value = args[i + 1];
                 value = value.replaceAll("-", "_");
                 if (value.equals("en_us")) {
                     Logger.log(Types.SYS, Levels.INFO, "Language option detected. Init language as \"English\".");
@@ -110,6 +113,10 @@ public class Main {
                     Logger.log(Types.SYS, Levels.WARN, "Cannot support customize language \"" + value + "\". Using default \"English\".");
                     Logger.log(Types.SYS, Levels.WARN, "Supported language: zh_cn en_us");
                 }
+            } else if (variable.equals("-g")) {
+                Logger.log(Types.SYS, Levels.INFO, "Launching graphic interface...");
+                Thread GUI = new Thread(new GraphicMain());
+                GUI.run();
             }
         }
     }

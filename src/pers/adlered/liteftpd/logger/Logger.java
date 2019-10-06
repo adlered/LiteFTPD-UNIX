@@ -1,5 +1,6 @@
 package pers.adlered.liteftpd.logger;
 
+import pers.adlered.liteftpd.graphic.main.model.MainModels;
 import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.enums.Types;
 
@@ -14,6 +15,10 @@ public class Logger {
     public static boolean log(Types type, Levels level, String log) {
         if (Filter.fil(level)) {
             // Can be logged
+            if (MainModels.guiReady) {
+                MainModels.console.append("[" + level + "]" + " " + "[" + type + "]" + " >> " + log + "\n");
+                MainModels.console.setCaretPosition(MainModels.console.getDocument().getLength());
+            }
             System.out.println("[" + level + "]" + " " + "[" + type + "]" + " >> " + log);
             return true;
         } else {

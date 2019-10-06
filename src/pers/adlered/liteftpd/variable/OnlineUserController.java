@@ -16,10 +16,7 @@ public class OnlineUserController {
     public static void printOnline() {
         int ipSize = Online.ipRuleOnline.size();
         int userSize = Online.userRuleOnline.size();
-        if (ipSize != userSize) {
-            ipSize = -1;
-        }
-        Logger.log(Types.SYS, Levels.INFO, "Online: " + ipSize);
+        Logger.log(Types.SYS, Levels.INFO, "Online Users: " + userSize + " Connections: " + ipSize);
     }
 
     public static void reduceOnline(String ipAddress, String username) { ;

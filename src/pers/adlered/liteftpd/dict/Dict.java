@@ -361,5 +361,21 @@ public class Dict {
         return null;
     }
 
+    public static String onlineStr() {
+        if (lang.equals("zh_cn"))
+            return "在线";
+        if (lang.equals("en_us"))
+            return "Online";
+        return null;
+    }
+
+    public static String template() {
+        if (lang.equals("zh_cn"))
+            return "";
+        if (lang.equals("en_us"))
+            return "";
+        return null;
+    }
+
     public static final String newLine = "\r\n";
 }
