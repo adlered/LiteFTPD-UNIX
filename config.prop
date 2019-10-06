@@ -136,7 +136,7 @@
 # =                                          ↓ CONFIG ↓                                          =
 # ================================================================================================
 # 
-user=anonymous;;r;/;/;admin;123456;r;/;/root;
+user=anonymous;;rwdcm;/;/;adler;;rwdcm;/;/Users/adler/test;
 ipOnlineLimit=0.0.0.0;100;127.x.x.x;100;192.168.1.x;100;
 userOnlineLimit=%;100;anonymous;100;admin;100;
 debugLevel=3

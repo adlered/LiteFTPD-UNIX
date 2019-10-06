@@ -73,8 +73,8 @@ public class PORT extends Thread {
                 privateVariable.setTimeoutLock(true);
                 if (pauseListen.isRunning()) {
                     Logger.log(Types.SYS, Levels.DEBUG, "Port mode is in transmission.");
-                    long startTime = System.nanoTime();
-                    double kb = 0;
+                    long startTime = System.currentTimeMillis();
+                    float kb = 0;
                     long bts = 0;
                     if (listening != null) {
                         // To avoid bare line feeds.
@@ -94,7 +94,6 @@ public class PORT extends Thread {
                         OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
                         byte[] bytes = new byte[8192];
                         int len = -1;
-                        char[] buf = new char[8192];
                         if (privateVariable.getRest() == 0l) {
                             if (!isASCII) {
                                 // Not rest mode
@@ -152,11 +151,15 @@ public class PORT extends Thread {
                                 InputStream inputStream = socket.getInputStream();
                                 byte[] bytes = new byte[8192];
                                 int len = -1;
+                                long sTime = System.currentTimeMillis();
                                 while ((len = inputStream.read(bytes)) != -1) {
                                     fileOutputStream.write(bytes, 0, len);
                                 }
+                                long eTime = (System.currentTimeMillis() - sTime) / 1000;
+                                if (eTime == 0) eTime = 1;
+                                float pSecond = file.length() / eTime;
                                 fileOutputStream.flush();
-                                send.send("226 Transfer complete." + Dict.newLine);
+                                send.send("226 Transfer complete. " + file.length() + " bytes saved in " + eTime + " second. " + pSecond + " KB/sec." + Dict.newLine);
                                 inputStream.close();
                                 fileOutputStream.close();
                             } catch (FileNotFoundException FNFE) {
@@ -171,11 +174,15 @@ public class PORT extends Thread {
                                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                                 String line;
+                                long sTime = System.currentTimeMillis();
                                 while ((line = bufferedReader.readLine()) != null) {
                                     bufferedWriter.write(line + "\n");
                                 }
+                                long eTime = (System.currentTimeMillis() - sTime) / 1000;
+                                if (eTime == 0) eTime = 1;
+                                float pSecond = file.length() / eTime;
                                 bufferedWriter.flush();
-                                send.send("226-Transfer complete." + Dict.newLine +
+                                send.send("226-Transfer complete. " + file.length() + " bytes saved in " + eTime + " second. " + pSecond + " KB/sec." + Dict.newLine +
                                         "226 You are using ASCII mode to transfer files. If you find that the file is corrupt, type \"binary\" and try again." + Dict.newLine);
                                 bufferedReader.close();
                                 inputStreamReader.close();
@@ -194,20 +201,14 @@ public class PORT extends Thread {
                     } else {
                         kb = bts / 1000;
                         socket.close();
-                        long stopTime = System.nanoTime();
-                        long nanoEndTime = stopTime - startTime;
-                        double endTime = nanoEndTime / 1000000000;
-                        double perSecond = 0;
-                        if (endTime == 0) {
-                            perSecond = kb;
-                        } else {
-                            perSecond = kb / endTime;
-                        }
+                        long endTime = (System.currentTimeMillis() - startTime) / 1000;
+                        if (endTime == 0) endTime = 1;
+                        float perSecond = kb / endTime;
                         if (isASCII && listening == null) {
-                            send.send("226-Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec." + Dict.newLine +
+                            send.send("226-Complete! " + bts + " bytes in " + endTime + " second transferred. " + perSecond + " KB/sec." + Dict.newLine +
                                     "226 You are using ASCII mode to transfer files. If you find that the file is corrupt, type \"binary\" and try again." + Dict.newLine);
                         } else {
-                            send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec." + Dict.newLine);
+                            send.send("226 Complete! " + bts + " bytes in " + endTime + " second transferred. " + perSecond + " KB/sec." + Dict.newLine);
                         }
                     }
                 }
