@@ -98,7 +98,7 @@ public class Dict {
 
     public static String pasvMode(String[] IPADD, int calcPort, int randomSub) {
         if (lang.equals("zh_cn"))
-            return StatusCode.PASSIVE + " 正在进入被动传输模式 " + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "" + Dict.newLine;
+            return StatusCode.PASSIVE + " Entering Passive Mode " + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "" + Dict.newLine;
         if (lang.equals("en_us"))
             return StatusCode.PASSIVE + " Entering Passive Mode " + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "" + Dict.newLine;
         return null;
