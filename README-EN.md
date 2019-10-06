@@ -39,7 +39,10 @@ Current progress: **File upload, download, delete, move, rename function for FTP
 
 The server ** supports most FTP client connections** for most systems, but the server itself is only required to run on Linux/MacOS systems (due to file system and encoding) due to the need to be stable.  
 
-You can clone the project or download it directly to the local (or [click here](https://github.com/AdlerED/LiteFTPD-UNIX/releases) directly download the separate Jar package), go to the release folder, run java -jar LiteFTPD -UNIX.jar is fine. LiteFTPD will automatically listen to port 21 by default.  
+You can clone the project or download it directly to the local (or [click here](https://github.com/AdlerED/LiteFTPD-UNIX/releases) directly download the separate Jar package), go to the release folder, run `java -jar LiteFTPD -UNIX.jar` is fine. LiteFTPD will automatically listen to port 21 by default.  
+
+**If you need to change the language of LiteFTPD to another language**, you can add the `-l [language]` parameter when starting Jar. For example, `java -jar LiteFTPD-UNIX.jar -l zh-cn`, currently supports `zh-cn`, `en-us`.
+
 If the configuration file `config.prop` does not exist in the same directory, it will automatically generate one when you first run it.  
 Modify the file in `config.prop`, you can modify the configuration of LiteFTPD, it is very simple and easy to use.  
 
