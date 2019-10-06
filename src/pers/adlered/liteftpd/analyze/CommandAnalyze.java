@@ -167,10 +167,10 @@ public class CommandAnalyze {
                         privateVariable.setUsername(arg1);
                         Logger.log(Types.SYS, Levels.DEBUG, Thread.currentThread() + " User login: " + arg1);
                         loginUser = arg1;
-                        send.send(Dict.passwordRequired + loginUser + "." + "" + Dict.newLine + "");
+                        send.send(Dict.passwordRequired(loginUser));
                         step = 2;
                     } else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
-                        send.send(Dict.bye);
+                        send.send(Dict.bye());
                         privateVariable.setInterrupted(true);
                     } else if (cmd.equals("OPTS")) {
                         if (arg1 != null) {
@@ -181,11 +181,11 @@ public class CommandAnalyze {
                                     if (arg2.equals("ON")) {
                                         privateVariable.setEncode("UTF-8");
                                         privateVariable.setEncodeLock(true);
-                                        send.send("200 OPTS UTF8 command successful - UTF8 encoding now ON." + Dict.newLine);
+                                        send.send(Dict.utf8(true));
                                     } else if (arg2.equals("OFF")) {
                                         privateVariable.setEncode(Variable.defaultEncode);
                                         privateVariable.setEncodeLock(true);
-                                        send.send("200 OPTS UTF8 command successful - UTF8 encoding now OFF." + Dict.newLine);
+                                        send.send(Dict.utf8(false));
                                     }
                                 }
                             }
@@ -200,13 +200,13 @@ public class CommandAnalyze {
                         loginPass = arg1;
                         userLimitBind = OnlineRules.checkUsername(loginUser);
                         if (userLimitBind.getUsername() == null) {
-                            send.send("530 Sorry, user \"" + loginUser + "\" has too much login, please try again at later." + Dict.newLine);
+                            send.send(Dict.tooMuchLoginInUser(loginUser));
                             privateVariable.reason = "user \"" + loginUser + "\" has too much login";
                             privateVariable.setInterrupted(true);
                         } else {
                             if (User.checkPassword(loginUser, loginPass) || loginUser.equals("anonymous")) {
                                 OnlineInfo.usersOnlineInfo.add(new UserInfoBind(ipLimitBind, userLimitBind));
-                                send.send(Dict.loggedIn + "" + Dict.newLine + "===------===" + Dict.newLine + ">>> :) Good " + GoodXX.getTimeAsWord() + ", " + loginUser + "!" + Dict.remind);
+                                send.send(Dict.loggedIn(loginUser));
                                 Logger.log(Types.SYS, Levels.INFO, "User " + loginUser + " logged in.");
                                 userProps = User.getUserProps(loginUser);
                                 lockPath = userProps.getPermitDir();
@@ -214,12 +214,12 @@ public class CommandAnalyze {
                                 OnlineUserController.printOnline();
                                 step = 3;
                             } else {
-                                send.send("530 Sorry, the password is wrong." + Dict.newLine);
+                                send.send(Dict.wrongPassword());
                                 privateVariable.setInterrupted(true);
                             }
                         }
                     } else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
-                        send.send(Dict.bye);
+                        send.send(Dict.bye());
                         privateVariable.setInterrupted(true);
                     } else {
                         unknownCommand();
@@ -227,44 +227,34 @@ public class CommandAnalyze {
                     break;
                 case 3:
                     if (cmd.equals("USER") || cmd.equals("PASS")) {
-                        send.send(Dict.alreadyLogged);
+                        send.send(Dict.alreadyLogIn());
                     }
                     /**
                      * INFO COMMANDS
                      */
                     else if (cmd.equals("FEAT")) {
-                        send.send("211-Features:" + Dict.newLine + "" +
-                                "UTF8" + Dict.newLine + "" +
-                                "211 End" + Dict.newLine + "");
+                        send.send(Dict.features());
                     } else if (cmd.equals("SITE")) {
-                        send.send("501 SITE option not supported." + Dict.newLine);
+                        send.send(Dict.notSupportSITE());
                     }
                     /**
                      * NORMAL COMMANDS
                      */
                     else if (cmd.equals("PWD")) {
                         //if (file.isDirectory()) {
-                        send.send(Dict.currentDir + "\"" + getLockPath(currentPath, lockPath) + "\" is current directory." + "" + Dict.newLine + "");
+                        send.send(Dict.currentDir(getLockPath(currentPath, lockPath)));
                         //} else {
-                        //    send.send(Dict.isFile + file.getName() + "" + Dict.newLine + "");
+                        //    send.send(Dict.isFile + file.getName() + "" + Dict.newLine);
                         //}
                     } else if (cmd.equals("TYPE")) {
                         arg1 = arg1.toUpperCase();
-                        switch (arg1) {
-                            case "I":
-                                type = "I";
-                                send.send(Dict.setType + "I." + "" + Dict.newLine + "");
-                                break;
-                            case "A":
-                                type = "A";
-                                send.send(Dict.setType + "A." + "" + Dict.newLine + "");
-                                break;
-                        }
+                        type = arg1;
+                        send.send(Dict.type(arg1));
                     } else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
-                        send.send(Dict.bye);
+                        send.send(Dict.bye());
                         privateVariable.setInterrupted(true);
                     } else if (cmd.equals("LIST")) {
-                        send.send(Dict.openPassiveASCII);
+                        send.send(Dict.list());
                         privateVariable.setTimeoutLock(true);
                         try {
                             Process process = Runtime.getRuntime().exec(new String[]{"ls", "-l", currentPath});
@@ -299,7 +289,7 @@ public class CommandAnalyze {
                         }
                     } else if (cmd.equals("CDUP")) {
                         upperDirectory();
-                        send.send("250 Directory changed to " + getLockPath(currentPath, lockPath) + "" + Dict.newLine + "");
+                        send.send(Dict.changeDir(getLockPath(currentPath, lockPath)));
                     } else if (cmd.equals("CWD")) {
                         if (arg1 != null) {
                             String completePath = arg1;
@@ -315,7 +305,7 @@ public class CommandAnalyze {
                             }
                             if (completePath.equals("..")) {
                                 upperDirectory();
-                                send.send(Dict.changeDir + getLockPath(currentPath, lockPath) + Dict.newLine);
+                                send.send(Dict.changeDir(getLockPath(currentPath, lockPath)));
                             } else {
                                 if (completePath.indexOf("../") != -1) {
                                     completePath = completePath.replaceAll("\\.\\./", "");
@@ -324,23 +314,23 @@ public class CommandAnalyze {
                                 File file = new File(completePath);
                                 if (file.exists()) {
                                     if (file.isFile()) {
-                                        send.send("550 " + getLockPath(completePath, lockPath) + ": No such file or directory." + Dict.newLine);
+                                        send.send(Dict.notFound(getLockPath(completePath, lockPath)));
                                     } else {
                                         currentPath = completePath;
-                                        send.send(Dict.changeDir + getLockPath(currentPath, lockPath) + Dict.newLine);
+                                        send.send(Dict.changeDir(getLockPath(currentPath, lockPath)));
                                     }
                                 } else {
-                                    send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                                    send.send(Dict.notFound(getLockPath(completePath, lockPath)));
                                 }
                             }
                         } else {
-                            send.send(Dict.unknownCommand);
+                            send.send(Dict.unknownCommand());
                         }
                     } else if (cmd.equals("SYST")) {
-                        send.send(Dict.type);
+                        send.send(Dict.unixType());
                     } else if (cmd.equals("NOOP")) {
                         privateVariable.setTimeoutLock(true);
-                        send.send("200 Command okay." + Dict.newLine);
+                        send.send(Dict.commandOK());
                     } else if (cmd.equals("MKD")) {
                         if (userProps.getPermission().contains("c")) {
                             String completePath = arg1;
@@ -356,12 +346,12 @@ public class CommandAnalyze {
                             File file = new File(completePath);
                             if (!file.exists()) {
                                 file.mkdirs();
-                                send.send("257 \"" + getLockPath(completePath, lockPath) + "\" directory created." + Dict.newLine);
+                                send.send(Dict.dirCreated(getLockPath(completePath, lockPath)));
                             } else {
-                                send.send("550 " + getLockPath(completePath, lockPath) + ": Failed to create." + Dict.newLine);
+                                send.send(Dict.createFailed(getLockPath(completePath, lockPath)));
                             }
                         } else {
-                            send.send(Dict.noPermission);
+                            send.send(Dict.permissionDenied());
                         }
                     } else if (cmd.equals("RMD")) {
                         if (userProps.getPermission().contains("d")) {
@@ -378,12 +368,12 @@ public class CommandAnalyze {
                             File file = new File(completePath);
                             if (file.isDirectory()) {
                                 delFolder(completePath);
-                                send.send("250 RMD command successful." + Dict.newLine);
+                                send.send(Dict.rmdSuccess());
                             } else {
-                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                                send.send(Dict.notFound(getLockPath(completePath, lockPath)));
                             }
                         } else {
-                            send.send(Dict.noPermission);
+                            send.send(Dict.permissionDenied());
                         }
                     } else if (cmd.equals("DELE")) {
                         if (userProps.getPermission().contains("d")) {
@@ -400,12 +390,12 @@ public class CommandAnalyze {
                             File file = new File(completePath);
                             if (file.isFile()) {
                                 file.delete();
-                                send.send("250 DELE command successful." + Dict.newLine);
+                                send.send(Dict.deleSuccess());
                             } else {
-                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                                send.send(Dict.notFound(getLockPath(completePath, lockPath)));
                             }
                         } else {
-                            send.send(Dict.noPermission);
+                            send.send(Dict.permissionDenied());
                         }
                     } else if (cmd.equals("RNFR")) {
                         if (userProps.getPermission().contains("m")) {
@@ -422,12 +412,12 @@ public class CommandAnalyze {
                             File file = new File(completePath);
                             if (file.exists()) {
                                 RNFR = completePath;
-                                send.send("350 File or directory exists, ready for destination name" + Dict.newLine);
+                                send.send(Dict.rnfrSuccess());
                             } else {
-                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                                send.send(Dict.notFound(getLockPath(completePath, lockPath)));
                             }
                         } else {
-                            send.send(Dict.noPermission);
+                            send.send(Dict.permissionDenied());
                         }
                     } else if (cmd.equals("RNTO")) {
                         if (userProps.getPermission().contains("m")) {
@@ -443,13 +433,13 @@ public class CommandAnalyze {
                             completePath = getAbsolutePath(completePath);
                             File file = new File(RNFR);
                             if (file.renameTo(new File(completePath))) {
-                                send.send("250 RNTO command successful." + Dict.newLine);
+                                send.send(Dict.rntoSuccess());
                             } else {
-                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                                send.send(Dict.notFound(getLockPath(completePath, lockPath)));
                             }
                             RNFR = null;
                         } else {
-                            send.send(Dict.noPermission);
+                            send.send(Dict.permissionDenied());
                         }
                     }
                     /**
@@ -486,7 +476,7 @@ public class CommandAnalyze {
                         }
                         portMode = new PORT(send, privateVariable, pauseListen, type);
                         portMode.setTarget(ip, port);
-                        send.send("200 PORT Command successful." + Dict.newLine + "");
+                        send.send(Dict.portSuccess());
                         mode = "port";
                     } else if (cmd.equals("PASV")) {
                         if (passiveMode != null) {
@@ -505,7 +495,7 @@ public class CommandAnalyze {
                             finalPort = map.get("finalPort");
                         } while (!passiveMode.listen(finalPort));
                         String[] IPADD = (SRVIPADD.split(":")[0]).split("\\.");
-                        send.send(Dict.passiveMode + "(" + IPADD[0] + "," + IPADD[1] + "," + IPADD[2] + "," + IPADD[3] + "," + calcPort + "," + randomSub + ")" + "" + Dict.newLine + "");
+                        send.send(Dict.pasvMode(IPADD, calcPort, randomSub));
                         passiveMode.start();
                         mode = "passive";
                     } else if (cmd.equals("RETR")) {
@@ -524,9 +514,9 @@ public class CommandAnalyze {
                                 File file = new File(completePath);
                                 if (file.exists()) {
                                     if (type.equals("I")) {
-                                        send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)" + Dict.newLine + "");
+                                        send.send(Dict.openPasvBin(getLockPath(completePath, lockPath), file.length()));
                                     } else {
-                                        send.send(Dict.openPassiveASCI + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)" + Dict.newLine + "");
+                                        send.send(Dict.openPasvAscii(getLockPath(completePath, lockPath), file.length()));
                                     }
                                     if (mode != null) {
                                         Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
@@ -544,13 +534,13 @@ public class CommandAnalyze {
                                         }
                                     }
                                 } else {
-                                    send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
+                                    send.send(Dict.notFound(getLockPath(completePath, lockPath)));
                                 }
                             } catch (NullPointerException NPE) {
-                                send.send(Dict.passiveDataFailed);
+                                send.send(Dict.pasvDataFailed());
                             }
                         } else {
-                            send.send(Dict.noPermission);
+                            send.send(Dict.permissionDenied());
                         }
                     } else if (cmd.equals("STOR")) {
                         if (userProps.getPermission().contains("w")) {
@@ -565,18 +555,11 @@ public class CommandAnalyze {
                             }
                             completePath = getAbsolutePath(completePath);
                             if (type.equals("I")) {
-                                send.send("150 Opening BINARY mode data connection for " + getLockPath(completePath, lockPath) + "." + Dict.newLine);
+                                send.send(Dict.openBin(getLockPath(completePath, lockPath)));
                             } else {
-                                send.send("150 Opening ASCII mode data connection for " + getLockPath(completePath, lockPath) + "." + Dict.newLine);
+                                send.send(Dict.openAscii(getLockPath(completePath, lockPath)));
                             }
                             try {
-                            /*File file = new File(completePath);
-                            if (file.exists()) {
-                                send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)" + Dict.newLine + "");
-                                passiveMode.hello(file);
-                            } else {
-                                send.send(Dict.noSuchFileOrDir + getLockPath(completePath, lockPath) + Dict.noSuchFIleOrDir2);
-                            }*/
                                 if (mode != null) {
                                     Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
                                     String mode = this.mode;
@@ -593,10 +576,10 @@ public class CommandAnalyze {
                                     }
                                 }
                             } catch (NullPointerException NPE) {
-                                send.send(Dict.passiveDataFailed);
+                                send.send(Dict.pasvDataFailed());
                             }
                         } else {
-                            send.send(Dict.noPermission);
+                            send.send(Dict.permissionDenied());
                         }
                     } else if (cmd.equals("SIZE")) {
                         if (userProps.getPermission().contains("r")) {
@@ -609,12 +592,12 @@ public class CommandAnalyze {
                             completePath = getAbsolutePath(completePath);
                             File file = new File(completePath);
                             if (file.exists() && file.isFile()) {
-                                send.send("213 " + file.length() + Dict.newLine);
+                                send.send(Dict.fileSize(file.length()));
                             } else {
-                                send.send("550 " + completePath + ": No such file." + Dict.newLine);
+                                send.send(Dict.noSuchFile(completePath));
                             }
                         } else {
-                            send.send(Dict.noPermission);
+                            send.send(Dict.permissionDenied());
                         }
                     } else if (cmd.equals("OPTS")) {
                         if (arg1 != null) {
@@ -625,18 +608,18 @@ public class CommandAnalyze {
                                     if (arg2.equals("ON")) {
                                         privateVariable.setEncode("UTF-8");
                                         privateVariable.setEncodeLock(true);
-                                        send.send("200 OPTS UTF8 command successful - UTF8 encoding now ON." + Dict.newLine);
+                                        send.send(Dict.utf8(true));
                                     } else if (arg2.equals("OFF")) {
                                         privateVariable.setEncode(Variable.defaultEncode);
                                         privateVariable.setEncodeLock(true);
-                                        send.send("200 OPTS UTF8 command successful - UTF8 encoding now OFF." + Dict.newLine);
+                                        send.send(Dict.utf8(false));
                                     }
                                 }
                             }
                         }
                     } else if (cmd.equals("REST")) {
                         if (arg1 != null) {
-                            send.send("350 Restarting at " + arg1 + ". Send STORE or RETRIEVE." + Dict.newLine);
+                            send.send(Dict.rest(arg1));
                             try {
                                 privateVariable.setRest(Long.parseLong(arg1));
                             } catch (Exception E) {
@@ -644,12 +627,12 @@ public class CommandAnalyze {
                             }
                         }
                     } else if (cmd.equals("ABOR")) {
-                        send.send(Dict.bye);
+                        send.send(Dict.bye());
                         privateVariable.setInterrupted(true);
                     } else if (cmd.equals("GB")) {
                         privateVariable.setEncode("GB2312");
                         privateVariable.setEncodeLock(true);
-                        send.send(StatusCode.SERVICEREADY + "-LiteFTPD" + Dict.newLine + ">>> 编码已适应Windows FTP客户端，您现在看到的这条信息应是正常的简体中文。" + Dict.newLine + ">>> Your IP address: " + ipAddressBind.getIPADD() + "" + Dict.newLine + "220" + Dict.connectionStarted);
+                        send.send(Dict.gbEncodeOK(ipAddressBind.getIPADD()));
                     } else {
                         unknownCommand();
                     }
@@ -659,7 +642,7 @@ public class CommandAnalyze {
     }
 
     public boolean unknownCommand() {
-        send.send(Dict.unknownCommand);
+        send.send(Dict.unknownCommand());
         return true;
     }
 

@@ -83,8 +83,8 @@ public class PASV extends Thread {
                 if (listening != null) {
                     // To avoid bare line feeds.
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
-                    listening = listening.replaceAll("" + Dict.newLine + "", "\n");
-                    listening = listening.replaceAll("\n", "" + Dict.newLine + "");
+                    listening = listening.replaceAll("" + Dict.newLine, "\n");
+                    listening = listening.replaceAll("\n", "" + Dict.newLine);
                     if (Variable.smartEncode) {
                         bufferedOutputStream.write(listening.getBytes(privateVariable.encode));
                     } else {
@@ -163,11 +163,11 @@ public class PASV extends Thread {
                             if (eTime == 0) eTime = 1;
                             float pSecond = file.length() / eTime;
                             fileOutputStream.flush();
-                            send.send("226 Transfer complete. " + file.length() + " bytes saved in " + eTime + " second. " + pSecond + " KB/sec." + Dict.newLine);
+                            send.send(Dict.transferComplete(file.length(), eTime, pSecond));
                             inputStream.close();
                             fileOutputStream.close();
                         } catch (FileNotFoundException FNFE) {
-                            send.send("550 Permission denied." + Dict.newLine);
+                            send.send(Dict.permissionDenied());
                             FNFE.printStackTrace();
                         }
                     } else {
@@ -186,15 +186,14 @@ public class PASV extends Thread {
                             if (eTime == 0) eTime = 1;
                             float pSecond = file.length() / eTime;
                             bufferedWriter.flush();
-                            send.send("226-Transfer complete. " + file.length() + " bytes saved in " + eTime + " second. " + pSecond + " KB/sec." + Dict.newLine +
-                                    "226 You are using ASCII mode to transfer files. If you find that the file is corrupt, type \"binary\" and try again." + Dict.newLine);
+                            send.send(Dict.transferCompleteInAsciiMode(file.length(), eTime, pSecond));
                             bufferedReader.close();
                             inputStreamReader.close();
                             inputStream.close();
                             bufferedWriter.close();
                             fileWriter.close();
                         } catch (FileNotFoundException FNFE) {
-                            send.send("550 Permission denied." + Dict.newLine);
+                            send.send(Dict.permissionDenied());
                             FNFE.printStackTrace();
                         }
                     }
@@ -211,10 +210,9 @@ public class PASV extends Thread {
                     if (endTime == 0) endTime = 1;
                     float perSecond = kb / endTime;
                     if (isASCII && listening == null) {
-                        send.send("226-Complete! " + bts + " bytes in " + endTime + " second transferred. " + perSecond + " KB/sec." + Dict.newLine +
-                                "226 You are using ASCII mode to transfer files. If you find that the file is corrupt, type \"binary\" and try again." + Dict.newLine);
+                        send.send(Dict.transferCompleteInAsciiMode(bts, endTime, perSecond));
                     } else {
-                        send.send("226 Complete! " + bts + " bytes in " + endTime + " second transferred. " + perSecond + " KB/sec." + Dict.newLine);
+                        send.send(Dict.transferComplete(bts, endTime, perSecond));
                     }
                 }
             }

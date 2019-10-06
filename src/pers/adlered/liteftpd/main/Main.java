@@ -78,7 +78,7 @@ public class Main {
                         }
                     }
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
-                    bufferedOutputStream.write(Dict.outOfOnlineLimit.getBytes());
+                    bufferedOutputStream.write(Dict.outOfOnlineLimit().getBytes());
                     bufferedOutputStream.flush();
                     bufferedOutputStream.close();
                     socket.close();

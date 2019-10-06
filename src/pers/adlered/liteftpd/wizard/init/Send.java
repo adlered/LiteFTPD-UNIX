@@ -31,7 +31,7 @@ public class Send {
         this.pauseListen = pauseListen;
         this.privateVariable = privateVariable;
         this.ipAddressBind = ipAddressBind;
-        send(StatusCode.SERVICEREADY + "-LiteFTPD" + Dict.newLine + ">>> Please log in, my honored guest." + Dict.newLine + ">>> Your IP address: " + ipAddressBind.getIPADD() + "" + Dict.newLine + "220" + Dict.connectionStarted);
+        send(Dict.connectedMessage(ipAddressBind.getIPADD()));
     }
 
     public boolean send(String message) {
