@@ -203,7 +203,7 @@ public class PORT extends Thread {
                         } else {
                             perSecond = kb / endTime;
                         }
-                        if (isASCII) {
+                        if (isASCII && listening == null) {
                             send.send("226-Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec." + Dict.newLine +
                                     "226 You are using ASCII mode to transfer files. If you find that the file is corrupt, type \"binary\" and try again." + Dict.newLine);
                         } else {
