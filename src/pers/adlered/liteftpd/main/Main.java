@@ -30,6 +30,7 @@ import java.net.Socket;
  **/
 public class Main {
     public static void main(String[] args) {
+        Main.init(args);
         Runtime runtime = Runtime.getRuntime();
         runtime.addShutdownHook(new Thread() {
             @Override
@@ -88,6 +89,27 @@ public class Main {
             } catch (IOException IOE) {
                 // TODO
                 IOE.printStackTrace();
+            }
+        }
+    }
+
+    public static void init(String[] args) {
+        Dict.init("en_us");
+        for (int i = 0; i < args.length; i += 2) {
+            String variable = args[i];
+            String value = args[i + 1];
+            if (variable.equals("-l")) {
+                value = value.replaceAll("-", "_");
+                if (value.equals("en_us")) {
+                    Logger.log(Types.SYS, Levels.INFO, "Language option detected. Init language as \"English\".");
+                    Dict.init(value);
+                } else if (value.equals("zh_cn")) {
+                    Logger.log(Types.SYS, Levels.INFO, "Language option detected. Init language as \"简体中文\".");
+                    Dict.init(value);
+                } else {
+                    Logger.log(Types.SYS, Levels.WARN, "Cannot support customize language \"" + value + "\". Using default \"English\".");
+                    Logger.log(Types.SYS, Levels.WARN, "Supported language: zh_cn en_us");
+                }
             }
         }
     }

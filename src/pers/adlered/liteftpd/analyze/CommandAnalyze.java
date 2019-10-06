@@ -369,6 +369,9 @@ public class CommandAnalyze {
                             if (file.isDirectory()) {
                                 delFolder(completePath);
                                 send.send(Dict.rmdSuccess());
+                            } else if (file.isFile()) {
+                                file.delete();
+                                send.send(Dict.rmdSuccess());
                             } else {
                                 send.send(Dict.notFound(getLockPath(completePath, lockPath)));
                             }
