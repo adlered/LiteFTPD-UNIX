@@ -32,11 +32,15 @@ public class PASV extends Thread {
     private String listening = null;
     private File file = null;
     private String path = null;
+    private boolean isASCII = true;
 
-    public PASV(Send send, PrivateVariable privateVariable, PauseListen pauseListen) {
+    public PASV(Send send, PrivateVariable privateVariable, PauseListen pauseListen, String type) {
         this.send = send;
         this.privateVariable = privateVariable;
         this.pauseListen = pauseListen;
+        if (type.equals("I")) {
+            isASCII = false;
+        }
     }
 
     public boolean listen(int port) {
@@ -94,15 +98,31 @@ public class PASV extends Thread {
                     OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
                     byte[] bytes = new byte[8192];
                     int len = -1;
+                    char[] buf = new char[8192];
                     if (privateVariable.getRest() == 0l) {
-                        // Not rest mode
-                        while ((len = fileInputStream.read(bytes)) != -1) {
-                            outputStream.write(bytes, 0, len);
+                        if (!isASCII) {
+                            // Not rest mode
+                            while ((len = fileInputStream.read(bytes)) != -1) {
+                                outputStream.write(bytes, 0, len);
+                            }
+                            outputStream.flush();
+                            fileInputStream.close();
+                            outputStream.close();
+                            bts = file.length();
+                        } else {
+                            FileReader fileReader = new FileReader(file);
+                            BufferedReader bufferedReader = new BufferedReader(fileReader);
+                            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+                            String line;
+                            while ((line = bufferedReader.readLine()) != null) {
+                                outputStreamWriter.write(line + "\r\n");
+                            }
+                            outputStreamWriter.flush();
+                            fileReader.close();
+                            outputStreamWriter.close();
+                            outputStream.close();
+                            bts = file.length();
                         }
-                        outputStream.flush();
-                        fileInputStream.close();
-                        outputStream.close();
-                        bts = file.length();
                     } else {
                         // Rest mode on
                         fileInputStream.skip(privateVariable.getRest());
@@ -131,20 +151,45 @@ public class PASV extends Thread {
                         fileOutputStream = new FileOutputStream(file, true);
                     }
                     // FileOutputStream will be create a new file auto.
-                    try {
-                        InputStream inputStream = socket.getInputStream();
-                        byte[] bytes = new byte[8192];
-                        int len = -1;
-                        while ((len = inputStream.read(bytes)) != -1) {
-                            fileOutputStream.write(bytes, 0, len);
+                    if (!isASCII) {
+                        try {
+                            InputStream inputStream = socket.getInputStream();
+                            byte[] bytes = new byte[8192];
+                            int len = -1;
+                            while ((len = inputStream.read(bytes)) != -1) {
+                                fileOutputStream.write(bytes, 0, len);
+                            }
+                            fileOutputStream.flush();
+                            send.send("226 Transfer complete." + Dict.newLine);
+                            inputStream.close();
+                            fileOutputStream.close();
+                        } catch (FileNotFoundException FNFE) {
+                            send.send("550 Permission denied." + Dict.newLine);
+                            FNFE.printStackTrace();
                         }
-                        fileOutputStream.flush();
-                        send.send("226 Transfer complete." + Dict.newLine);
-                        inputStream.close();
-                        fileOutputStream.close();
-                    } catch (FileNotFoundException FNFE) {
-                        send.send("550 Permission denied." + Dict.newLine);
-                        FNFE.printStackTrace();
+                    } else {
+                        try {
+                            FileWriter fileWriter = new FileWriter(file);
+                            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                            InputStream inputStream = socket.getInputStream();
+                            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                            String line;
+                            while ((line = bufferedReader.readLine()) != null) {
+                                bufferedWriter.write(line + "\n");
+                            }
+                            bufferedWriter.flush();
+                            send.send("226-Transfer complete." + Dict.newLine +
+                                    "226 You are using ASCII mode to transfer files. If you find that the file is corrupt, type \"binary\" and try again." + Dict.newLine);
+                            bufferedReader.close();
+                            inputStreamReader.close();
+                            inputStream.close();
+                            bufferedWriter.close();
+                            fileWriter.close();
+                        } catch (FileNotFoundException FNFE) {
+                            send.send("550 Permission denied." + Dict.newLine);
+                            FNFE.printStackTrace();
+                        }
                     }
                     privateVariable.resetRest();
                 }
@@ -164,7 +209,12 @@ public class PASV extends Thread {
                     } else {
                         perSecond = kb / endTime;
                     }
-                    send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec." + Dict.newLine + "");
+                    if (isASCII) {
+                        send.send("226-Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec." + Dict.newLine +
+                                "226 You are using ASCII mode to transfer files. If you find that the file is corrupt, type \"binary\" and try again." + Dict.newLine);
+                    } else {
+                        send.send("226 Complete! " + bts + " bytes in " + nanoEndTime + " nanosecond transferred. " + perSecond + " KB/sec." + Dict.newLine);
+                    }
                 }
             }
         } catch (SocketException SE) {

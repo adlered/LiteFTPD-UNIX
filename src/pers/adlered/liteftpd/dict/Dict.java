@@ -19,6 +19,7 @@ public class Dict {
     public static final String passiveMode = Code.PASSIVE + " Entering Passive Mode ";
     public static final String changeDir = Code.CORRECT + " Directory changed to ";
     public static final String openPassiveBINARY = Code.STATUSOK + " Opening BINARY mode data connection for ";
+    public static final String openPassiveASCI = Code.STATUSOK + " Opening ASCII mode data connection for ";
     public static final String noSuchFileOrDir = Code.ERRTARGET + " ";
     public static final String newLine = "\r\n";
     public static final String connectionStarted = " :) " + Variable.welcomeMessage + "" + Dict.newLine + "";
@@ -27,7 +28,7 @@ public class Dict {
     public static final String alreadyLogged = Code.CMDUNKNOWN + " You have already logged in." + "" + Dict.newLine + "";
     public static final String bye = Code.SERVICESTOP + " :) See ya!" + "" + Dict.newLine + "";
     public static final String passiveDataFailed = Code.UNAVAILABLE + " Passive port is not connected." + Dict.newLine + "";
-    public static final String openPassiveASCII = Code.STATUSOK + " Opening BINARY mode data, please wait." + Dict.newLine + "";
+    public static final String openPassiveASCII = Code.STATUSOK + " Opening ASCII mode data, please wait." + Dict.newLine + "";
     public static final String type = Code.NAME + " UNIX Type: L8" + Dict.newLine + "";
     public static final String remind = "" + Dict.newLine + ">>> LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX" + Dict.newLine + "===------===" + Dict.newLine + "" +
             "IS THE CHINESE ON THE RIGHT NORMAL? -> 中文 <- If not, type \"quote gb\" to change the encode type." + Dict.newLine + "230 OK" + Dict.newLine + "";

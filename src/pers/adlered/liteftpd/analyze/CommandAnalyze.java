@@ -484,7 +484,7 @@ public class CommandAnalyze {
                         if (portMode != null) {
                             portMode.stopSocket();
                         }
-                        portMode = new PORT(send, privateVariable, pauseListen);
+                        portMode = new PORT(send, privateVariable, pauseListen, type);
                         portMode.setTarget(ip, port);
                         send.send("200 PORT Command successful." + Dict.newLine + "");
                         mode = "port";
@@ -492,7 +492,7 @@ public class CommandAnalyze {
                         if (passiveMode != null) {
                             passiveMode.stopSocket();
                         }
-                        passiveMode = new PASV(send, privateVariable, pauseListen);
+                        passiveMode = new PASV(send, privateVariable, pauseListen, type);
                         int randomPort;
                         int randomSub;
                         int calcPort;
@@ -523,7 +523,11 @@ public class CommandAnalyze {
                             try {
                                 File file = new File(completePath);
                                 if (file.exists()) {
-                                    send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)" + Dict.newLine + "");
+                                    if (type.equals("I")) {
+                                        send.send(Dict.openPassiveBINARY + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)" + Dict.newLine + "");
+                                    } else {
+                                        send.send(Dict.openPassiveASCI + getLockPath(completePath, lockPath) + " (" + file.length() + " Bytes)" + Dict.newLine + "");
+                                    }
                                     if (mode != null) {
                                         Logger.log(Types.TRANS, Levels.DEBUG, "Reset mode.");
                                         String mode = this.mode;
@@ -560,7 +564,11 @@ public class CommandAnalyze {
                                 completePath = completePath.replaceAll("\\.\\./", "");
                             }
                             completePath = getAbsolutePath(completePath);
-                            send.send("150 Opening BINARY mode data connection for " + getLockPath(completePath, lockPath) + "." + Dict.newLine);
+                            if (type.equals("I")) {
+                                send.send("150 Opening BINARY mode data connection for " + getLockPath(completePath, lockPath) + "." + Dict.newLine);
+                            } else {
+                                send.send("150 Opening ASCII mode data connection for " + getLockPath(completePath, lockPath) + "." + Dict.newLine);
+                            }
                             try {
                             /*File file = new File(completePath);
                             if (file.exists()) {
