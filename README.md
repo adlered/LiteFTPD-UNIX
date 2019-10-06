@@ -4,7 +4,7 @@
 造这个轱辘的原因主要是因为我在使用MacOS的FTP服务端时发现编码问题很严重，Windows几乎无法正常使用。  
 于是想在业余时间做出一个兼容性强、人性化、高性能且低占用的FTP服务端。  
 
-### [→ Englsh Version README ←](https://github.com/AdlerED/LiteFTPD-UNIX/blob/master/README-EN.md)
+### [→ English Version README ←](https://github.com/AdlerED/LiteFTPD-UNIX/blob/master/README-EN.md)
 
 ## 当前开发进度：
 ✳️ 目标：强兼容，高性能，低占用  
