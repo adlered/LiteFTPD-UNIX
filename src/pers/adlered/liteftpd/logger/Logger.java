@@ -15,11 +15,11 @@ public class Logger {
     public static boolean log(Types type, Levels level, String log) {
         if (Filter.fil(level)) {
             // Can be logged
+            System.out.println("[" + level + "]" + " " + "[" + type + "]" + " >> " + log);
             if (MainModels.guiReady) {
                 MainModels.console.append("[" + level + "]" + " " + "[" + type + "]" + " >> " + log + "\n");
                 MainModels.console.setCaretPosition(MainModels.console.getDocument().getLength());
             }
-            System.out.println("[" + level + "]" + " " + "[" + type + "]" + " >> " + log);
             return true;
         } else {
             // Cannot log

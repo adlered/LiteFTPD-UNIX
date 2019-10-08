@@ -25,7 +25,7 @@ public class RunningUpdate implements Runnable {
                 List<String> list = new ArrayList<>();
                 // ** Collect **
                 // Online
-                list.add(Dict.onlineStr() + ": " + Online.userRuleOnline.size());
+                list.add(" ● " + Dict.onlineStr() + " " + Online.userRuleOnline.size() + "   ● " + Dict.connectionsStr() + " " + Online.ipRuleOnline.size());
                 // Users
                 Map<String, Integer> userMap = new HashMap<>();
                 for (UserLimitBind userLimitBind : Online.userRuleOnline) {
@@ -40,8 +40,9 @@ public class RunningUpdate implements Runnable {
                 }
                 String users = "";
                 for (Map.Entry<String, Integer> entry : userMap.entrySet()) {
-                    users += entry.getKey() + ": " + entry.getValue() + " ";
+                    users += entry.getKey() + " (" + entry.getValue() + ") | ";
                 }
+                users = users.replaceAll("( \\| )$", "");
                 list.add(users);
                 // ** Update **
                 String text = "";

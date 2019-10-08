@@ -369,7 +369,31 @@ public class Dict {
         return null;
     }
 
-    public static String template() {
+    public static String clearStr() {
+        if (lang.equals("zh_cn"))
+            return "清除";
+        if (lang.equals("en_us"))
+            return "Clear";
+        return null;
+    }
+
+    public static String actionStr() {
+        if (lang.equals("zh_cn"))
+            return "操作";
+        if (lang.equals("en_us"))
+            return "Action";
+        return null;
+    }
+
+    public static String connectionsStr() {
+        if (lang.equals("zh_cn"))
+            return "连接数";
+        if (lang.equals("en_us"))
+            return "Connection";
+        return null;
+    }
+
+    public static String t() {
         if (lang.equals("zh_cn"))
             return "";
         if (lang.equals("en_us"))

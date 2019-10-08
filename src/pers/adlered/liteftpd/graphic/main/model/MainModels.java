@@ -12,6 +12,6 @@ import javax.swing.*;
 public class MainModels {
     public static boolean guiReady = false;
 
-    public static JTextArea console = new JTextArea(18, 32);
-    public static JTextArea data = new JTextArea(5, 32);
+    public static JTextArea console = new JTextArea(18, 31);
+    public static JTextArea data = new JTextArea(3, 32);
 }

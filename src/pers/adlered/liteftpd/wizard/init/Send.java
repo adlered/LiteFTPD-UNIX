@@ -2,7 +2,6 @@ package pers.adlered.liteftpd.wizard.init;
 
 import pers.adlered.liteftpd.analyze.PrivateVariable;
 import pers.adlered.liteftpd.user.status.bind.IPAddressBind;
-import pers.adlered.liteftpd.dict.StatusCode;
 import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.Logger;
