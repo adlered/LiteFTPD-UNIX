@@ -39,7 +39,6 @@
 
 ![How-to-LiteFTPD-UNIX.gif](/How-to-LiteFTPD-UNIX.gif)
 
-
 ### 国际化
 
 虽然用处可能不是很大，但LiteFTPD支持国际化语言——支持一部分语言。以中文为例：  
@@ -91,6 +90,10 @@ java -jar LiteFTPD-UNIX.jar
 不需要其它文件，你可以只通过LiteFTPD-UNIX.jar运行FTP服务。你只需要在安装了Java的电脑中直接运行LiteFTPD-UNIX.jar就可以了，十分便捷。  
 
 ![屏幕快照 2019-09-30 下午8.44.56.png](https://pic.stackoverflow.wiki/uploadImages/79a47e02-0623-427f-ae43-e08ab4be11f9.png) 
+
+## 多线程不占CPU、内存
+
+![屏幕快照 2019-10-11 上午11.38.35.png](https://pic.stackoverflow.wiki/uploadImages/6dd550d3-825e-4fdd-828e-bd53b1104dbb.png)
 
 ## 中文不乱码
 

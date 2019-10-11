@@ -82,3 +82,7 @@ After the first startup, LiteFTPD will automatically generate the `config.prop` 
 No other files are required, you can run the FTP service only through LiteFTPD-UNIX.jar. You only need to run LiteFTPD-UNIX.jar directly on the computer with Java installed, which is very convenient.  
 
 ![Screenshot 2019-09-30 8.45.56.png](https://pic.stackoverflow.wiki/uploadImages/79a47e02-0623-427f-ae43-e08ab4be11f9.png)
+
+## Multithreading does not occupy CPU, memory
+
+![屏幕快照 2019-10-11 上午11.38.35.png](https://pic.stackoverflow.wiki/uploadImages/6dd550d3-825e-4fdd-828e-bd53b1104dbb.png)
