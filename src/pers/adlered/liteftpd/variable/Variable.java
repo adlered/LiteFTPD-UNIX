@@ -11,6 +11,7 @@ public class Variable {
     public static String user = "1;anonymous;;r;2;admin;123456;r";
     public static String ipOnlineLimit = "";
     public static String userOnlineLimit = "";
+    public static String speedLimit="";
     public static int debugLevel = 4;
     public static int online = 0;
     public static long maxUserLimit = 100;

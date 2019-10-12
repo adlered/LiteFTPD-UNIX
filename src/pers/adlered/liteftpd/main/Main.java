@@ -12,6 +12,7 @@ import pers.adlered.liteftpd.tool.Status;
 import pers.adlered.liteftpd.user.User;
 import pers.adlered.liteftpd.user.status.Online;
 import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
+import pers.adlered.liteftpd.user.status.bind.SpeedLimitBind;
 import pers.adlered.liteftpd.user.verify.OnlineRules;
 import pers.adlered.liteftpd.variable.OnlineUserController;
 import pers.adlered.liteftpd.variable.Variable;
@@ -33,19 +34,8 @@ import java.net.Socket;
 public class Main {
     public static void main(String[] args) {
         Main.init(args);
-        Runtime runtime = Runtime.getRuntime();
-        runtime.addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                Logger.log(Types.SYS, Levels.INFO, "LiteFTPD stopped.");
-            }
-        });
         ServerSocket serverSocket = null;
         try {
-            // 先读取配置文件
-            Prop.getInstance();
-            // 再初始化用户信息
-            User.initUsers();
             Logger.log(Types.SYS, Levels.INFO, "LiteFTPD by AdlerED <- GitHub");
             // Listen socket connections, handle with SocketHandler.
             serverSocket = new ServerSocket(Variable.port);
@@ -97,7 +87,17 @@ public class Main {
     }
 
     public static void init(String[] args) {
-        Dict.init("en_us");
+        // 设置LiteFTPD关闭时的操作
+        Runtime runtime = Runtime.getRuntime();
+        runtime.addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                Logger.log(Types.SYS, Levels.INFO, "LiteFTPD stopped.");
+            }
+        });
+        // 读取配置文件
+        Prop.getInstance();
+        // 检测传值，执行指定操作
         for (int i = 0; i < args.length; i++) {
             String variable = args[i];
             if (variable.equals("-l")) {
@@ -119,5 +119,7 @@ public class Main {
                 GUI.run();
             }
         }
+        // 初始化用户信息
+        User.initUsers();
     }
 }

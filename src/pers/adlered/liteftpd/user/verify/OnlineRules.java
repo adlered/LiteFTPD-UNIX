@@ -2,6 +2,7 @@ package pers.adlered.liteftpd.user.verify;
 
 import pers.adlered.liteftpd.user.status.bind.IpLimitBind;
 import pers.adlered.liteftpd.user.status.Online;
+import pers.adlered.liteftpd.user.status.bind.SpeedLimitBind;
 import pers.adlered.liteftpd.user.status.bind.UserLimitBind;
 import pers.adlered.liteftpd.variable.Variable;
 
@@ -74,7 +75,7 @@ public class OnlineRules {
      * 检查用户名是否达到了上限
      *
      * @param username
-     * @return true则允许登录 false则禁止登录
+     * @return 禁止登录返回null
      */
     public static UserLimitBind checkUsername(String username) {
         boolean onList = false;
@@ -117,5 +118,28 @@ public class OnlineRules {
             Online.userRuleOnline.add(userLimitBind);
             return userLimitBind;
         }
+    }
+
+    public static SpeedLimitBind getSpeedLimit(String username) {
+        String[] speedRules = Variable.speedLimit.split(";");
+        for (int i = 0; i < speedRules.length; i += 3) {
+            String currentUser = speedRules[i];
+            if (currentUser.equals(username)) {
+                int uploadSpeed;
+                if (speedRules[i + 1].isEmpty() || speedRules[i + 1].equals("0")) {
+                    uploadSpeed = 0;
+                } else {
+                    uploadSpeed = Integer.parseInt(speedRules[i + 1]);
+                }
+                int downloadSpeed;
+                if (speedRules[i + 2].isEmpty() || speedRules[i + 2].equals("0")) {
+                    downloadSpeed = 0;
+                } else {
+                    downloadSpeed = Integer.parseInt(speedRules[i + 2]);
+                }
+                return new SpeedLimitBind(uploadSpeed, downloadSpeed);
+            }
+        }
+        return new SpeedLimitBind(0, 0);
     }
 }

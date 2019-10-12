@@ -5,6 +5,7 @@ import pers.adlered.liteftpd.dict.Dict;
 import pers.adlered.liteftpd.logger.enums.Levels;
 import pers.adlered.liteftpd.logger.Logger;
 import pers.adlered.liteftpd.logger.enums.Types;
+import pers.adlered.liteftpd.user.status.bind.SpeedLimitBind;
 import pers.adlered.liteftpd.wizard.init.PauseListen;
 import pers.adlered.liteftpd.wizard.init.Send;
 import pers.adlered.liteftpd.variable.Variable;
@@ -30,18 +31,20 @@ public class PORT extends Thread {
     private String listening = null;
     private File file = null;
     private String path = null;
-
     private String ip = null;
+
     private int port = -1;
     private boolean isASCII = true;
+    SpeedLimitBind speedLimitBind = null;
 
-    public PORT(Send send, PrivateVariable privateVariable, PauseListen pauseListen, String type) {
+    public PORT(Send send, PrivateVariable privateVariable, PauseListen pauseListen, String type, SpeedLimitBind speedLimitBind) {
         this.send = send;
         this.privateVariable = privateVariable;
         this.pauseListen = pauseListen;
         if (type.equals("I")) {
             isASCII = false;
         }
+        this.speedLimitBind = speedLimitBind;
     }
 
     public void setTarget(String ip, int port) {
@@ -90,48 +93,94 @@ public class PORT extends Thread {
                         bufferedOutputStream.close();
                         bts = (listening.getBytes(privateVariable.encode)).length;
                     } else if (file != null) {
-                        FileInputStream fileInputStream = new FileInputStream(file);
-                        OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-                        byte[] bytes = new byte[8192];
-                        int len = -1;
-                        if (privateVariable.getRest() == 0l) {
-                            if (!isASCII) {
-                                // Not rest mode
+                        if (speedLimitBind.getDownloadSpeed() != 0) {
+                            FileInputStream fileInputStream = new FileInputStream(file);
+                            OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+                            byte[] bytes = new byte[speedLimitBind.getDownloadSpeed() * 1024];
+                            int len = -1;
+                            if (privateVariable.getRest() == 0l) {
+                                if (!isASCII) {
+                                    // Not rest mode
+                                    while ((len = fileInputStream.read(bytes)) != -1) {
+                                        outputStream.write(bytes, 0, len);
+                                        Thread.sleep(1000);
+                                    }
+                                    outputStream.flush();
+                                    fileInputStream.close();
+                                    outputStream.close();
+                                    bts = file.length();
+                                } else {
+                                    FileReader fileReader = new FileReader(file);
+                                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+                                    String line;
+                                    while ((line = bufferedReader.readLine()) != null) {
+                                        outputStreamWriter.write(line + "\r\n");
+                                        Thread.sleep(1000);
+                                    }
+                                    outputStreamWriter.flush();
+                                    fileReader.close();
+                                    outputStreamWriter.close();
+                                    outputStream.close();
+                                    bts = file.length();
+                                }
+                            } else {
+                                // Rest mode on
+                                fileInputStream.skip(privateVariable.getRest());
+                                while ((len = fileInputStream.read(bytes)) != -1) {
+                                    outputStream.write(bytes, 0, len);
+                                    Thread.sleep(1000);
+                                }
+                                outputStream.flush();
+                                fileInputStream.close();
+                                outputStream.close();
+                                bts = file.length() - privateVariable.getRest();
+                                privateVariable.resetRest();
+                            }
+                        } else {
+                            FileInputStream fileInputStream = new FileInputStream(file);
+                            OutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+                            byte[] bytes = new byte[8192];
+                            int len = -1;
+                            if (privateVariable.getRest() == 0l) {
+                                if (!isASCII) {
+                                    // Not rest mode
+                                    while ((len = fileInputStream.read(bytes)) != -1) {
+                                        outputStream.write(bytes, 0, len);
+                                    }
+                                    outputStream.flush();
+                                    fileInputStream.close();
+                                    outputStream.close();
+                                    bts = file.length();
+                                } else {
+                                    FileReader fileReader = new FileReader(file);
+                                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+                                    String line;
+                                    while ((line = bufferedReader.readLine()) != null) {
+                                        outputStreamWriter.write(line + "\r\n");
+                                    }
+                                    outputStreamWriter.flush();
+                                    fileReader.close();
+                                    outputStreamWriter.close();
+                                    outputStream.close();
+                                    bts = file.length();
+                                }
+                            } else {
+                                // Rest mode on
+                                fileInputStream.skip(privateVariable.getRest());
                                 while ((len = fileInputStream.read(bytes)) != -1) {
                                     outputStream.write(bytes, 0, len);
                                 }
                                 outputStream.flush();
                                 fileInputStream.close();
                                 outputStream.close();
-                                bts = file.length();
-                            } else {
-                                FileReader fileReader = new FileReader(file);
-                                BufferedReader bufferedReader = new BufferedReader(fileReader);
-                                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-                                String line;
-                                while ((line = bufferedReader.readLine()) != null) {
-                                    outputStreamWriter.write(line + "\r\n");
-                                }
-                                outputStreamWriter.flush();
-                                fileReader.close();
-                                outputStreamWriter.close();
-                                outputStream.close();
-                                bts = file.length();
+                                bts = file.length() - privateVariable.getRest();
+                                privateVariable.resetRest();
                             }
-                        } else {
-                            // Rest mode on
-                            fileInputStream.skip(privateVariable.getRest());
-                            while ((len = fileInputStream.read(bytes)) != -1) {
-                                outputStream.write(bytes, 0, len);
-                            }
-                            outputStream.flush();
-                            fileInputStream.close();
-                            outputStream.close();
-                            bts = file.length() - privateVariable.getRest();
-                            privateVariable.resetRest();
                         }
                     } else if (path != null) {
-                        Logger.log(Types.RECV, Levels.DEBUG, "Passive mode store. Path: " + path);
+                        Logger.log(Types.RECV, Levels.DEBUG, "Port mode store. Path: " + path);
                         File file = new File(path);
                         if (!file.getParentFile().exists()) {
                             file.getParentFile().mkdirs();
@@ -146,51 +195,103 @@ public class PORT extends Thread {
                             fileOutputStream = new FileOutputStream(file, true);
                         }
                         // FileOutputStream will be create a new file auto.
-                        if (!isASCII) {
-                            try {
-                                InputStream inputStream = socket.getInputStream();
-                                byte[] bytes = new byte[8192];
-                                int len = -1;
-                                long sTime = System.currentTimeMillis();
-                                while ((len = inputStream.read(bytes)) != -1) {
-                                    fileOutputStream.write(bytes, 0, len);
+                        if (speedLimitBind.getUploadSpeed() == 0) {
+                            if (!isASCII) {
+                                try {
+                                    InputStream inputStream = socket.getInputStream();
+                                    byte[] bytes = new byte[8192];
+                                    int len = -1;
+                                    long sTime = System.currentTimeMillis();
+                                    while ((len = inputStream.read(bytes)) != -1) {
+                                        fileOutputStream.write(bytes, 0, len);
+                                    }
+                                    long eTime = (System.currentTimeMillis() - sTime) / 1000;
+                                    if (eTime == 0) eTime = 1;
+                                    float pSecond = file.length() / eTime;
+                                    fileOutputStream.flush();
+                                    send.send(Dict.transferComplete(file.length(), eTime, pSecond));
+                                    inputStream.close();
+                                    fileOutputStream.close();
+                                } catch (FileNotFoundException FNFE) {
+                                    send.send(Dict.permissionDenied());
+                                    FNFE.printStackTrace();
                                 }
-                                long eTime = (System.currentTimeMillis() - sTime) / 1000;
-                                if (eTime == 0) eTime = 1;
-                                float pSecond = file.length() / eTime;
-                                fileOutputStream.flush();
-                                send.send(Dict.transferComplete(file.length(), eTime, pSecond));
-                                inputStream.close();
-                                fileOutputStream.close();
-                            } catch (FileNotFoundException FNFE) {
-                                send.send(Dict.permissionDenied());
-                                FNFE.printStackTrace();
+                            } else {
+                                try {
+                                    FileWriter fileWriter = new FileWriter(file);
+                                    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                                    InputStream inputStream = socket.getInputStream();
+                                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                                    String line;
+                                    long sTime = System.currentTimeMillis();
+                                    while ((line = bufferedReader.readLine()) != null) {
+                                        bufferedWriter.write(line + "\n");
+                                    }
+                                    long eTime = (System.currentTimeMillis() - sTime) / 1000;
+                                    if (eTime == 0) eTime = 1;
+                                    float pSecond = file.length() / eTime;
+                                    bufferedWriter.flush();
+                                    send.send(Dict.transferCompleteInAsciiMode(file.length(), eTime, pSecond));
+                                    bufferedReader.close();
+                                    inputStreamReader.close();
+                                    inputStream.close();
+                                    bufferedWriter.close();
+                                    fileWriter.close();
+                                } catch (FileNotFoundException FNFE) {
+                                    send.send(Dict.permissionDenied());
+                                    FNFE.printStackTrace();
+                                }
                             }
                         } else {
-                            try {
-                                FileWriter fileWriter = new FileWriter(file);
-                                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-                                InputStream inputStream = socket.getInputStream();
-                                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                                String line;
-                                long sTime = System.currentTimeMillis();
-                                while ((line = bufferedReader.readLine()) != null) {
-                                    bufferedWriter.write(line + "\n");
+                            if (!isASCII) {
+                                try {
+                                    InputStream inputStream = socket.getInputStream();
+                                    BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream, speedLimitBind.getUploadSpeed() * 1024);
+                                    int len = -1;
+                                    long sTime = System.currentTimeMillis();
+                                    byte[] bytes = new byte[speedLimitBind.getUploadSpeed() * 1024];
+                                    while ((len = bufferedInputStream.read(bytes)) != -1) {
+                                        fileOutputStream.write(bytes, 0, len);
+                                        Thread.sleep(1000);
+                                    }
+                                    long eTime = (System.currentTimeMillis() - sTime) / 1000;
+                                    if (eTime == 0) eTime = 1;
+                                    float pSecond = file.length() / eTime;
+                                    fileOutputStream.flush();
+                                    send.send(Dict.transferComplete(file.length(), eTime, pSecond));
+                                    inputStream.close();
+                                    fileOutputStream.close();
+                                } catch (FileNotFoundException FNFE) {
+                                    send.send(Dict.permissionDenied());
+                                    FNFE.printStackTrace();
                                 }
-                                long eTime = (System.currentTimeMillis() - sTime) / 1000;
-                                if (eTime == 0) eTime = 1;
-                                float pSecond = file.length() / eTime;
-                                bufferedWriter.flush();
-                                send.send(Dict.transferCompleteInAsciiMode(file.length(), eTime, pSecond));
-                                bufferedReader.close();
-                                inputStreamReader.close();
-                                inputStream.close();
-                                bufferedWriter.close();
-                                fileWriter.close();
-                            } catch (FileNotFoundException FNFE) {
-                                send.send(Dict.permissionDenied());
-                                FNFE.printStackTrace();
+                            } else {
+                                try {
+                                    FileWriter fileWriter = new FileWriter(file);
+                                    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                                    InputStream inputStream = socket.getInputStream();
+                                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                                    String line;
+                                    long sTime = System.currentTimeMillis();
+                                    while ((line = bufferedReader.readLine()) != null) {
+                                        bufferedWriter.write(line + "\n");
+                                    }
+                                    long eTime = (System.currentTimeMillis() - sTime) / 1000;
+                                    if (eTime == 0) eTime = 1;
+                                    float pSecond = file.length() / eTime;
+                                    bufferedWriter.flush();
+                                    send.send(Dict.transferCompleteInAsciiMode(file.length(), eTime, pSecond));
+                                    bufferedReader.close();
+                                    inputStreamReader.close();
+                                    inputStream.close();
+                                    bufferedWriter.close();
+                                    fileWriter.close();
+                                } catch (FileNotFoundException FNFE) {
+                                    send.send(Dict.permissionDenied());
+                                    FNFE.printStackTrace();
+                                }
                             }
                         }
                         privateVariable.resetRest();

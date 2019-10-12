@@ -477,7 +477,7 @@ public class CommandAnalyze {
                         if (portMode != null) {
                             portMode.stopSocket();
                         }
-                        portMode = new PORT(send, privateVariable, pauseListen, type);
+                        portMode = new PORT(send, privateVariable, pauseListen, type, OnlineRules.getSpeedLimit(loginUser));
                         portMode.setTarget(ip, port);
                         send.send(Dict.portSuccess());
                         mode = "port";
@@ -485,7 +485,7 @@ public class CommandAnalyze {
                         if (passiveMode != null) {
                             passiveMode.stopSocket();
                         }
-                        passiveMode = new PASV(send, privateVariable, pauseListen, type);
+                        passiveMode = new PASV(send, privateVariable, pauseListen, type, OnlineRules.getSpeedLimit(loginUser));
                         int randomPort;
                         int randomSub;
                         int calcPort;
