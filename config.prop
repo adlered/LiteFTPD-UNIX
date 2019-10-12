@@ -132,6 +132,14 @@
 #       !!! 请注意！配置越往前，连接数限制的权重越低（意味着越往前，匹配到的可能性越小）。建议将指定用户的配置写在最后面，将使用通配符的用户配置写在前面。 !!!
 #       例如 =admin;1;%;100; 当登录用户admin时，最终获取到允许同时登录的连接数最大为100！应将配置修改为 =%;100;admin;1;
 # 
+#  >> speedLimit
+# 
+#      Limit user's upload & download speed. There is no limit
+#      format: speedLimit=[username];[upload(kb/s)];[download(kb/s)]; ...
+# 
+#      限制用户的上传和下载速度。数值为0或不填时不限制。
+#      格式：speedList=[用户名];[上传速度(kb/秒)];[下载速度(kb/秒)]; ...
+# 
 # ================================================================================================
 # =                                          ↓ CONFIG ↓                                          =
 # ================================================================================================
@@ -139,6 +147,7 @@
 user=anonymous;;r;/;/;admin;123456;r;/;/root;
 ipOnlineLimit=0.0.0.0;100;127.x.x.x;100;192.168.1.x;100;
 userOnlineLimit=%;100;anonymous;100;admin;100;
+speedLimit=anonymous;0;10240;admin;;20480;
 debugLevel=3
 maxUserLimit=100
 timeout=100
