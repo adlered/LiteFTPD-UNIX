@@ -250,6 +250,12 @@ public class CommandAnalyze {
                         arg1 = arg1.toUpperCase();
                         type = arg1;
                         send.send(Dict.type(arg1));
+                    } else if (cmd.equals("BINARY")) {
+                        type = "I";
+                        send.send(Dict.type("I"));
+                    } else if (cmd.equals("ASCII")) {
+                        type = "A";
+                        send.send(Dict.type("A"));
                     } else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
                         send.send(Dict.bye());
                         privateVariable.setInterrupted(true);

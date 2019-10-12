@@ -113,9 +113,10 @@ public class PORT extends Thread {
                                     FileReader fileReader = new FileReader(file);
                                     BufferedReader bufferedReader = new BufferedReader(fileReader);
                                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-                                    String line;
-                                    while ((line = bufferedReader.readLine()) != null) {
-                                        outputStreamWriter.write(line + "\r\n");
+                                    int length = -1;
+                                    char[] chars = new char[speedLimitBind.getUploadSpeed() * 1024];
+                                    while ((length = bufferedReader.read(chars)) != -1) {
+                                        outputStreamWriter.write(String.valueOf(chars, 0, length).replaceAll("\r", "").replaceAll("\n", "\r\n"));
                                         Thread.sleep(1000);
                                     }
                                     outputStreamWriter.flush();
@@ -273,10 +274,12 @@ public class PORT extends Thread {
                                     InputStream inputStream = socket.getInputStream();
                                     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                                    String line;
+                                    int len = -1;
                                     long sTime = System.currentTimeMillis();
-                                    while ((line = bufferedReader.readLine()) != null) {
-                                        bufferedWriter.write(line + "\n");
+                                    char[] chars = new char[speedLimitBind.getUploadSpeed() * 1024];
+                                    while ((len = bufferedReader.read(chars)) != -1) {
+                                        bufferedWriter.write(String.valueOf(chars, 0, len).replaceAll("\r\n", "\n"));
+                                        Thread.sleep(1000);
                                     }
                                     long eTime = (System.currentTimeMillis() - sTime) / 1000;
                                     if (eTime == 0) eTime = 1;
