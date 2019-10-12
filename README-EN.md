@@ -10,23 +10,24 @@ Current progress: **File upload, download, delete, move, rename function for FTP
 
 - [x] Extremely simple multi-user identification && permission control && default directory && allows directory setting
 - [x] User directory lock
-- [x] passive mode
-- [x] active mode
-- [x] breakpoint resume function
+- [x] Passive mode
+- [x] Active mode
+- [x] Breakpoint resume function
 - [x] Multi-platform client compatibility
-- [x] binary download
-- [x] binary upload
-- [ ] ASCII download
-- [ ] ASCII upload
-- [x] file move/rename
-- [x] memory recycling mechanism
+- [x] Binary download
+- [x] Binary upload
+- [x] ASCII download
+- [x] ASCII upload
+- [x] File move/rename
+- [x] Memory recycling mechanism
 - [x] User Defined Settings
-- [x] idle port reclamation mechanism
+- [x] Idle port reclamation mechanism
 - [x] Small function: Automatically judge time greeting information after successful login ( Good morning / noon / afternoon / evening / night )
 - [x] long connection (noop)
 - [x] User connection limit and settings (support global settings)
 - [x] IP connection limit and setting (support fuzzy matching)
-- [x] configuration file (delete will be automatically generated)
+- [x] Configuration file (delete will be automatically generated)
+- [ ] Upload / Download speed limit
 - [ ] Graphic Control Panel
 
 ## How to experience?

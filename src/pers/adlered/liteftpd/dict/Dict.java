@@ -263,7 +263,7 @@ public class Dict {
         if (lang.equals("zh_cn"))
             return StatusCode.LOGGED + "-" + Dict.newLine + "===------===" + Dict.newLine + ">>> :) Good " + GoodXX.getTimeAsWord() + ", " + username + "!" + Dict.newLine
                     + ">>> LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX" + Dict.newLine + "===------===" + Dict.newLine
-                    + "右侧的中文显示是否正常? -> 中文 <- 如果乱码了, 请输入 \"quote gb\" 以修复该问题." + Dict.newLine + "230 成功" + Dict.newLine;
+                    + "IS THE CHINESE ON THE RIGHT NORMAL? -> 中文 <- If not, type \"quote gb\" to change the encode type." + Dict.newLine + "230 OK" + Dict.newLine;
         if (lang.equals("en_us"))
             return StatusCode.LOGGED + "-" + "" + Dict.newLine + "===------===" + Dict.newLine + ">>> :) Good " + GoodXX.getTimeAsWord() + ", " + username + "!" + Dict.newLine
                     + ">>> LiteFTPD https://github.com/AdlerED/LiteFTPD-UNIX" + Dict.newLine + "===------===" + Dict.newLine
