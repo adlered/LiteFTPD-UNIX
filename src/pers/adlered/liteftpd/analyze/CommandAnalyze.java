@@ -256,7 +256,7 @@ public class CommandAnalyze {
                     } else if (cmd.equals("ASCII")) {
                         type = "A";
                         send.send(Dict.type("A"));
-                    } else if (cmd.equals("BYE") || cmd.equals("QUIT")) {
+                    } else if (cmd.equals("BYE") || cmd.equals("QUIT") || cmd.equals("EXIT")) {
                         send.send(Dict.bye());
                         privateVariable.setInterrupted(true);
                     } else if (cmd.equals("LIST")) {
