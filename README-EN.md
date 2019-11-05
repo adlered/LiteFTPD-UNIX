@@ -27,7 +27,7 @@ Current progress: **File upload, download, delete, move, rename function for FTP
 - [x] User connection limit and settings (support global settings)
 - [x] IP connection limit and setting (support fuzzy matching)
 - [x] Configuration file (delete will be automatically generated)
-- [ ] Upload / Download speed limit
+- [x] Upload / Download speed limit
 - [ ] Graphic Control Panel
 
 ## How to experience?
