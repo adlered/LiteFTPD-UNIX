@@ -204,16 +204,21 @@ public class CommandAnalyze {
                             privateVariable.reason = "user \"" + loginUser + "\" has too much login";
                             privateVariable.setInterrupted(true);
                         } else {
-                            if (User.checkPassword(loginUser, loginPass) || loginUser.equals("anonymous")) {
-                                OnlineInfo.usersOnlineInfo.add(new UserInfoBind(ipLimitBind, userLimitBind));
-                                send.send(Dict.loggedIn(loginUser));
-                                Logger.log(Types.SYS, Levels.INFO, "User " + loginUser + " logged in.");
-                                userProps = User.getUserProps(loginUser);
-                                lockPath = userProps.getPermitDir();
-                                currentPath = userProps.getDefaultDir();
-                                OnlineUserController.printOnline();
-                                step = 3;
-                            } else {
+                            try {
+                                if ((loginUser.equals("anonymous") && userProps.getPermission() != null) || User.checkPassword(loginUser, loginPass)) {
+                                    OnlineInfo.usersOnlineInfo.add(new UserInfoBind(ipLimitBind, userLimitBind));
+                                    send.send(Dict.loggedIn(loginUser));
+                                    Logger.log(Types.SYS, Levels.INFO, "User " + loginUser + " logged in.");
+                                    userProps = User.getUserProps(loginUser);
+                                    lockPath = userProps.getPermitDir();
+                                    currentPath = userProps.getDefaultDir();
+                                    OnlineUserController.printOnline();
+                                    step = 3;
+                                } else {
+                                    send.send(Dict.wrongPassword());
+                                    privateVariable.setInterrupted(true);
+                                }
+                            } catch (NullPointerException NPE) {
                                 send.send(Dict.wrongPassword());
                                 privateVariable.setInterrupted(true);
                             }
