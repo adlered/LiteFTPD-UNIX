@@ -205,11 +205,11 @@ public class CommandAnalyze {
                             privateVariable.setInterrupted(true);
                         } else {
                             try {
+                                userProps = User.getUserProps(loginUser);
                                 if ((loginUser.equals("anonymous") && userProps.getPermission() != null) || User.checkPassword(loginUser, loginPass)) {
                                     OnlineInfo.usersOnlineInfo.add(new UserInfoBind(ipLimitBind, userLimitBind));
                                     send.send(Dict.loggedIn(loginUser));
                                     Logger.log(Types.SYS, Levels.INFO, "User " + loginUser + " logged in.");
-                                    userProps = User.getUserProps(loginUser);
                                     lockPath = userProps.getPermitDir();
                                     currentPath = userProps.getDefaultDir();
                                     OnlineUserController.printOnline();
